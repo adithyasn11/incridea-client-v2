@@ -42,7 +42,7 @@ function FormPage() {
           <label className="label" htmlFor="name">
             Name
           </label>
-          <input id="name" className="input" placeholder="Ada Lovelace" {...register('name')} />
+          <input id="name" className="input" placeholder="Arjun Mehta" {...register('name')} />
           {errors.name && <p className="text-sm text-rose-300">{errors.name.message}</p>}
         </div>
 
@@ -61,7 +61,7 @@ function FormPage() {
           <textarea
             id="message"
             className="input min-h-[120px] resize-none"
-            placeholder="Tell us about your project"
+            placeholder="Share your idea or question"
             {...register('message')}
           />
           {errors.message && <p className="text-sm text-rose-300">{errors.message.message}</p>}

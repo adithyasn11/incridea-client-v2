@@ -1,9 +1,14 @@
 import axios from 'axios'
 
-const apiBaseUrl =
-  typeof import.meta.env.VITE_API_URL === 'string'
+const rawBaseUrl =
+  typeof import.meta.env.VITE_API_URL === 'string' && import.meta.env.VITE_API_URL.length > 0
     ? import.meta.env.VITE_API_URL
-    : undefined
+    : '/api'
+
+// Ensure the base URL always points at the server's /api prefix, even if the env var omits it.
+const apiBaseUrl = rawBaseUrl.replace(/\/+$/, '').endsWith('/api')
+  ? rawBaseUrl.replace(/\/+$/, '')
+  : `${rawBaseUrl.replace(/\/+$/, '')}/api`
 
 export const apiClient = axios.create({
   baseURL: apiBaseUrl,
