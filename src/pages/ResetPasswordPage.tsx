@@ -21,11 +21,9 @@ function ResetPasswordPage() {
     },
   })
 
-  /* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return */
   const resetMutationFn: MutationFunction<ResetPasswordResponse, ResetPasswordConfirmPayload> = (
     payload,
   ) => resetPasswordConfirm(payload)
-  /* eslint-enable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return */
 
   const resetMutation = useMutation<ResetPasswordResponse, Error, ResetPasswordConfirmPayload>({
     mutationFn: resetMutationFn,

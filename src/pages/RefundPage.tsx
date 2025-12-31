@@ -1,6 +1,6 @@
 function RefundPage() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden overflow-y-hidden p-5 py-10 pt-32 text-gray-100">
+    <div className="relative min-h-screen overflow-x-hidden overflow-y-auto p-10 pt-32 text-gray-100">
       <div className="mx-auto w-full max-w-7xl">
         <h1 className="mb-3 text-center text-4xl tracking-wider md:text-6xl font-life-craft">Refund Policy</h1>
         <div className="mt-[3em] space-y-6">
@@ -54,12 +54,12 @@ function RefundPage() {
             <h2 className="mt-4 text-2xl font-semibold">Contact Information</h2>
             <p className="mt-2 text-slate-200">
               If you have any questions or concerns about our refund policy or payment process, please do not hesitate to contact
-              our team. You can reach us at
-              <a href="mailto:incridea@nmamit.in" className="ml-1 font-semibold underline">
+              our team. You can reach us at{' '}
+              <a href="mailto:incridea@nmamit.in" className="font-semibold underline">
                 incridea@nmamit.in
-              </a>
-              <span className="mx-1">or</span>
-              <span className="mr-1 inline-block">+91 94488 46524 or +91 96863 56123</span>
+              </a>{' '}
+              or{' '}
+              <span className="inline-block">+91 94488 46524 or +91 96863 56123</span>
               , and we will be happy to assist you.
             </p>
           </div>

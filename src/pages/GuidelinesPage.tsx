@@ -12,7 +12,7 @@ function GuidelinesPage() {
     <div className="overflow-y-auto overflow-x-hidden p-10 pt-32 text-gray-100">
       <div className="mx-auto w-full max-w-7xl">
         <h1 className="text-center text-4xl tracking-wider md:text-6xl font-life-craft">
-          Guidelines and Regulations for Participating in Incridea 2025
+          Guidelines and Regulations for Participating in Incridea 2026
         </h1>
         <div>
           <p className="mt-6 text-center">

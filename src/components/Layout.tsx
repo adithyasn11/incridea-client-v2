@@ -9,6 +9,7 @@ const navLinks = [
   { label: 'About', to: '/about' },
   { label: 'Contact', to: '/contact' },
   { label: 'Events', to: '/events' },
+  { label: 'Privacy', to: '/privacy' },
   { label: 'Login/Register', to: '/login' },
 ]
 
@@ -87,9 +88,9 @@ function Layout() {
   }, [token])
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
+    <div className="flex min-h-screen flex-col bg-slate-950 text-slate-50">
       <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-3 text-lg font-semibold text-sky-300">
             <img
               src="/incridea.png.png"
@@ -147,12 +148,12 @@ function Layout() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-10">
+      <main className="w-screen flex justify-center items-center flex-1 px-4 py-10">
         <Outlet />
       </main>
 
       <footer className="border-t border-slate-800 bg-slate-900/70">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-5 text-xs font-semibold text-slate-100 md:flex-row md:flex-wrap md:justify-center md:gap-4">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4 py-5 text-xs font-semibold text-slate-100 md:flex-row md:flex-wrap md:justify-center md:gap-4">
           <Link className="transition-colors duration-200 hover:text-slate-200" to="/privacy">
             Privacy Policy
           </Link>
@@ -173,7 +174,7 @@ function Layout() {
             Contact Us
           </Link>
         </div>
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-1 px-4 pb-5 text-[11px] font-semibold tracking-wide text-slate-200">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-1 px-4 pb-5 text-[11px] font-semibold tracking-wide text-slate-200">
           <Link className="inline-flex items-center gap-1 transition-all hover:tracking-wider hover:text-slate-100" to="/team">
             Made with <span className="text-rose-400">❤</span> by Technical Team
           </Link>

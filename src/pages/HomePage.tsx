@@ -23,7 +23,7 @@ function HomePage() {
         <div className="flex flex-col justify-center gap-6">
           <p className="text-xs uppercase tracking-[0.4em] text-slate-400">Innovate · Create · Ideate</p>
           <h1 className="text-4xl font-semibold leading-tight text-white md:text-5xl">
-            Incridea 2025 — a student-built techno-cultural experience.
+            Incridea 2026 — a student-built techno-cultural experience.
           </h1>
           <p className="max-w-2xl text-base text-slate-300 md:text-lg">
             National-level fest crafted by students, featuring pronites, workshops, competitions,

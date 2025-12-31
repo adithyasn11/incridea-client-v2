@@ -12,6 +12,9 @@ import RefundPage from '../pages/RefundPage.tsx'
 import GuidelinesPage from '../pages/GuidelinesPage.tsx'
 import EventsPage from '../pages/EventsPage.tsx'
 import EventDetailPage from '../pages/EventDetailPage.tsx'
+import CommitteePage from '../pages/CommitteePage.tsx'
+import PrivacyPage from '../pages/PrivacyPage.tsx'
+import RulesPage from '../pages/RulesPage.tsx'
 
 function AppRoutes() {
   return (
@@ -24,10 +27,13 @@ function AppRoutes() {
         <Route path="/events/:slug" element={<EventDetailPage />} />
         <Route path="/refund" element={<RefundPage />} />
         <Route path="/guidelines" element={<GuidelinesPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/rules" element={<RulesPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/committee" element={<CommitteePage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

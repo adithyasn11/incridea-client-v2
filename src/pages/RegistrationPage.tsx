@@ -551,7 +551,7 @@ function RegistrationPage() {
                   <input
                     id="accommodationCheckIn"
                     className="input"
-                    placeholder="e.g., 2025-02-25 10:00"
+                    placeholder="e.g., 2026-02-25 10:00"
                     value={accommodationDraft.checkIn}
                     onChange={(event) =>
                       setAccommodationDraft((prev) => ({ ...prev, checkIn: event.target.value }))
@@ -566,7 +566,7 @@ function RegistrationPage() {
                   <input
                     id="accommodationCheckOut"
                     className="input"
-                    placeholder="e.g., 2025-02-28 18:00"
+                    placeholder="e.g., 2026-02-28 18:00"
                     value={accommodationDraft.checkOut}
                     onChange={(event) =>
                       setAccommodationDraft((prev) => ({ ...prev, checkOut: event.target.value }))

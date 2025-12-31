@@ -25,6 +25,19 @@ export interface BranchRepEvent {
   organizers: BranchRepOrganizer[]
 }
 
+export interface CreateBranchRepEventPayload {
+  name: string
+  description?: string
+  venue?: string
+  fees?: number
+  minTeamSize?: number
+  maxTeamSize?: number
+  maxTeams?: number | null
+  eventType: EventType
+  category?: EventCategory
+  tier?: EventTier
+}
+
 export interface BranchRepEventDetails {
   id: number
   name: string
@@ -64,10 +77,7 @@ export async function fetchBranchRepEvents(token: string): Promise<BranchRepEven
   return data
 }
 
-export async function createBranchRepEvent(
-  payload: { name: string; eventType: EventType },
-  token: string,
-) {
+export async function createBranchRepEvent(payload: CreateBranchRepEventPayload, token: string) {
   const { data } = await apiClient.post<{ event: BranchRepEvent }>(
     '/branch-rep/events',
     payload,

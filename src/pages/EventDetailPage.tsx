@@ -13,7 +13,6 @@ import {
   type PublishedEventResponse,
 } from '../api/public'
 import { showToast } from '../utils/toast'
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
 
 function isPublishedEventResponse(value: unknown): value is PublishedEventResponse {
   return typeof value === 'object' && value !== null && 'event' in value

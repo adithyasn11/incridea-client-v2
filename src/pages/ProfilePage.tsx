@@ -36,7 +36,6 @@ function ProfilePage() {
     }
   }, [token, navigate])
 
-  /* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return */
   const profileQueryFn: QueryFunction<MeResponse> = () => {
     if (!token) {
       throw new Error('Unauthorized')
@@ -67,7 +66,6 @@ function ProfilePage() {
     }
     return changePassword(payload, token)
   }
-  /* eslint-enable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return */
 
   const changePasswordMutation = useMutation<ChangePasswordResponse, Error, ChangePasswordPayload>({
     mutationFn: changePasswordMutationFn,
@@ -94,11 +92,9 @@ function ProfilePage() {
 
   const onSubmit = form.handleSubmit((values) => changePasswordMutation.mutate(values))
 
-  /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
   const user = profileQuery.data?.user
   const userName = user?.name ?? user?.email ?? 'User'
   const userEmail: string = user?.email ?? ''
-  /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 
   const handleResetRequest = () => {
     if (!userEmail) {

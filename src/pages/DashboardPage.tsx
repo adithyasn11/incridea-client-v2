@@ -1,77 +1,130 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import {
+  fetchAdminUsers,
   fetchSettings,
   fetchVariables,
+  fetchWebLogs,
   updateSetting,
+  updateUserRoles,
   upsertVariable,
-  type SettingsResponse,
-  type VariablesResponse,
+  type AdminUser,
+  type AdminUsersResponse,
   type Setting,
+  type SettingsResponse,
   type Variable,
+  type VariablesResponse,
+  type WebLogsResponse,
 } from '../api/admin'
 import {
   EVENT_TYPES,
   addOrganizerToEvent,
   createBranchRepEvent,
   deleteBranchRepEvent,
-  fetchBranchRepEvents,
   fetchBranchRepEventDetails,
+  fetchBranchRepEvents,
   removeOrganizerFromEvent,
   searchBranchRepUsers,
   toggleBranchRepEventPublish,
   updateBranchRepEvent,
-  type BranchRepEventsResponse,
+  type BranchRepEvent,
   type BranchRepEventDetails,
-  type EventType,
+  type BranchRepEventsResponse,
   type BranchRepUser,
+  type CreateBranchRepEventPayload,
+  type EventType,
 } from '../api/branchRep'
 import type { EventCategory, EventTier } from '../api/types'
-import { hasRole, normalizeRoles } from '../utils/roles'
 import apiClient from '../api/client'
+import { hasRole, normalizeRoles } from '../utils/roles'
 import { showToast } from '../utils/toast'
+import BranchEventsTab from './dashboard/BranchEventsTab'
+import LogsTab from './dashboard/LogsTab'
+import SettingsTab from './dashboard/SettingsTab'
+import UsersTab from './dashboard/UsersTab'
+import VariablesTab from './dashboard/VariablesTab'
 
-const ADMIN_TABS = ['Settings', 'Variables'] as const
+const ADMIN_TABS = ['Settings', 'Variables', 'Users', 'Logs'] as const
 const BRANCHREP_TABS = ['Branch Events'] as const
+const EVENT_CATEGORIES: EventCategory[] = ['TECHNICAL', 'NON_TECHNICAL', 'CORE', 'SPECIAL']
+const EVENT_TIERS: EventTier[] = ['DIAMOND', 'GOLD', 'SILVER', 'BRONZE']
 
 type TabKey = (typeof ADMIN_TABS)[number] | (typeof BRANCHREP_TABS)[number]
 
+const truthyStrings = new Set(['true', '1', 'yes', 'y', 'on'])
+
+function isTruthyVariable(value: unknown): boolean {
+  if (typeof value === 'boolean') {
+    return value
+  }
+
+  if (typeof value === 'number') {
+    return value !== 0
+  }
+
+  if (typeof value === 'string') {
+    return truthyStrings.has(value.trim().toLowerCase())
+  }
+
+  return false
+}
+
 function DashboardPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
   const [token, setToken] = useState<string | null>(() =>
-    (typeof window !== 'undefined' ? localStorage.getItem('token') : null),
+    typeof window !== 'undefined' ? localStorage.getItem('token') : null,
   )
   const [roles, setRoles] = useState<string[]>([])
   const [isBranchRep, setIsBranchRep] = useState(false)
   const isAdmin = hasRole(roles, 'ADMIN')
+
+  const [tabLoadState, setTabLoadState] = useState<Record<TabKey, boolean>>({
+    Settings: true,
+    Variables: false,
+    Users: false,
+    Logs: false,
+    'Branch Events': false,
+  })
   const [activeTab, setActiveTab] = useState<TabKey>('Settings')
+
   const [variableDrafts, setVariableDrafts] = useState<Record<string, string>>({})
   const [editingKey, setEditingKey] = useState<string | null>(null)
   const [newVarKey, setNewVarKey] = useState('')
   const [newVarValue, setNewVarValue] = useState('')
+
+  const [userSearchDraft, setUserSearchDraft] = useState('')
+  const [userSearchTerm, setUserSearchTerm] = useState('')
+  const [userRolesDraft, setUserRolesDraft] = useState<Record<number, string[]>>({})
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
+  const [editingUserId, setEditingUserId] = useState<number | null>(null)
+  const [logsPage, setLogsPage] = useState(1)
+
+  const [isAddEventOpen, setIsAddEventOpen] = useState(false)
   const [newEventName, setNewEventName] = useState('')
+  const [newEventDescription, setNewEventDescription] = useState('')
+  const [newEventVenue, setNewEventVenue] = useState('')
+  const [newEventFees, setNewEventFees] = useState(0)
+  const [newMinTeamSize, setNewMinTeamSize] = useState(1)
+  const [newMaxTeamSize, setNewMaxTeamSize] = useState(1)
+  const [newMaxTeams, setNewMaxTeams] = useState('')
   const [newEventType, setNewEventType] = useState<EventType>(EVENT_TYPES[0])
+  const [newEventCategory, setNewEventCategory] = useState<EventCategory>('TECHNICAL')
+  const [newEventTier, setNewEventTier] = useState<EventTier>('GOLD')
+
   const [organizerSearchTerms, setOrganizerSearchTerms] = useState<Record<number, string>>({})
   const [organizerSearchResults, setOrganizerSearchResults] = useState<Record<number, BranchRepUser[]>>({})
   const [organizerSearchLoading, setOrganizerSearchLoading] = useState<Record<number, boolean>>({})
   const [pendingOrganizer, setPendingOrganizer] = useState<{ eventId: number; user: BranchRepUser } | null>(null)
   const [activeEventId, setActiveEventId] = useState<number | null>(null)
-  const [eventDrafts, setEventDrafts] = useState<Record<
-    number,
-    Partial<{
-      name: string
-      description: string | null
-      venue: string | null
-      fees: number
-      minTeamSize: number
-      maxTeamSize: number
-      maxTeams: number | null
-      eventType: EventType
-      category: EventCategory
-      tier: EventTier
-    }>
-  >>({})
+  const [eventDrafts, setEventDrafts] = useState<Record<number, Partial<BranchRepEventDetails>>>({})
+
+  const handleTabChange = (tab: TabKey) => {
+    setActiveTab(tab)
+    setTabLoadState((prev) => ({ ...prev, [tab]: true }))
+  }
 
   useEffect(() => {
     const authToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null
@@ -107,6 +160,7 @@ function DashboardPage() {
         ]
 
         setActiveTab((prev) => (availableTabs.includes(prev) ? prev : availableTabs[0]))
+        setTabLoadState((prev) => ({ ...prev, [availableTabs[0]]: true }))
       } catch {
         showToast('Session expired. Please log in again.', 'error')
         void navigate('/login')
@@ -116,47 +170,46 @@ function DashboardPage() {
     void fetchRoles()
   }, [navigate])
 
+  useEffect(() => {
+    const handle = window.setTimeout(() => setUserSearchTerm(userSearchDraft.trim()), 250)
+    return () => window.clearTimeout(handle)
+  }, [userSearchDraft])
+
   const settingsQuery = useQuery<SettingsResponse, Error, SettingsResponse, ['admin-settings']>({
     queryKey: ['admin-settings'],
     queryFn: () => fetchSettings(token ?? ''),
-    enabled: isAdmin && Boolean(token) && activeTab === 'Settings',
+    enabled: isAdmin && Boolean(token) && tabLoadState.Settings,
   })
 
   const variablesQuery = useQuery<VariablesResponse, Error, VariablesResponse, ['admin-variables']>({
     queryKey: ['admin-variables'],
     queryFn: () => fetchVariables(token ?? ''),
-    enabled: isAdmin && Boolean(token) && activeTab === 'Variables',
+    enabled: isAdmin && Boolean(token) && tabLoadState.Variables,
   })
 
-  const branchEventsQuery = useQuery<
-    BranchRepEventsResponse,
-    Error,
-    BranchRepEventsResponse,
-    ['branch-rep-events']
-  >({
+  const adminUsersQuery = useQuery<AdminUsersResponse, Error, AdminUsersResponse, ['admin-users', string]>({
+    queryKey: ['admin-users', userSearchTerm],
+    queryFn: () => fetchAdminUsers(userSearchTerm, token ?? ''),
+    enabled: isAdmin && Boolean(token) && tabLoadState.Users,
+  })
+
+  const adminAccessUsersQuery = useQuery<AdminUsersResponse, Error, AdminUsersResponse, ['admin-access-users']>({
+    queryKey: ['admin-access-users'],
+    queryFn: () => fetchAdminUsers('', token ?? ''),
+    enabled: isAdmin && Boolean(token) && tabLoadState.Users,
+  })
+
+  const webLogsQuery = useQuery<WebLogsResponse, Error, WebLogsResponse, ['web-logs', number]>({
+    queryKey: ['web-logs', logsPage],
+    queryFn: () => fetchWebLogs(token ?? '', logsPage, 50),
+    enabled: isAdmin && Boolean(token) && tabLoadState.Logs,
+  })
+
+  const branchEventsQuery = useQuery<BranchRepEventsResponse, Error, BranchRepEventsResponse, ['branch-rep-events']>({
     queryKey: ['branch-rep-events'],
     queryFn: () => fetchBranchRepEvents(token ?? ''),
-    enabled: isBranchRep && Boolean(token) && activeTab === 'Branch Events',
+    enabled: isBranchRep && Boolean(token) && tabLoadState['Branch Events'],
   })
-
-  useEffect(() => {
-    if (!token) {
-      return
-    }
-
-    if (isAdmin) {
-      if (activeTab === 'Settings') {
-        void settingsQuery.refetch()
-      }
-      if (activeTab === 'Variables') {
-        void variablesQuery.refetch()
-      }
-    }
-
-    if (isBranchRep && activeTab === 'Branch Events') {
-      void branchEventsQuery.refetch()
-    }
-  }, [isAdmin, isBranchRep, token, activeTab, settingsQuery, variablesQuery, branchEventsQuery])
 
   useEffect(() => {
     if (!variablesQuery.data?.variables) {
@@ -204,8 +257,32 @@ function DashboardPage() {
     },
   })
 
+  const updateUserRolesMutation = useMutation<
+    { user: { id: number; roles: string[] }; message: string },
+    Error,
+    { userId: number; roles: string[] }
+  >({
+    mutationFn: (payload) => {
+      if (!token) {
+        throw new Error('Unauthorized')
+      }
+      return updateUserRoles(payload.userId, payload.roles, token)
+    },
+    onSuccess: (data) => {
+      showToast('Roles updated', 'success')
+      setUserRolesDraft((prev) => ({ ...prev, [data.user.id]: data.user.roles }))
+      setEditingUserId(null)
+      setSelectedUser(null)
+      void queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      void adminAccessUsersQuery.refetch()
+    },
+    onError: (error) => {
+      showToast(error instanceof Error ? error.message : 'Failed to update roles', 'error')
+    },
+  })
+
   const createBranchEventMutation = useMutation({
-    mutationFn: (payload: { name: string; eventType: EventType }) => {
+    mutationFn: (payload: CreateBranchRepEventPayload) => {
       if (!token) {
         throw new Error('Unauthorized')
       }
@@ -213,8 +290,8 @@ function DashboardPage() {
     },
     onSuccess: () => {
       void branchEventsQuery.refetch()
-      setNewEventName('')
-      setNewEventType(EVENT_TYPES[0])
+      resetAddEventForm()
+      setIsAddEventOpen(false)
       showToast('Event created', 'success')
     },
     onError: (error) => {
@@ -222,8 +299,8 @@ function DashboardPage() {
     },
   })
 
-  const addOrganizerMutation = useMutation({
-    mutationFn: (payload: { eventId: number; email: string }) => {
+  const addOrganizerMutation = useMutation<{ organizer: { userId: number } }, Error, { eventId: number; email: string }>({
+    mutationFn: (payload) => {
       if (!token) {
         throw new Error('Unauthorized')
       }
@@ -274,9 +351,6 @@ function DashboardPage() {
     },
   })
 
-  const settings = useMemo<Setting[]>(() => settingsQuery.data?.settings ?? [], [settingsQuery.data])
-  const variables = useMemo<Variable[]>(() => variablesQuery.data?.variables ?? [], [variablesQuery.data])
-
   const eventDetailsQuery = useQuery<
     BranchRepEventDetails,
     Error,
@@ -291,7 +365,7 @@ function DashboardPage() {
       const { event } = await fetchBranchRepEventDetails(activeEventId, token)
       return event
     },
-    enabled: Boolean(token && activeEventId && isBranchRep && activeTab === 'Branch Events'),
+    enabled: tabLoadState['Branch Events'] && Boolean(token && activeEventId && isBranchRep),
     staleTime: 30_000,
   })
 
@@ -319,16 +393,13 @@ function DashboardPage() {
 
   const handleOrganizerSearch = async (eventId: number, term: string) => {
     setOrganizerSearchTerms((prev) => ({ ...prev, [eventId]: term }))
-
     if (!token) {
       return
     }
-
     if (term.trim().length < 2) {
       setOrganizerSearchResults((prev) => ({ ...prev, [eventId]: [] }))
       return
     }
-
     setOrganizerSearchLoading((prev) => ({ ...prev, [eventId]: true }))
     try {
       const { users } = await searchBranchRepUsers(term.trim(), token)
@@ -340,8 +411,12 @@ function DashboardPage() {
     }
   }
 
-  const updateBranchEventMutation = useMutation({
-    mutationFn: (payload: { eventId: number; data: Partial<BranchRepEventDetails> }) => {
+  const updateBranchEventMutation = useMutation<
+    { event: BranchRepEventDetails },
+    Error,
+    { eventId: number; data: Partial<BranchRepEventDetails> }
+  >({
+    mutationFn: (payload) => {
       if (!token) {
         throw new Error('Unauthorized')
       }
@@ -376,616 +451,86 @@ function DashboardPage() {
     },
   })
 
-  const renderSettings = () => (
-    <div className="space-y-4">
-      {settingsQuery.isError ? (
-        <p className="text-sm text-rose-300">
-          {settingsQuery.error instanceof Error ? settingsQuery.error.message : 'Failed to load settings.'}
-        </p>
-      ) : null}
-      {settings.length === 0 ? <p className="text-sm text-slate-300">No settings found.</p> : null}
-      {settings.map((setting) => (
-        <div key={setting.key} className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3">
-          <div>
-            <p className="text-sm font-semibold text-slate-100">{setting.key}</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs uppercase tracking-wide text-slate-400">{setting.value ? 'On' : 'Off'}</span>
-            <button
-              type="button"
-              aria-pressed={setting.value}
-              onClick={() =>
-                updateSettingMutation.mutate({ key: setting.key, value: !setting.value })
-              }
-              disabled={updateSettingMutation.isPending}
-              className={`relative inline-flex h-7 w-12 items-center rounded-full border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 ${
-                setting.value ? 'border-sky-300/70 bg-sky-500/70' : 'border-slate-700 bg-slate-800'
-              } ${updateSettingMutation.isPending ? 'cursor-not-allowed opacity-60' : 'hover:border-sky-300'}`}
-            >
-              <span className="sr-only">Toggle {setting.key}</span>
-              <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-slate-950 shadow transition ${
-                  setting.value ? 'translate-x-6 bg-white' : 'translate-x-1 bg-slate-300'
-                }`}
-              />
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
+  const setActiveEventDraft = (eventId: number, data: Partial<BranchRepEventDetails>) => {
+    setEventDrafts((prev) => ({ ...prev, [eventId]: { ...prev[eventId], ...data } }))
+  }
+
+  const resetAddEventForm = () => {
+    setNewEventName('')
+    setNewEventDescription('')
+    setNewEventVenue('')
+    setNewEventFees(0)
+    setNewMinTeamSize(1)
+    setNewMaxTeamSize(1)
+    setNewMaxTeams('')
+    setNewEventType(EVENT_TYPES[0])
+    setNewEventCategory('TECHNICAL')
+    setNewEventTier('GOLD')
+  }
+
+  const handleCreateEvent = () => {
+    const trimmedName = newEventName.trim()
+    if (!trimmedName) {
+      showToast('Event name is required', 'error')
+      return
+    }
+    if (newEventFees < 0) {
+      showToast('Fees cannot be negative', 'error')
+      return
+    }
+    if (newMinTeamSize <= 0 || newMaxTeamSize <= 0) {
+      showToast('Team size must be at least 1', 'error')
+      return
+    }
+    if (newMaxTeamSize < newMinTeamSize) {
+      showToast('Max team size cannot be less than min team size', 'error')
+      return
+    }
+    const parsedMaxTeams = newMaxTeams.trim() === '' ? null : Number(newMaxTeams)
+    if (parsedMaxTeams !== null && (!Number.isFinite(parsedMaxTeams) || parsedMaxTeams <= 0)) {
+      showToast('Max teams must be a positive number', 'error')
+      return
+    }
+
+    const payload: CreateBranchRepEventPayload = {
+      name: trimmedName,
+      description: newEventDescription.trim() || undefined,
+      venue: newEventVenue.trim() || undefined,
+      fees: newEventFees,
+      minTeamSize: newMinTeamSize,
+      maxTeamSize: newMaxTeamSize,
+      maxTeams: parsedMaxTeams,
+      eventType: newEventType,
+      category: newEventCategory,
+      tier: newEventTier,
+    }
+
+    createBranchEventMutation.mutate(payload)
+  }
+
+  const settings = useMemo<Setting[]>(() => settingsQuery.data?.settings ?? [], [settingsQuery.data])
+  const variables = useMemo<Variable[]>(() => variablesQuery.data?.variables ?? [], [variablesQuery.data])
+  const settingsLookup = useMemo<Record<string, boolean>>(
+    () => settings.reduce((acc, setting) => ({ ...acc, [setting.key]: setting.value }), {} as Record<string, boolean>),
+    [settings],
+  )
+  const variableLookup = useMemo<Record<string, string>>(
+    () => variables.reduce((acc, variable) => ({ ...acc, [variable.key]: variable.value }), {} as Record<string, string>),
+    [variables],
   )
 
-  const renderVariables = () => (
-    <div className="space-y-5">
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-        <p className="mb-3 text-sm font-semibold text-slate-100">Add / Update Variable</p>
-        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
-          <input
-            className="input"
-            placeholder="Key"
-            value={newVarKey}
-            onChange={(event) => setNewVarKey(event.target.value)}
-          />
-          <input
-            className="input"
-            placeholder="Value"
-            value={newVarValue}
-            onChange={(event) => setNewVarValue(event.target.value)}
-          />
-          <button
-            className="button"
-            type="button"
-            onClick={() => newVarKey && upsertVariableMutation.mutate({ key: newVarKey, value: newVarValue })}
-            disabled={upsertVariableMutation.isPending}
-          >
-            {upsertVariableMutation.isPending ? 'Saving…' : 'Save'}
-          </button>
-        </div>
-      </div>
+  const adminUsers = adminUsersQuery.data?.users ?? []
+  const adminUsersData = adminUsersQuery.data ?? { availableRoles: [] as string[] }
+  const accessUsers = adminAccessUsersQuery.data?.users ?? []
 
-      <div className="space-y-3">
-        {variablesQuery.isError ? (
-          <p className="text-sm text-rose-300">
-            {variablesQuery.error instanceof Error ? variablesQuery.error.message : 'Failed to load variables.'}
-          </p>
-        ) : null}
-        {variables.length === 0 ? <p className="text-sm text-slate-300">No variables yet.</p> : null}
-        {variables.map((variable) => (
-          <div
-            key={variable.key}
-            className="rounded-xl border border-slate-800 bg-slate-900/60 p-4"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 space-y-2">
-                <p className="text-sm font-semibold text-slate-100">{variable.key}</p>
-
-                {editingKey === variable.key ? (
-                  <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <input
-                      className="input"
-                      value={variableDrafts[variable.key] ?? ''}
-                      onChange={(event) =>
-                        setVariableDrafts((prev) => ({ ...prev, [variable.key]: event.target.value }))
-                      }
-                    />
-                    <div className="flex gap-2 sm:w-48">
-                      <button
-                        className="button sm:flex-1"
-                        type="button"
-                        onClick={() =>
-                          upsertVariableMutation.mutate({
-                            key: variable.key,
-                            value: variableDrafts[variable.key] ?? '',
-                          })
-                        }
-                        disabled={upsertVariableMutation.isPending}
-                      >
-                        {upsertVariableMutation.isPending ? 'Saving…' : 'Save'}
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800 sm:flex-1"
-                        onClick={() => {
-                          setVariableDrafts((prev) => ({ ...prev, [variable.key]: variable.value }))
-                          setEditingKey(null)
-                        }}
-                        disabled={upsertVariableMutation.isPending}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-slate-300 break-all">{variable.value}</p>
-                )}
-              </div>
-
-              {editingKey === variable.key ? null : (
-                <button
-                  className="button sm:w-24"
-                  type="button"
-                  onClick={() => setEditingKey(variable.key)}
-                  disabled={upsertVariableMutation.isPending}
-                >
-                  Edit
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-
-  const renderBranchRepEvents = () => (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <p className="text-sm text-slate-300">Manage the events for your branch.</p>
-        {branchEventsQuery.data?.branchName ? (
-          <span className="rounded-full border border-emerald-400/50 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">
-            {branchEventsQuery.data.branchName}
-          </span>
-        ) : null}
-      </div>
-
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-        <p className="mb-3 text-sm font-semibold text-slate-100">Add Event</p>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <input
-            className="input sm:flex-1"
-            placeholder="Event name"
-            value={newEventName}
-            onChange={(event) => setNewEventName(event.target.value)}
-          />
-          <select
-            className="input sm:w-56"
-            value={newEventType}
-            onChange={(event) => setNewEventType(event.target.value as EventType)}
-          >
-            {EVENT_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-          <button
-            className="button sm:w-36"
-            type="button"
-            onClick={() =>
-              newEventName.trim() && createBranchEventMutation.mutate({ name: newEventName.trim(), eventType: newEventType })
-            }
-            disabled={createBranchEventMutation.isPending}
-          >
-            {createBranchEventMutation.isPending ? 'Creating…' : 'Add Event'}
-          </button>
-        </div>
-      </div>
-
-      {branchEventsQuery.isLoading ? (
-        <p className="text-sm text-slate-400">Loading events…</p>
-      ) : null}
-      {branchEventsQuery.isError ? (
-        <p className="text-sm text-rose-300">
-          {branchEventsQuery.error instanceof Error
-            ? branchEventsQuery.error.message
-            : 'Failed to load branch events.'}
-        </p>
-      ) : null}
-
-      {branchEventsQuery.data?.events.length === 0 ? (
-        <p className="text-sm text-slate-300">No events yet. Add your first event above.</p>
-      ) : null}
-
-      <div className="space-y-3">
-        {branchEventsQuery.data?.events.map((event) => (
-          <div
-            key={event.id}
-            className="rounded-xl border border-slate-800 bg-slate-900/60 p-4"
-          >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-base font-semibold text-slate-100">{event.name}</p>
-                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-slate-400">
-                  <span className="rounded-full border border-slate-700 px-2 py-1 text-[11px] font-semibold text-slate-200">
-                    {event.eventType}
-                  </span>
-                  <span
-                    className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
-                      event.published
-                        ? 'border border-emerald-500/60 bg-emerald-500/10 text-emerald-200'
-                        : 'border border-amber-400/60 bg-amber-400/10 text-amber-100'
-                    }`}
-                  >
-                    {event.published ? 'Published' : 'Pending'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className={`relative inline-flex h-8 w-16 items-center rounded-full border text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300 ${
-                    event.published
-                      ? 'border-emerald-400/70 bg-emerald-500/60 text-slate-900'
-                      : 'border-slate-700 bg-slate-800 text-slate-200'
-                  } ${togglePublishMutation.isPending ? 'cursor-not-allowed opacity-60' : 'hover:border-emerald-300/70'}`}
-                  onClick={() =>
-                    togglePublishMutation.mutate({ eventId: event.id, publish: !event.published })
-                  }
-                  disabled={togglePublishMutation.isPending}
-                  aria-pressed={event.published}
-                  aria-label={event.published ? 'Unpublish event' : 'Publish event'}
-                >
-                  <span
-                    className={`ml-1 inline-block h-6 w-6 transform rounded-full bg-white shadow transition ${
-                      event.published ? 'translate-x-8' : 'translate-x-0'
-                    }`}
-                  />
-                  <span className="absolute inset-0 flex items-center justify-center gap-1 px-2">
-                    {togglePublishMutation.isPending ? 'Saving…' : event.published ? 'On' : 'Off'}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  className="rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-                  onClick={() => setActiveEventId((prev) => (prev === event.id ? null : event.id))}
-                >
-                  View Details
-                </button>
-                <button
-                  type="button"
-                  className="rounded-lg border border-rose-400/60 px-3 py-2 text-sm font-semibold text-rose-100 transition hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
-                  onClick={() => deleteBranchEventMutation.mutate(event.id)}
-                  disabled={event.published || deleteBranchEventMutation.isPending}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-3 space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Organizers</p>
-              {event.organizers.length === 0 ? (
-                <p className="text-sm text-slate-300">No organizers yet.</p>
-              ) : (
-                <div className="divide-y divide-slate-800 rounded-lg border border-slate-800">
-                  {event.organizers.map((organizer) => (
-                    <div
-                      key={organizer.userId}
-                      className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between"
-                    >
-                      <div>
-                        <p className="text-sm font-semibold text-slate-100">{organizer.name || 'Organizer'}</p>
-                        <p className="text-xs text-slate-400">{organizer.email}</p>
-                        {organizer.phoneNumber ? (
-                          <p className="text-xs text-slate-500">{organizer.phoneNumber}</p>
-                        ) : null}
-                      </div>
-                      <button
-                        type="button"
-                        className="rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-                        onClick={() =>
-                          removeOrganizerMutation.mutate({ eventId: event.id, userId: organizer.userId })
-                        }
-                        disabled={removeOrganizerMutation.isPending}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-                {activeEventId === event.id ? (
-                  <div className="mt-3 space-y-3 rounded-lg border border-slate-800 bg-slate-950/40 p-4">
-                    {eventDetailsQuery.isLoading ? (
-                      <p className="text-sm text-slate-400">Loading details…</p>
-                    ) : null}
-                    {eventDetailsQuery.isError ? (
-                      <p className="text-sm text-rose-300">
-                        {eventDetailsQuery.error instanceof Error
-                          ? eventDetailsQuery.error.message
-                          : 'Failed to load event details.'}
-                      </p>
-                    ) : null}
-
-                    {eventDetailsQuery.data && eventDetailsQuery.data.id === event.id ? (
-                      <div className="space-y-3">
-                        <div className="flex flex-wrap gap-2 text-xs uppercase tracking-wide text-slate-400">
-                          <span className="rounded-full border border-slate-700 px-2 py-1 text-[11px] font-semibold text-slate-200">
-                            {eventDetailsQuery.data.category}
-                          </span>
-                          <span className="rounded-full border border-slate-700 px-2 py-1 text-[11px] font-semibold text-slate-200">
-                            {eventDetailsQuery.data.tier}
-                          </span>
-                        </div>
-
-                        <div className="grid gap-3 lg:grid-cols-2">
-                          <label className="flex flex-col gap-1 text-sm text-slate-200">
-                            <span className="text-xs uppercase tracking-wide text-slate-400">Name</span>
-                            {eventDetailsQuery.data.published ? (
-                              <span className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-slate-100">
-                                {eventDetailsQuery.data.name}
-                              </span>
-                            ) : (
-                              <input
-                                className="input"
-                                value={eventDrafts[event.id]?.name ?? ''}
-                                onChange={(ev) =>
-                                  setEventDrafts((prev) => ({ ...prev, [event.id]: { ...prev[event.id], name: ev.target.value } }))
-                                }
-                              />
-                            )}
-                          </label>
-
-                          <label className="flex flex-col gap-1 text-sm text-slate-200">
-                            <span className="text-xs uppercase tracking-wide text-slate-400">Venue</span>
-                            {eventDetailsQuery.data.published ? (
-                              <span className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-slate-100">
-                                {eventDetailsQuery.data.venue ?? '—'}
-                              </span>
-                            ) : (
-                              <input
-                                className="input"
-                                value={eventDrafts[event.id]?.venue ?? ''}
-                                onChange={(ev) =>
-                                  setEventDrafts((prev) => ({ ...prev, [event.id]: { ...prev[event.id], venue: ev.target.value } }))
-                                }
-                              />
-                            )}
-                          </label>
-
-                          <label className="flex flex-col gap-1 text-sm text-slate-200 lg:col-span-2">
-                            <span className="text-xs uppercase tracking-wide text-slate-400">Description</span>
-                            {eventDetailsQuery.data.published ? (
-                              <div className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-slate-100">
-                                {eventDetailsQuery.data.description ?? '—'}
-                              </div>
-                            ) : (
-                              <textarea
-                                className="input min-h-[100px]"
-                                value={eventDrafts[event.id]?.description ?? ''}
-                                onChange={(ev) =>
-                                  setEventDrafts((prev) => ({
-                                    ...prev,
-                                    [event.id]: { ...prev[event.id], description: ev.target.value },
-                                  }))
-                                }
-                              />
-                            )}
-                          </label>
-
-                          <label className="flex flex-col gap-1 text-sm text-slate-200">
-                            <span className="text-xs uppercase tracking-wide text-slate-400">Fees</span>
-                            {eventDetailsQuery.data.published ? (
-                              <span className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-slate-100">
-                                ₹ {eventDetailsQuery.data.fees}
-                              </span>
-                            ) : (
-                              <input
-                                type="number"
-                                className="input"
-                                value={eventDrafts[event.id]?.fees ?? 0}
-                                onChange={(ev) =>
-                                  setEventDrafts((prev) => ({
-                                    ...prev,
-                                    [event.id]: { ...prev[event.id], fees: Number(ev.target.value) },
-                                  }))
-                                }
-                              />
-                            )}
-                          </label>
-
-                          <div className="grid grid-cols-2 gap-3">
-                            <label className="flex flex-col gap-1 text-sm text-slate-200">
-                              <span className="text-xs uppercase tracking-wide text-slate-400">Min Team</span>
-                              {eventDetailsQuery.data.published ? (
-                                <span className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-slate-100">
-                                  {eventDetailsQuery.data.minTeamSize}
-                                </span>
-                              ) : (
-                                <input
-                                  type="number"
-                                  className="input"
-                                  value={eventDrafts[event.id]?.minTeamSize ?? 1}
-                                  onChange={(ev) =>
-                                    setEventDrafts((prev) => ({
-                                      ...prev,
-                                      [event.id]: { ...prev[event.id], minTeamSize: Number(ev.target.value) },
-                                    }))
-                                  }
-                                />
-                              )}
-                            </label>
-                            <label className="flex flex-col gap-1 text-sm text-slate-200">
-                              <span className="text-xs uppercase tracking-wide text-slate-400">Max Team</span>
-                              {eventDetailsQuery.data.published ? (
-                                <span className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-slate-100">
-                                  {eventDetailsQuery.data.maxTeamSize}
-                                </span>
-                              ) : (
-                                <input
-                                  type="number"
-                                  className="input"
-                                  value={eventDrafts[event.id]?.maxTeamSize ?? 1}
-                                  onChange={(ev) =>
-                                    setEventDrafts((prev) => ({
-                                      ...prev,
-                                      [event.id]: { ...prev[event.id], maxTeamSize: Number(ev.target.value) },
-                                    }))
-                                  }
-                                />
-                              )}
-                            </label>
-                          </div>
-
-                          <label className="flex flex-col gap-1 text-sm text-slate-200">
-                            <span className="text-xs uppercase tracking-wide text-slate-400">Max Teams</span>
-                            {eventDetailsQuery.data.published ? (
-                              <span className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-slate-100">
-                                {eventDetailsQuery.data.maxTeams ?? '—'}
-                              </span>
-                            ) : (
-                              <input
-                                type="number"
-                                className="input"
-                                value={eventDrafts[event.id]?.maxTeams ?? ''}
-                                onChange={(ev) =>
-                                  setEventDrafts((prev) => ({
-                                    ...prev,
-                                    [event.id]: {
-                                      ...prev[event.id],
-                                      maxTeams: ev.target.value === '' ? null : Number(ev.target.value),
-                                    },
-                                  }))
-                                }
-                              />
-                            )}
-                          </label>
-
-                          <label className="flex flex-col gap-1 text-sm text-slate-200">
-                            <span className="text-xs uppercase tracking-wide text-slate-400">Event Type</span>
-                            {eventDetailsQuery.data.published ? (
-                              <span className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-slate-100">
-                                {eventDetailsQuery.data.eventType}
-                              </span>
-                            ) : (
-                              <select
-                                className="input"
-                                value={eventDrafts[event.id]?.eventType ?? eventDetailsQuery.data.eventType}
-                                onChange={(ev) =>
-                                  setEventDrafts((prev) => ({
-                                    ...prev,
-                                    [event.id]: { ...prev[event.id], eventType: ev.target.value as EventType },
-                                  }))
-                                }
-                              >
-                                {EVENT_TYPES.map((type) => (
-                                  <option key={type} value={type}>
-                                    {type}
-                                  </option>
-                                ))}
-                              </select>
-                            )}
-                          </label>
-
-                          <label className="flex flex-col gap-1 text-sm text-slate-200">
-                            <span className="text-xs uppercase tracking-wide text-slate-400">Category</span>
-                            <span className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-slate-100">
-                              {eventDetailsQuery.data.category}
-                            </span>
-                          </label>
-
-                          <label className="flex flex-col gap-1 text-sm text-slate-200">
-                            <span className="text-xs uppercase tracking-wide text-slate-400">Tier</span>
-                            <span className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-slate-100">
-                              {eventDetailsQuery.data.tier}
-                            </span>
-                          </label>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                          {!eventDetailsQuery.data.published ? (
-                            <button
-                              type="button"
-                              className="rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-                              onClick={() => {
-                                const draft = eventDrafts[event.id]
-                                if (!draft) {
-                                  return
-                                }
-                                updateBranchEventMutation.mutate({ eventId: event.id, data: draft })
-                              }}
-                              disabled={updateBranchEventMutation.isPending}
-                            >
-                              {updateBranchEventMutation.isPending ? 'Saving…' : 'Save Changes'}
-                            </button>
-                          ) : null}
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-                ) : null}
-
-              <div className="relative flex flex-col gap-2 rounded-lg border border-slate-800 bg-slate-950/40 p-3 sm:flex-row sm:items-center">
-                <input
-                  className="input sm:flex-1"
-                  placeholder="Search user by email or name"
-                  value={organizerSearchTerms[event.id] ?? ''}
-                  onChange={(ev) => {
-                    void handleOrganizerSearch(event.id, ev.target.value)
-                  }}
-                />
-                {organizerSearchLoading[event.id] ? (
-                  <p className="text-xs text-slate-400">Searching…</p>
-                ) : null}
-
-                {organizerSearchResults[event.id]?.length ? (
-                  <div className="absolute left-0 right-0 top-full z-10 mt-2 space-y-1 rounded-lg border border-slate-800 bg-slate-900/95 p-2 shadow-xl">
-                    {organizerSearchResults[event.id].map((user) => (
-                      <button
-                        type="button"
-                        key={user.id}
-                        className="w-full rounded-md px-3 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-800"
-                        onClick={() => {
-                          setPendingOrganizer({ eventId: event.id, user })
-                          setOrganizerSearchResults((prev) => ({ ...prev, [event.id]: [] }))
-                        }}
-                        disabled={addOrganizerMutation.isPending}
-                      >
-                        <span className="font-semibold">{user.name || 'User'}</span>
-                        <span className="block text-xs text-slate-400">{user.email}</span>
-                        {user.phoneNumber ? (
-                          <span className="block text-[11px] text-slate-500">{user.phoneNumber}</span>
-                        ) : null}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-
-                {pendingOrganizer && pendingOrganizer.eventId === event.id ? (
-                  <div className="mt-2 flex flex-col gap-2 rounded-lg border border-emerald-700/60 bg-emerald-900/30 p-3 text-sm text-emerald-50">
-                    <p className="font-semibold">Add {pendingOrganizer.user.name || pendingOrganizer.user.email} as organizer?</p>
-                    <p className="text-xs text-emerald-200">{pendingOrganizer.user.email}</p>
-                    {pendingOrganizer.user.phoneNumber ? (
-                      <p className="text-xs text-emerald-200">{pendingOrganizer.user.phoneNumber}</p>
-                    ) : null}
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        className="button sm:w-28"
-                        onClick={() =>
-                          addOrganizerMutation.mutate({ eventId: event.id, email: pendingOrganizer.user.email })
-                        }
-                        disabled={addOrganizerMutation.isPending}
-                      >
-                        {addOrganizerMutation.isPending ? 'Adding…' : 'Confirm'}
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800"
-                        onClick={() => setPendingOrganizer(null)}
-                        disabled={addOrganizerMutation.isPending}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
+  const branchName = branchEventsQuery.data?.branchName
+  const branchEvents: BranchRepEvent[] = branchEventsQuery.data?.events ?? []
 
   if (!token) {
     return null
   }
 
   const hasAnyAccess = isAdmin || isBranchRep
-
   if (!hasAnyAccess) {
     return (
       <section className="space-y-4">
@@ -998,60 +543,374 @@ function DashboardPage() {
   }
 
   return (
-    <section className="grid gap-4 lg:grid-cols-[220px_1fr]">
-      <aside className="card h-full p-4">
-        <div className="flex flex-col gap-5">
-          {isAdmin ? (
-            <div className="flex flex-col gap-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Admin</p>
-              {ADMIN_TABS.map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setActiveTab(tab)}
-                  className={`w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
-                    activeTab === tab ? 'bg-sky-500/20 text-sky-200' : 'hover:bg-slate-800 text-slate-200'
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
+    <div className="w-full max-w-full space-y-3 px-2 lg:px-3">
+      {isAddEventOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div
+            className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
+            onClick={() => setIsAddEventOpen(false)}
+            aria-label="Close add event modal"
+          />
+          <div className="relative z-10 w-full max-w-xl rounded-2xl border border-slate-800 bg-slate-900/90 p-6 shadow-2xl">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-slate-400">New Event</p>
+                <h3 className="text-lg font-semibold text-slate-50">Add Event</h3>
+              </div>
+              <button
+                type="button"
+                className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800"
+                onClick={() => setIsAddEventOpen(false)}
+              >
+                Close
+              </button>
             </div>
-          ) : null}
 
-          {isBranchRep ? (
-            <div className="flex flex-col gap-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Branch Rep</p>
-              {BRANCHREP_TABS.map((tab) => (
+            <div className="space-y-4">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wide text-slate-400">Event Name</label>
+                  <input
+                    className="input"
+                    placeholder="Enter event name"
+                    value={newEventName}
+                    onChange={(event) => setNewEventName(event.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wide text-slate-400">Event Type</label>
+                  <select
+                    className="input"
+                    value={newEventType}
+                    onChange={(event) => setNewEventType(event.target.value as EventType)}
+                  >
+                    {EVENT_TYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-wide text-slate-400">Description</label>
+                <textarea
+                  className="input min-h-30"
+                  placeholder="Add a short overview"
+                  value={newEventDescription}
+                  onChange={(event) => setNewEventDescription(event.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wide text-slate-400">Venue</label>
+                  <input
+                    className="input"
+                    placeholder="Hall / Room / Location"
+                    value={newEventVenue}
+                    onChange={(event) => setNewEventVenue(event.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wide text-slate-400">Fees</label>
+                  <input
+                    type="number"
+                    className="input"
+                    min={0}
+                    value={newEventFees}
+                    onChange={(event) => setNewEventFees(Number(event.target.value))}
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wide text-slate-400">Min Team Size</label>
+                  <input
+                    type="number"
+                    className="input"
+                    min={1}
+                    value={newMinTeamSize}
+                    onChange={(event) => setNewMinTeamSize(Number(event.target.value))}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wide text-slate-400">Max Team Size</label>
+                  <input
+                    type="number"
+                    className="input"
+                    min={1}
+                    value={newMaxTeamSize}
+                    onChange={(event) => setNewMaxTeamSize(Number(event.target.value))}
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wide text-slate-400">Max Teams (optional)</label>
+                  <input
+                    type="number"
+                    className="input"
+                    min={1}
+                    value={newMaxTeams}
+                    onChange={(event) => setNewMaxTeams(event.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wide text-slate-400">Category</label>
+                  <select
+                    className="input"
+                    value={newEventCategory}
+                    onChange={(event) => setNewEventCategory(event.target.value as EventCategory)}
+                  >
+                    {EVENT_CATEGORIES.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wide text-slate-400">Tier</label>
+                  <select
+                    className="input"
+                    value={newEventTier}
+                    onChange={(event) => setNewEventTier(event.target.value as EventTier)}
+                  >
+                    {EVENT_TIERS.map((tier) => (
+                      <option key={tier} value={tier}>
+                        {tier}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
                 <button
-                  key={tab}
                   type="button"
-                  onClick={() => setActiveTab(tab)}
-                  className={`w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
-                    activeTab === tab ? 'bg-emerald-500/20 text-emerald-200' : 'hover:bg-slate-800 text-slate-200'
-                  }`}
+                  className="button"
+                  onClick={handleCreateEvent}
+                  disabled={createBranchEventMutation.isPending}
                 >
-                  {tab}
+                  {createBranchEventMutation.isPending ? 'Creating…' : 'Create Event'}
                 </button>
-              ))}
+                <button
+                  type="button"
+                  className="rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800"
+                  onClick={() => {
+                    resetAddEventForm()
+                    setIsAddEventOpen(false)
+                  }}
+                  disabled={createBranchEventMutation.isPending}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
-          ) : null}
+          </div>
         </div>
-      </aside>
+      ) : null}
 
-      <div className="card space-y-4 p-6">
-        <div className="flex items-center justify-between">
+      <div className="card space-y-3 p-5">
+        <div className="flex items-center justify-center text-center">
           <div>
             <p className="muted">Dashboard</p>
-            <h1 className="text-2xl font-semibold text-slate-50">{activeTab}</h1>
+            <h1 className="text-3xl font-semibold text-slate-50">
+              {isAdmin ? 'Admin Dashboard' : isBranchRep ? 'Branch Rep Dashboard' : 'Dashboard'}
+            </h1>
           </div>
         </div>
 
-        {activeTab === 'Settings' && renderSettings()}
-        {activeTab === 'Variables' && renderVariables()}
-        {activeTab === 'Branch Events' && renderBranchRepEvents()}
+        {isAdmin ? (
+          <div className="grid gap-3 lg:grid-cols-2">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3">
+              <p className="mb-2 text-xs font-semibold text-slate-100">Statuses</p>
+              <ul className="space-y-1">
+                {[{ label: 'Registrations', key: 'isRegistrationOpen' }, { label: 'Spot Registration', key: 'isSpotRegistration' }, { label: 'Committee Registration', key: 'isCommitteeRegOpen' }].map((item) => {
+                  const rawValue = variableLookup[item.key] ?? settingsLookup[item.key]
+                  const value = isTruthyVariable(rawValue)
+                  return (
+                    <li key={item.key} className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2">
+                      <span className="text-xs text-slate-200">{item.label}</span>
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold ${
+                        value
+                          ? 'border border-emerald-400/70 bg-emerald-500/10 text-emerald-100'
+                          : 'border border-rose-400/70 bg-rose-500/10 text-rose-100'
+                      }`}>
+                        <span className={`h-2 w-2 rounded-full ${value ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+                        {value ? 'Open' : 'Closed'}
+                      </span>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3">
+              <p className="mb-2 text-xs font-semibold text-slate-100">Fees</p>
+              <ul className="space-y-1">
+                {[
+                  {
+                    label: 'Alumni Registration Fee',
+                    key: 'alumniRegistrationFee',
+                  },
+                  {
+                    label: 'External Students Fee',
+                    key: 'externalRegistrationFee',
+                  },
+                  {
+                    label: 'External Students OnSpot Fee',
+                    key: 'externalRegistrationFeeOnSpot',
+                  },
+                  {
+                    label: 'Internal Students Fee',
+                    key: 'internalRegistrationFeeGen',
+                  },
+                  {
+                    label: 'Internal Students Merch Inclusive',
+                    key: 'internalRegistrationFeeInclusiveMerch',
+                  },
+                  {
+                    label: 'Internal Students OnSpot',
+                    key: 'internalRegistrationOnSpot',
+                  },
+                ].map((item) => (
+                  <li key={item.key} className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2">
+                    <span className="text-xs text-slate-200">{item.label}</span>
+                    <span className="text-xs font-semibold text-slate-100">{variableLookup[item.key] ?? (settingsLookup[item.key] ?? '—')}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : null}
       </div>
-    </section>
+
+      <section className="grid w-full gap-3 lg:grid-cols-[220px_1fr]">
+        <aside className="card h-full p-3 sm:p-4">
+          <div className="flex h-full flex-col gap-5">
+            {isAdmin ? (
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Admin</p>
+                {ADMIN_TABS.map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => handleTabChange(tab)}
+                    className={`w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
+                      activeTab === tab ? 'bg-sky-500/20 text-sky-200' : 'hover:bg-slate-800 text-slate-200'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            {isBranchRep ? (
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Branch Rep</p>
+                {BRANCHREP_TABS.map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => handleTabChange(tab)}
+                    className={`w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
+                      activeTab === tab ? 'bg-emerald-500/20 text-emerald-200' : 'hover:bg-slate-800 text-slate-200'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </aside>
+
+        <div className="card space-y-4 p-6">
+          {activeTab === 'Settings' ? (
+            <SettingsTab settingsQuery={settingsQuery} settings={settings} updateSettingMutation={updateSettingMutation} />
+          ) : null}
+
+          {activeTab === 'Variables' ? (
+            <VariablesTab
+              variablesQuery={variablesQuery}
+              variables={variables}
+              editingKey={editingKey}
+              setEditingKey={setEditingKey}
+              variableDrafts={variableDrafts}
+              setVariableDrafts={setVariableDrafts}
+              newVarKey={newVarKey}
+              setNewVarKey={setNewVarKey}
+              newVarValue={newVarValue}
+              setNewVarValue={setNewVarValue}
+              upsertVariableMutation={upsertVariableMutation}
+            />
+          ) : null}
+
+          {activeTab === 'Users' ? (
+            <UsersTab
+              adminUsersQuery={adminUsersQuery}
+              adminAccessUsersQuery={adminAccessUsersQuery}
+              availableRoles={adminUsersData.availableRoles ?? ['USER', 'PARTICIPANT', 'ADMIN', 'JUDGE', 'JURY']}
+              users={adminUsers}
+              accessUsers={accessUsers}
+              userSearchDraft={userSearchDraft}
+              setUserSearchDraft={setUserSearchDraft}
+              setUserSearchTerm={setUserSearchTerm}
+              userRolesDraft={userRolesDraft}
+              setUserRolesDraft={setUserRolesDraft}
+              selectedUser={selectedUser}
+              setSelectedUser={setSelectedUser}
+              editingUserId={editingUserId}
+              setEditingUserId={setEditingUserId}
+              updateUserRolesMutation={updateUserRolesMutation}
+            />
+          ) : null}
+
+          {activeTab === 'Logs' ? (
+            <LogsTab webLogsQuery={webLogsQuery} logsPage={logsPage} setLogsPage={setLogsPage} />
+          ) : null}
+
+          {activeTab === 'Branch Events' ? (
+            <BranchEventsTab
+              branchName={branchName ?? undefined}
+              branchEvents={branchEvents}
+              branchEventsLoading={branchEventsQuery.isLoading}
+              branchEventsError={branchEventsQuery.isError ? (branchEventsQuery.error instanceof Error ? branchEventsQuery.error.message : 'Failed to load branch events.') : undefined}
+              activeEventId={activeEventId}
+              setActiveEventId={setActiveEventId}
+              organizerSearchTerms={organizerSearchTerms}
+              organizerSearchResults={organizerSearchResults}
+              organizerSearchLoading={organizerSearchLoading}
+              handleOrganizerSearch={handleOrganizerSearch}
+              pendingOrganizer={pendingOrganizer}
+              setPendingOrganizer={setPendingOrganizer}
+              eventDetailsQuery={eventDetailsQuery}
+              eventDrafts={eventDrafts}
+              setActiveEventDraft={setActiveEventDraft}
+              addOrganizerMutation={addOrganizerMutation}
+              removeOrganizerMutation={removeOrganizerMutation}
+              updateBranchEventMutation={updateBranchEventMutation}
+              togglePublishMutation={togglePublishMutation}
+              deleteBranchEventMutation={deleteBranchEventMutation}
+              setIsAddEventOpen={setIsAddEventOpen}
+            />
+          ) : null}
+        </div>
+      </section>
+    </div>
   )
 }
 
