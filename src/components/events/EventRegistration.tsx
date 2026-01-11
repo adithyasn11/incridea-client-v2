@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom';
+
 import { CiLogin } from "react-icons/ci";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getMyTeam, registerSoloEvent, confirmTeam, leaveTeam, deleteTeam } from '../../api/registration'

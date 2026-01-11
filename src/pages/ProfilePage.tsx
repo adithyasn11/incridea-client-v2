@@ -40,7 +40,7 @@ function ProfilePage() {
     if (!token) {
       throw new Error('Unauthorized')
     }
-    return fetchMe(token)
+    return fetchMe()
   }
 
   const profileQuery = useQuery<MeResponse>({
