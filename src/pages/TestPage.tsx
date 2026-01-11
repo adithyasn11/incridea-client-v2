@@ -50,14 +50,14 @@ export default function TestPage() {
             <div className="group relative">
                 <div className="absolute -top-6 left-0 text-sm text-slate-400">Liquid Gradient</div>
                 <div className="relative w-80 h-48 rounded-3xl overflow-hidden
-                            bg-white/20 backdrop-blur-xl
+                            bg-white/20 backdrop-blur-lg
                             border border-white/30
                             shadow-[0_0_40px_rgba(255,255,255,0.25)]">
                 
                 {/* Liquid gradient layer */}
                 <div className="absolute inset-0 bg-linear-to-br
                             from-white/30 via-white/10 to-transparent
-                            opacity-70"></div>
+                            opacity-10"></div>
                 
                 {/* Content */}
                 <div className="relative z-10 p-6 text-white h-full flex items-center justify-center">
@@ -95,9 +95,8 @@ export default function TestPage() {
 
                     <div className="absolute inset-0
                                 bg-linear-to-r from-white/40 via-transparent to-white/40
-                                opacity-30 animate-pulse">
+                                opacity-10 animate-pulse">
                     </div>
-
                     <div className="relative z-10 p-6 text-white h-full flex items-center justify-center">
                         Pulse
                     </div>
@@ -117,7 +116,7 @@ export default function TestPage() {
 
             {/* 6. User Requested Liquid Glass */}
             <div className="group relative">
-                <div className="absolute -top-6 left-0 text-sm text-slate-400"></div>
+                <div className="absolute -top-6 left-0 text-sm text-slate-400">Liquid Glass</div>
                 <div className="relative w-80 h-48 rounded-3xl overflow-hidden
                             bg-white/20 backdrop-blur-xl
                             border border-white/30
@@ -137,6 +136,30 @@ export default function TestPage() {
                     <div className="relative z-10 p-6 text-white font-semibold">
                         Liquid Glass
                     </div>
+                </div>
+            </div>
+
+            {/* 7. Image Liquid Glass Request */}
+            <div className="group relative">
+                <div className="absolute -top-6 left-0 text-sm text-slate-400">Image Liquid Glass</div>
+                <div className="relative w-80 h-48 rounded-3xl overflow-hidden
+                            bg-white/10 backdrop-blur-2xl
+                            border border-white/20
+                            shadow-[0_0_30px_rgba(255,255,255,0.15)]
+                            flex items-center justify-center">
+                    
+                    {/* Glossy Overlay */}
+                    <div className="absolute inset-0 bg-linear-to-br from-white/40 via-transparent to-transparent opacity-60 z-20 pointer-events-none"></div>
+                    
+                    {/* Subtle animating liquid/gradient background to make the glass pop */}
+                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent animate-pulse opacity-30 z-0"></div>
+
+                    {/* Image */}
+                    <img 
+                        src="https://96ivv88bg9.ufs.sh/f/0yks13NtToBiT6fs7qa3jkzt82J06HowfZviEDRBg1y4eIpU" 
+                        alt="Liquid Glass Effect" 
+                        className="h-32 w-auto object-contain relative z-10 drop-shadow-2xl opacity-90"
+                    />
                 </div>
             </div>
         </div>
@@ -177,7 +200,7 @@ export default function TestPage() {
                 </div>
 
                 {/* Square 4 (Dark) */}
-                <div className="bg-black/30 backdrop-blur-xl
+                <div className="bg-black/80 backdrop-blur-xl
                             border border-white/10
                             shadow-[0_0_15px_rgba(0,255,255,0.15)]
                             rounded-2xl w-[100px] h-[100px] flex items-center justify-center text-xs text-cyan-100">

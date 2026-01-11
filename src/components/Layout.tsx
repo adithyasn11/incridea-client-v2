@@ -30,6 +30,9 @@ function Layout() {
     } catch (error) {
       console.error('Logout failed', error)
     }
+    localStorage.removeItem('token')
+    localStorage.removeItem('userName')
+    localStorage.removeItem('userId')
     setToken(null)
     setUserName(null)
     setUserRoles([])
@@ -62,11 +65,7 @@ function Layout() {
         setIsBranchRep(branchRep)
         setIsOrganiser(organiser)
       } catch {
-        setToken(null)
-        setUserName(null)
-        setUserRoles([])
-        setIsBranchRep(false)
-        setIsOrganiser(false)
+        await handleLogout()
       } finally {
         setIsLoading(false)
       }
