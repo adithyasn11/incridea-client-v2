@@ -10,6 +10,7 @@ export interface OrganiserEvent {
   startDateTime: string | null
   endDateTime: string | null
   published: boolean
+  isStarted: boolean
   _count: {
     Teams: number
   }
@@ -19,6 +20,7 @@ export interface OrganiserEventDetails {
   id: number
   name: string
   category: string
+  isStarted: boolean
   // Add other fields as per response
   Teams: Team[]
   Rounds: Round[]
@@ -72,7 +74,7 @@ export interface Criteria {
 
 export interface Round {
     roundNo: number
-    completed: boolean
+    isCompleted: boolean
     eventId: number
     Judges: Judge[]
     Criteria: Criteria[]
@@ -99,6 +101,20 @@ export const fetchOrganiserEvents = async (token: string) => {
 
 export const fetchOrganiserEventDetails = async (eventId: number, token: string) => {
   const { data } = await apiClient.get<{ event: OrganiserEventDetails }>(`/organiser/events/${eventId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return data
+}
+
+export const toggleEventStart = async (eventId: number, isStarted: boolean, token: string) => {
+  const { data } = await apiClient.patch<{ event: OrganiserEvent }>(`/organiser/events/${eventId}/toggle-start`, { isStarted }, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return data
+}
+
+export const setActiveRound = async (eventId: number, roundNo: number, token: string) => {
+  const { data } = await apiClient.post<{ message: string }>(`/organiser/events/${eventId}/set-active-round`, { roundNo }, {
     headers: { Authorization: `Bearer ${token}` },
   })
   return data

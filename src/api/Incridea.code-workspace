@@ -1,15 +1,27 @@
 {
 	"folders": [
 		{
+			"name": "incridea-auth",
+			"path": "../../../incridea-auth"
+		},
+		{
+			"name": "incridea-client-v2",
 			"path": "../.."
 		},
 		{
+			"name": "incridea-server-v2",
 			"path": "../../../incridea-server-v2"
 		},
 		{
-			"path": "C:/Users/dnshi/Downloads/Softwares/incridea/incridea-client-main"
+			"name": "incridea-dashboard",
+			"path": "../../../incridea-dashboard"
 		},
 		{
+			"name": "incridea-client-main",
+			"path": "C:/Users/dnshi/Downloads/Softwares/incridea-client-main/incridea-client-main"
+		},
+		{
+			"name": "incridea-server-main",
 			"path": "C:/Users/dnshi/Downloads/Softwares/incridea/incridea-server-main"
 		}
 	],

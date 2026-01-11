@@ -91,15 +91,15 @@ export default function EventRegistration({ eventId, type, fees }: EventRegistra
 
   if (!user) {
     return (
-      <Link
-        to={`/login?redirectUrl=${encodeURIComponent(`/events/${eventId}`)}`}
+      <a
+        href={`${import.meta.env.VITE_AUTH_URL}/?redirect=${encodeURIComponent(`/events/${eventId}`)}`}
         className="w-fit lg:w-full"
       >
         <button className="flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-sky-600 px-5 py-2 capitalize text-white hover:bg-sky-500 transition-colors duration-300">
           <CiLogin className="text-xl" />
           Login to Register
         </button>
-      </Link>
+      </a>
     );
   }
 

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FiCheck, FiFilter, FiSearch } from 'react-icons/fi';
+import { AiOutlineClose } from "react-icons/ai";
 import type { Team, JudgeRound } from "../../../api/judging";
-import { promoteTeam, selectWinner } from "../../../api/judging";
+import { promoteTeam, selectWinner, deleteWinner } from "../../../api/judging";
 import { ID } from "../../../utils/id";
 import { showToast } from "../../../utils/toast";
 
@@ -47,6 +48,16 @@ export default function JudgeLeaderboard({ teams, round, isFinalRound }: Props) 
   });
 
   const toggleTeamSelection = (teamId: number) => {
+    if (isFinalRound) {
+      // Single selection for final round
+      const newSelected = new Set<number>();
+      if (!selectedTeamIds.has(teamId)) {
+        newSelected.add(teamId);
+      }
+      setSelectedTeamIds(newSelected);
+      return;
+    }
+
     const newSelected = new Set(selectedTeamIds);
     if (newSelected.has(teamId)) {
       newSelected.delete(teamId);
@@ -84,6 +95,17 @@ export default function JudgeLeaderboard({ teams, round, isFinalRound }: Props) 
       },
       onError: () => showToast("Failed to select winner", "error")
   })
+
+  const deleteWinnerMutation = useMutation({
+    mutationFn: async (winnerId: number) => {
+        return deleteWinner(winnerId)
+    },
+    onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['judge-teams', round.eventId, round.roundNo] });
+        showToast("Winner removed", "success")
+    },
+    onError: () => showToast("Failed to remove winner", "error")
+  });
 
   return (
     <div className="h-full flex flex-col">
@@ -130,36 +152,107 @@ export default function JudgeLeaderboard({ teams, round, isFinalRound }: Props) 
              
             {isFinalRound ? (
                 <div className="flex gap-2">
-                     <button
-                        onClick={() => {
-                            const teamId = Array.from(selectedTeamIds)[0];
-                            if(teamId) winnerMutation.mutate({ teamId, type: 'WINNER' });
-                        }}
-                        disabled={selectedTeamIds.size !== 1 || winnerMutation.isPending}
-                        className="bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50 disabled:hover:bg-yellow-600 text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition-colors"
-                    >
-                        Winner
-                    </button>
-                    <button
-                        onClick={() => {
-                            const teamId = Array.from(selectedTeamIds)[0];
-                            if(teamId) winnerMutation.mutate({ teamId, type: 'RUNNER_UP' });
-                        }}
-                        disabled={selectedTeamIds.size !== 1 || winnerMutation.isPending}
-                        className="bg-gray-500 hover:bg-gray-600 disabled:opacity-50 disabled:hover:bg-gray-500 text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition-colors"
-                    >
-                        1st Runner Up
-                    </button>
-                    <button
-                        onClick={() => {
-                            const teamId = Array.from(selectedTeamIds)[0];
-                            if(teamId) winnerMutation.mutate({ teamId, type: 'SECOND_RUNNER_UP' });
-                        }}
-                        disabled={selectedTeamIds.size !== 1 || winnerMutation.isPending}
-                        className="bg-orange-700 hover:bg-orange-800 disabled:opacity-50 disabled:hover:bg-orange-700 text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition-colors"
-                    >
-                        2nd Runner Up
-                    </button>
+                     {/* Winner */}
+                     {(() => {
+                         const winnerTeam = teams.find(t => t.Winners?.some(w => w.type === 'WINNER'));
+                         const winnerObj = winnerTeam?.Winners?.find(w => w.type === 'WINNER');
+
+                         if (winnerTeam && winnerObj) {
+                             return (
+                                 <div className="flex items-center gap-2 bg-yellow-500/20 border border-yellow-500/50 rounded-lg px-3 py-1.5">
+                                     <span className="text-xs font-bold text-yellow-500">WINNER: {winnerTeam.name}</span>
+                                     <button
+                                        onClick={() => deleteWinnerMutation.mutate(winnerObj.id)}
+                                        disabled={deleteWinnerMutation.isPending}
+                                        className="text-yellow-500 hover:text-yellow-400 disabled:opacity-50"
+                                     >
+                                         <AiOutlineClose size={12} />
+                                     </button>
+                                 </div>
+                             );
+                         }
+
+                         return (
+                            <button
+                                onClick={() => {
+                                    const teamId = Array.from(selectedTeamIds)[0];
+                                    if(teamId) winnerMutation.mutate({ teamId, type: 'WINNER' });
+                                }}
+                                disabled={selectedTeamIds.size !== 1 || winnerMutation.isPending}
+                                className="bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50 disabled:hover:bg-yellow-600 text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition-colors"
+                            >
+                                Winner
+                            </button>
+                         );
+                     })()}
+
+                     {/* 1st Runner Up */}
+                     {(() => {
+                         const runnerUpTeam = teams.find(t => t.Winners?.some(w => w.type === 'RUNNER_UP'));
+                         const runnerUpObj = runnerUpTeam?.Winners?.find(w => w.type === 'RUNNER_UP');
+
+                         if (runnerUpTeam && runnerUpObj) {
+                             return (
+                                 <div className="flex items-center gap-2 bg-gray-400/20 border border-gray-400/50 rounded-lg px-3 py-1.5">
+                                     <span className="text-xs font-bold text-gray-400">1st Runner Up: {runnerUpTeam.name}</span>
+                                     <button
+                                        onClick={() => deleteWinnerMutation.mutate(runnerUpObj.id)}
+                                        disabled={deleteWinnerMutation.isPending}
+                                        className="text-gray-400 hover:text-gray-300 disabled:opacity-50"
+                                     >
+                                         <AiOutlineClose size={12} />
+                                     </button>
+                                 </div>
+                             );
+                         }
+
+                         return (
+                            <button
+                                onClick={() => {
+                                    const teamId = Array.from(selectedTeamIds)[0];
+                                    if(teamId) winnerMutation.mutate({ teamId, type: 'RUNNER_UP' });
+                                }}
+                                disabled={selectedTeamIds.size !== 1 || winnerMutation.isPending}
+                                className="bg-gray-500 hover:bg-gray-600 disabled:opacity-50 disabled:hover:bg-gray-500 text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition-colors"
+                            >
+                                1st Runner Up
+                            </button>
+                         );
+                     })()}
+
+                     {/* 2nd Runner Up */}
+                     {(() => {
+                         const secondRunnerUpTeam = teams.find(t => t.Winners?.some(w => w.type === 'SECOND_RUNNER_UP'));
+                         const secondRunnerUpObj = secondRunnerUpTeam?.Winners?.find(w => w.type === 'SECOND_RUNNER_UP');
+
+                         if (secondRunnerUpTeam && secondRunnerUpObj) {
+                             return (
+                                 <div className="flex items-center gap-2 bg-orange-700/20 border border-orange-700/50 rounded-lg px-3 py-1.5">
+                                     <span className="text-xs font-bold text-orange-700">2nd Runner Up: {secondRunnerUpTeam.name}</span>
+                                     <button
+                                        onClick={() => deleteWinnerMutation.mutate(secondRunnerUpObj.id)}
+                                        disabled={deleteWinnerMutation.isPending}
+                                        className="text-orange-700 hover:text-orange-600 disabled:opacity-50"
+                                     >
+                                         <AiOutlineClose size={12} />
+                                     </button>
+                                 </div>
+                             );
+                         }
+
+                         return (
+                            <button
+                                onClick={() => {
+                                    const teamId = Array.from(selectedTeamIds)[0];
+                                    if(teamId) winnerMutation.mutate({ teamId, type: 'SECOND_RUNNER_UP' });
+                                }}
+                                disabled={selectedTeamIds.size !== 1 || winnerMutation.isPending}
+                                className="bg-orange-700 hover:bg-orange-800 disabled:opacity-50 disabled:hover:bg-orange-700 text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition-colors"
+                            >
+                                2nd Runner Up
+                            </button>
+                         );
+                     })()}
                 </div>
             ) : (
                 <div className="flex flex-col items-end gap-1">
@@ -195,8 +288,10 @@ export default function JudgeLeaderboard({ teams, round, isFinalRound }: Props) 
                 }`}
               >
                 <div className="flex items-center gap-3">
-                    {/* Checkbox UI */}
-                    <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
+                    {/* Checkbox/Radio UI */}
+                    <div className={`w-5 h-5 border flex items-center justify-center transition-colors ${
+                        isFinalRound ? 'rounded-full' : 'rounded'
+                    } ${
                         isSelected ? 'bg-indigo-500 border-indigo-500' : 'border-slate-600 bg-slate-900'
                     }`}>
                         {isSelected && <FiCheck className="text-white w-3.5 h-3.5" />}
@@ -206,7 +301,12 @@ export default function JudgeLeaderboard({ teams, round, isFinalRound }: Props) 
                         #{index + 1}
                     </span>
                     <div>
-                        <p className={`font-medium transition-colors ${isSelected ? 'text-indigo-200' : 'text-white'}`}>{team.name}</p>
+                        <p className={`font-medium transition-colors ${isSelected ? 'text-indigo-200' : 'text-white'}`}>
+                            {team.Winners?.some(w => w.type === 'WINNER') && <span className="mr-2 rounded bg-yellow-500/20 px-1.5 py-0.5 text-[10px] font-bold text-yellow-500">WINNER</span>}
+                            {team.Winners?.some(w => w.type === 'RUNNER_UP') && <span className="mr-2 rounded bg-gray-400/20 px-1.5 py-0.5 text-[10px] font-bold text-gray-400">1st Runner Up</span>}
+                            {team.Winners?.some(w => w.type === 'SECOND_RUNNER_UP') && <span className="mr-2 rounded bg-orange-700/20 px-1.5 py-0.5 text-[10px] font-bold text-orange-700">2nd Runner Up</span>}
+                            {team.name}
+                        </p>
                         <p className="text-xs text-slate-400">{ID.toTeamId(team.id)}</p>
                     </div>
                 </div>

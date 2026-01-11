@@ -36,6 +36,7 @@ export interface UserPayload {
 
 export interface SignupResponse {
   message: string
+  token: string
   user: UserPayload
 }
 
@@ -99,10 +100,13 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
   return data
 }
 
-export async function fetchMe(token: string): Promise<MeResponse> {
-  const { data } = await apiClient.get<MeResponse>('/auth/me', {
-    headers: { Authorization: `Bearer ${token}` },
-  })
+export async function fetchMe(): Promise<MeResponse> {
+  const { data } = await apiClient.get<MeResponse>('/auth/me')
+  return data
+}
+
+export async function logoutUser(): Promise<{ message: string }> {
+  const { data } = await apiClient.post<{ message: string }>('/auth/logout')
   return data
 }
 

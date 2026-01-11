@@ -52,6 +52,7 @@ export interface PublicEventOrganiser {
 
 export interface PublicEventDetail extends PublicEvent {
   organisers: PublicEventOrganiser[]
+  roundsCount?: number
 }
 
 export interface EventDayConfig {

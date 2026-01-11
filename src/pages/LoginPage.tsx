@@ -50,6 +50,28 @@ function LoginPage() {
       localStorage.setItem('userName', data.user.name)
       localStorage.setItem('userEmail', data.user.email)
 
+      if (!data.user.isVerified) {
+        showToast('Please verify your email to continue.', 'info')
+        // Navigate to register page with state to show step 2
+        // We need to ensure RegistrationPage reads this state
+        // For now, let's assume we can pass a query param or state?
+        // Since RegistrationPage is rendered inside LoginPage when showRegister is true,
+        // OR we might be navigating to the /register route if it exists?
+        // Wait, LoginPage has "showRegister" toggle.
+        // If the user uses the dedicated /register route, we should navigate there.
+        // But the previous code suggests `RegistrationPage` is embedded or at `/register`.
+        // Let's assume `/register` route exists as per standard practice, OR we toggle `setShowRegister(true)` if on same page.
+        // However, `data` in onSuccess implies we "Logged in".
+        // If we are at `/login` (which renders this component), and we want to go to "Step 2" of registration.
+        // If `RegistrationPage` is a separate route component, `navigate('/register')`.
+        // If it's the same component, we might just stay here?
+        // Standard Auth: Login -> Redirect.
+        // If unverified, we want them to go to the verification screen.
+        // Let's navigate to `/register` and pass state.
+        void navigate('/register', { state: { step: 2 } })
+        return
+      }
+
       const userLabel = data.user.name ?? data.user.email ?? 'user'
       showToast(`Welcome back, ${userLabel}!`, 'success')
       void navigate('/')

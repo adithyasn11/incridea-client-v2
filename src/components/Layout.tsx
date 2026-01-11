@@ -1,8 +1,6 @@
-import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import apiClient from '../api/client'
 import { hasRole, normalizeRoles } from '../utils/roles'
-import { showToast } from '../utils/toast'
 
 const navLinks = [
   { label: 'Home', to: '/' },
@@ -13,49 +11,36 @@ const navLinks = [
   { label: 'Login/Register', to: '/login' },
 ]
 
+import { logoutUser, fetchMe } from '../api/auth'
+
 function Layout() {
   const [token, setToken] = useState<string | null>(null)
   const [userName, setUserName] = useState<string | null>(null)
   const [userRoles, setUserRoles] = useState<string[]>([])
   const [isBranchRep, setIsBranchRep] = useState(false)
   const [isOrganiser, setIsOrganiser] = useState(false)
-  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(true)
   const location = useLocation()
 
-  useEffect(() => {
-    setToken(localStorage.getItem('token'))
-    const storedName = localStorage.getItem('userName')
-    const storedEmail = localStorage.getItem('userEmail')
-    setUserName(storedName ?? storedEmail ?? null)
-    setUserRoles([])
-  }, [location])
+  // Removed direct localStorage monitoring as we rely on server session
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('userName')
-    localStorage.removeItem('userEmail')
-    localStorage.removeItem('userRoles')
+  const handleLogout = async () => {
+    try {
+      await logoutUser()
+    } catch (error) {
+      console.error('Logout failed', error)
+    }
     setToken(null)
     setUserName(null)
     setUserRoles([])
-    showToast('Logged out successfully', 'info')
-    void navigate('/')
+    window.location.href = `${import.meta.env.VITE_AUTH_URL}/`
   }
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const authToken = localStorage.getItem('token')
-      if (!authToken) {
-        return
-      }
+      setIsLoading(true)
       try {
-        const { data } = await apiClient.get<{ user?: { name?: unknown; email?: unknown; roles?: unknown; isBranchRep?: unknown; isOrganiser?: unknown } }>(
-          '/auth/me',
-          {
-            headers: { Authorization: `Bearer ${authToken}` },
-          },
-        )
-        const user = data?.user
+        const { user } = await fetchMe()
         const name = user && typeof user === 'object'
           ? typeof user.name === 'string'
             ? user.name
@@ -69,31 +54,26 @@ function Layout() {
         const organiser = Boolean(user && (user as { isOrganiser?: unknown }).isOrganiser)
 
         if (name) {
-          localStorage.setItem('userName', name)
           setUserName(name)
+          setToken('logged-in')
         }
 
         setUserRoles(roles)
         setIsBranchRep(branchRep)
         setIsOrganiser(organiser)
-        if (user && typeof user === 'object' && typeof (user as { email?: unknown }).email === 'string') {
-          localStorage.setItem('userEmail', (user as { email: string }).email)
-        }
       } catch {
-        localStorage.removeItem('token')
-        localStorage.removeItem('userName')
-        localStorage.removeItem('userEmail')
-        localStorage.removeItem('userRoles')
         setToken(null)
         setUserName(null)
         setUserRoles([])
         setIsBranchRep(false)
         setIsOrganiser(false)
+      } finally {
+        setIsLoading(false)
       }
     }
 
     void fetchProfile()
-  }, [token])
+  }, [])
 
   return (
     <div className={`flex min-h-screen flex-col ${location.pathname.startsWith('/dashboard') ? '' : 'bg-slate-950'} text-slate-50`}>
@@ -107,7 +87,7 @@ function Layout() {
             />
           </Link>
           <nav className="flex items-center gap-3 text-sm font-medium text-slate-200">
-            {navLinks
+            {!isLoading && navLinks
               .filter((link) => !(link.label === 'Login/Register' && token))
               .map((link) => (
                 <NavLink
@@ -123,26 +103,21 @@ function Layout() {
                 </NavLink>
               ))}
             {hasRole(userRoles, 'ADMIN') || hasRole(userRoles, 'DOCUMENTATION') || isBranchRep || isOrganiser ? (
-              <NavLink
-                to="/dashboard"
-                className={({ isActive }) =>
-                  `rounded-md px-3 py-2 transition hover:bg-slate-800 hover:text-sky-200 ${
-                    isActive ? 'bg-slate-800 text-sky-300' : ''
-                  }`
-                }
+              <a
+                href={import.meta.env.VITE_DASHBOARD_URL}
+                className="rounded-md px-3 py-2 transition hover:bg-slate-800 hover:text-sky-200"
               >
                 Dashboard
-              </NavLink>
+              </a>
             ) : null}
             {token ? (
               <div className="flex items-center gap-2 rounded-md bg-slate-800 px-3 py-2 text-xs text-slate-100">
-                <button
-                  type="button"
-                  onClick={() => void navigate('/profile')}
+                <a
+                  href={`${import.meta.env.VITE_DASHBOARD_URL}/profile`}
                   className="font-semibold hover:text-sky-200"
                 >
                   {userName}
-                </button>
+                </a>
                 <button
                   type="button"
                   onClick={handleLogout}

@@ -1,11 +1,8 @@
 import { Route, Routes } from 'react-router-dom'
 import Layout from '../components/Layout.tsx'
 import HomePage from '../pages/HomePage.tsx'
-import ProfilePage from '../pages/ProfilePage.tsx'
-import LoginPage from '../pages/LoginPage.tsx'
-import ResetPasswordPage from '../pages/ResetPasswordPage.tsx'
 import NotFoundPage from '../pages/NotFoundPage.tsx'
-import DashboardPage from '../pages/DashboardPage.tsx'
+import TestPage from '../pages/TestPage.tsx'
 import ContactPage from '../pages/ContactPage.tsx'
 import AboutPage from '../pages/AboutPage.tsx'
 import RefundPage from '../pages/RefundPage.tsx'
@@ -16,8 +13,26 @@ import CommitteePage from '../pages/CommitteePage.tsx'
 import PrivacyPage from '../pages/PrivacyPage.tsx'
 import RulesPage from '../pages/RulesPage.tsx'
 import QuizPage from '../pages/QuizPage.tsx'
+import RegisterPage from '../pages/RegisterPage.tsx'
 
+const AuthRedirect = () => {
+    const params = new URLSearchParams(window.location.search)
+    const token = params.get('token')
+    
+    if (token) {
+        localStorage.setItem('token', token)
+        window.location.href = '/'
+        return null
+    }
 
+    window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${window.location.href}`
+    return null
+}
+
+const ResetRedirect = () => {
+    window.location.href = `${import.meta.env.VITE_AUTH_URL}/reset-password`;
+    return null;
+}
 
 function AppRoutes() {
   return (
@@ -32,13 +47,12 @@ function AppRoutes() {
         <Route path="/guidelines" element={<GuidelinesPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/rules" element={<RulesPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/dashboard/organiser/events/:eventId" element={<DashboardPage />} />
+        <Route path="/login" element={<AuthRedirect />} />
+        <Route path="/reset-password" element={<ResetRedirect />} />
         <Route path="/quiz/:quizId" element={<QuizPage />} />
         <Route path="/committee" element={<CommitteePage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/test" element={<TestPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
