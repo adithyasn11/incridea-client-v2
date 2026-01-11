@@ -86,7 +86,7 @@ function Layout() {
     <div className={`flex min-h-screen flex-col ${location.pathname.startsWith('/dashboard') ? '' : 'bg-slate-950'} text-slate-50`}>
       <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-3 text-lg font-semibold text-sky-300">
+          <Link to="/" className="flex items-center gap-3 text-lg font-semibold text-sky-300 cursor-target">
             <img
               src="/incridea.png.png"
               alt="Incridea"
@@ -101,7 +101,7 @@ function Layout() {
                   key={link.to}
                   to={link.to}
                   className={({ isActive }) =>
-                    `rounded-md px-3 py-2 transition hover:bg-slate-800 hover:text-sky-200 ${
+                    `rounded-md px-3 py-2 transition hover:bg-slate-800 hover:text-sky-200 cursor-target ${
                       isActive ? 'bg-slate-800 text-sky-300' : ''
                     }`
                   }
@@ -112,7 +112,7 @@ function Layout() {
             {hasRole(userRoles, 'ADMIN') || hasRole(userRoles, 'DOCUMENTATION') || isBranchRep || isOrganiser ? (
               <a
                 href={import.meta.env.VITE_DASHBOARD_URL}
-                className="rounded-md px-3 py-2 transition hover:bg-slate-800 hover:text-sky-200"
+                className="rounded-md px-3 py-2 transition hover:bg-slate-800 hover:text-sky-200 cursor-target"
               >
                 Dashboard
               </a>
@@ -121,14 +121,14 @@ function Layout() {
               <div className="flex items-center gap-2 rounded-md bg-slate-800 px-3 py-2 text-xs text-slate-100">
                 <a
                   href={`${import.meta.env.VITE_DASHBOARD_URL}/profile`}
-                  className="font-semibold hover:text-sky-200"
+                  className="font-semibold hover:text-sky-200 cursor-target"
                 >
                   {userName}
                 </a>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="rounded bg-slate-700 px-2 py-1 text-[11px] font-semibold text-sky-200 hover:bg-slate-600"
+                  className="rounded bg-slate-700 px-2 py-1 text-[11px] font-semibold text-sky-200 hover:bg-slate-600 cursor-target"
                 >
                   Logout
                 </button>

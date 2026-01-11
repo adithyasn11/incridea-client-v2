@@ -53,3 +53,18 @@ export async function deleteTeam(teamId: number) {
     const { data } = await apiClient.post<Team>('/registration/delete-team', { teamId })
     return data
 }
+
+export interface PaymentInitiateResponse {
+  orderId: string
+  amount: number
+  currency: string
+  key: string
+  name: string
+  description: string
+  prefill?: any
+}
+
+export async function initiatePayment(registrationId: string) {
+  const { data } = await apiClient.post<PaymentInitiateResponse>('/payment/initiate', { registrationId })
+  return data
+}

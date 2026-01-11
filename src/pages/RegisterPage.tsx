@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { fetchRegistrationConfig, type RegistrationConfigResponse } from '../api/public'
+import { initiatePayment } from '../api/registration'
 import { fetchMe } from '../api/auth'
 import { showToast } from '../utils/toast'
 
@@ -148,10 +149,60 @@ function RegisterPage() {
     }
   }, [feeOptions])
 
-  const handlePayment = () => {
-     showToast('Payment option selected (Mock).', 'success')
-     // Navigate to home or dashboard
-     navigate('/')
+  const handlePayment = async () => {
+     if (!registrationOption) return
+     
+     const loadScript = (src: string) => {
+        return new Promise((resolve) => {
+            const script = document.createElement('script')
+            script.src = src
+            script.onload = () => resolve(true)
+            script.onerror = () => resolve(false)
+            document.body.appendChild(script)
+        })
+     }
+
+     try {
+         const res = await loadScript('https://checkout.razorpay.com/v1/checkout.js')
+         if (!res) {
+             showToast('Razorpay SDK failed to load', 'error')
+             return
+         }
+
+         const data = await initiatePayment(registrationOption)
+         
+         const options = {
+             key: data.key,
+             amount: data.amount,
+             currency: data.currency,
+             name: "Incridea'26 - Registration",
+             description: 'Fest Registration',
+             order_id: data.orderId,
+             handler: async function (response: any) {
+                 console.log(response)
+                 showToast('Payment Successful!', 'success')
+                 navigate('/')
+             },
+             prefill: {
+                 name: user?.name,
+                 email: user?.email,
+                 contact: user?.phoneNumber
+             },
+             theme: {
+                 color: '#460c78' 
+             }
+         }
+         
+         const paymentObject = new (window as any).Razorpay(options)
+         paymentObject.on('payment.failed', function (response: any) {
+             showToast(response.error.description || 'Payment Failed', 'error')
+         })
+         paymentObject.open()
+
+     } catch (err: any) {
+         console.error(err)
+         showToast(err.response?.data?.message || 'Error initiating payment', 'error')
+     }
   }
 
   if (isUserLoading || isConfigLoading) {
