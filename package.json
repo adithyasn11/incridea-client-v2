@@ -16,6 +16,7 @@
     "@types/react-csv": "^1.1.10",
     "@uploadthing/react": "^7.0.0",
     "axios": "^1.13.2",
+    "interactjs": "^1.10.27",
     "lucide-react": "^0.562.0",
     "gsap": "^3.14.2",
     "react": "^19.2.0",
