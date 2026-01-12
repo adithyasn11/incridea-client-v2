@@ -13,6 +13,8 @@ const navLinks = [
 
 import { logoutUser, fetchMe } from '../api/auth'
 
+import galaxyBg from '../assets/galaxy-bg.jpg'
+
 function Layout() {
   const [token, setToken] = useState<string | null>(null)
   const [userName, setUserName] = useState<string | null>(null)
@@ -83,7 +85,18 @@ function Layout() {
   }, [])
 
   return (
-    <div className={`flex min-h-screen flex-col ${location.pathname.startsWith('/dashboard') ? '' : 'bg-slate-950'} text-slate-50`}>
+    <div className={`relative flex min-h-screen flex-col overflow-x-hidden text-slate-50`}>
+      {/* GLOBAL BACKGROUND (Non-Dashboard) */}
+      {!location.pathname.startsWith('/dashboard') && (
+        <div className="fixed inset-0 -z-10 h-full w-full bg-[#030014]">
+          <img
+            src={galaxyBg}
+            alt="Galaxy Background"
+            className="h-full w-full object-cover opacity-80"
+          />
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
+      )}
       <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-3 text-lg font-semibold text-sky-300 cursor-target">
@@ -101,8 +114,7 @@ function Layout() {
                   key={link.to}
                   to={link.to}
                   className={({ isActive }) =>
-                    `rounded-md px-3 py-2 transition hover:bg-slate-800 hover:text-sky-200 cursor-target ${
-                      isActive ? 'bg-slate-800 text-sky-300' : ''
+                    `rounded-md px-3 py-2 transition hover:bg-slate-800 hover:text-sky-200 cursor-target ${isActive ? 'bg-slate-800 text-sky-300' : ''
                     }`
                   }
                 >
@@ -138,7 +150,7 @@ function Layout() {
         </div>
       </header>
 
-      <main className="w-screen flex justify-center items-center flex-1 px-4 py-10">
+      <main className="w-full flex justify-center items-center flex-1 px-4 py-10">
         <Outlet />
       </main>
 

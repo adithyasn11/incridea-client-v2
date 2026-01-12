@@ -1,22 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { AiOutlineSearch } from 'react-icons/ai'
-import { BiCategoryAlt } from 'react-icons/bi'
-import { IoCalendarOutline, IoPeopleOutline } from 'react-icons/io5'
-import { FiMapPin } from 'react-icons/fi'
 import { Link as RouterLink } from 'react-router-dom'
 import {
   fetchPublishedEvents,
   type EventDayConfig,
   type PublicEvent,
   type PublicEventCategory,
-  type PublicEventType,
   type PublishedEventsResponse,
 } from '../api/public'
 import { showToast } from '../utils/toast'
-import { formatDate } from '../utils/date'
+
 import EventPreviewCard from '../components/events/EventCard'
-import AnimatedGlassCard from '../components/events/AnimatedGlassCard'
 
 const CATEGORY_FILTERS: (PublicEventCategory | 'ALL')[] = [
   'ALL',
@@ -45,100 +40,38 @@ function isSameUtcDay(left: Date, right: Date) {
 }
 
 
-function formatTeamSize(min: number, max: number) {
-  if (min === max) {
-    if (min === 1) {
-      return 'Solo'
-    }
-    if (min === 0) {
-      return 'Open'
-    }
-    return `${min} per team`
-  }
-  return `${min}-${max} per team`
-}
-
-function formatEventType(eventType: PublicEventType) {
-  if (eventType.includes('MULTIPLE')) {
-    return 'Multi-entry'
-  }
-  return eventType.split('_')[0]?.toLowerCase() === 'team' ? 'Team' : 'Individual'
-}
 
 function toSlug(event: PublicEvent) {
   const base = event.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
   return `${base}-${event.id}`
 }
 
-function EventListCard({ event }: { event: PublicEvent }) {
-  const firstRoundWithDate = event.rounds.find((round) => round.date)
-  const slug = toSlug(event)
 
-  return (
-    <RouterLink
-      to={`/events/${slug}`}
-      className="card flex flex-col gap-4 p-5 transition hover:border-sky-500/70 hover:shadow-lg hover:shadow-sky-900/30"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <p className="text-[11px] uppercase tracking-wide text-slate-400">
-            {event.category.replace('_', ' ')}
-          </p>
-          <h3 className="text-lg font-semibold text-slate-50">{event.name}</h3>
-          {event.description ? (
-            <p className="text-sm text-slate-300 line-clamp-2">{event.description}</p>
-          ) : null}
-        </div>
-        {event.image ? (
-          <img
-            src={event.image}
-            alt={event.name}
-            className="h-16 w-16 shrink-0 rounded-lg object-cover"
-          />
-        ) : null}
-      </div>
+// MOCK DATA FOR DEVELOPMENT
+const MOCK_EVENTS = Array.from({ length: 9 }).map((_, i) => ({
+  id: `mock-${i + 1}`,
+  name: i % 2 === 0 ? 'ROBOWARS' : 'CODE QUEST',
+  description: 'Experience the thrill of competition and showcase your skills in this amazing event.',
+  image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop',
+  category: i % 2 === 0 ? 'TECH' : 'N-TECH',
+  rounds: [{ date: new Date().toISOString() }],
+  venue: 'Main Auditorium',
+  minTeamSize: 1,
+  maxTeamSize: 4,
+  eventType: 'TEAM_MULTIPLE_ENTRY',
+  needRegistration: true,
+  registered: false,
+})) as unknown as PublicEvent[]
 
-      <div className="grid grid-cols-1 gap-3 text-sm text-slate-200 sm:grid-cols-2">
-        <div className="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2">
-          <IoCalendarOutline className="text-sky-300" />
-          <div className="leading-tight">
-            <p className="text-[11px] uppercase tracking-wide text-slate-400">Date</p>
-            <p className="font-semibold">{formatDate(firstRoundWithDate?.date)}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2">
-          <FiMapPin className="text-emerald-300" size={18} />
-          <div className="leading-tight">
-            <p className="text-[11px] uppercase tracking-wide text-slate-400">Venue</p>
-            <p className="font-semibold">{event.venue ?? 'Will be announced'}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2">
-          <IoPeopleOutline className="text-amber-300" />
-          <div className="leading-tight">
-            <p className="text-[11px] uppercase tracking-wide text-slate-400">Team</p>
-            <p className="font-semibold">
-              {formatEventType(event.eventType)} · {formatTeamSize(event.minTeamSize, event.maxTeamSize)}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2">
-          <BiCategoryAlt className="text-fuchsia-300" />
-          <div className="leading-tight">
-            <p className="text-[11px] uppercase tracking-wide text-slate-400">Rounds</p>
-            <p className="font-semibold">{event.rounds.length > 0 ? `${event.rounds.length} planned` : 'TBD'}</p>
-          </div>
-        </div>
-      </div>
-    </RouterLink>
-  )
-}
 
 function EventsPage() {
   const [categoryFilter, setCategoryFilter] = useState<(PublicEventCategory | 'ALL')>('ALL')
   const [dayFilter, setDayFilter] = useState<DayFilterLabel>('All')
   const [query, setQuery] = useState('')
 
+
+  // NOTE: Server part not ready, using mock data for development
+  /*
   const eventsQuery = useQuery<PublishedEventsResponse, Error>({
     queryKey: ['public-events'],
     queryFn: fetchPublishedEvents,
@@ -160,6 +93,13 @@ function EventsPage() {
       showToast(message, 'error')
     }
   }, [eventsQuery.error])
+  */
+
+  // Mock Data Integration
+  const eventsQuery = { isLoading: false, isError: false };
+  const dayConfig = undefined;
+  const events = MOCK_EVENTS;
+
 
   const availableDayFilters = useMemo<DayFilterLabel[]>(() => {
     const labels: DayFilterLabel[] = ['All']
@@ -196,19 +136,19 @@ function EventsPage() {
       const matchesDay = !selectedDayIso
         ? true
         : event.rounds.some((round) => {
-            if (!round.date) {
-              return false
-            }
-            return isSameUtcDay(new Date(round.date), new Date(selectedDayIso))
-          })
+          if (!round.date) {
+            return false
+          }
+          return isSameUtcDay(new Date(round.date), new Date(selectedDayIso))
+        })
 
       return matchesQuery && matchesCategory && matchesDay
     })
   }, [dayConfig, events, categoryFilter, activeDayKey, query])
 
   return (
-    <section className="space-y-8">
-      
+    <section className="space-y-8 max-w-[1400px] mx-auto px-4 md:px-8 py-8">
+
       <header className="space-y-2">
         <p className="muted uppercase text-xs">Discover</p>
         <h1 className="text-3xl font-bold text-slate-50">Events</h1>
@@ -216,16 +156,16 @@ function EventsPage() {
           Browse published events. Day filters come from the variable table so updates from admin will appear here automatically.
         </p>
       </header>
-      <EventPreviewCard/>
-    <AnimatedGlassCard/>
+
+
       <div className="card space-y-4 p-5">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="relative w-full lg:max-w-md">
             <AiOutlineSearch className="absolute left-3 top-3 text-slate-500" size={18} />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              className="input pl-9"
+              className="input pl-9 w-full"
               placeholder="Search events by name"
             />
           </div>
@@ -236,11 +176,10 @@ function EventsPage() {
                 key={category}
                 type="button"
                 onClick={() => setCategoryFilter(category)}
-                className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                  categoryFilter === category
-                    ? 'border-sky-400 bg-sky-500/20 text-sky-100'
-                    : 'border-slate-800 bg-slate-900/60 text-slate-200 hover:border-slate-600'
-                }`}
+                className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${categoryFilter === category
+                  ? 'border-sky-400 bg-sky-500/20 text-sky-100'
+                  : 'border-slate-800 bg-slate-900/60 text-slate-200 hover:border-slate-600'
+                  }`}
               >
                 {category === 'ALL' ? 'All categories' : category.replace('_', ' ')}
               </button>
@@ -254,11 +193,10 @@ function EventsPage() {
               key={label}
               type="button"
               onClick={() => setDayFilter(label)}
-              className={`rounded-full border px-3 py-1.5 text-sm font-semibold transition ${
-                dayFilter === label
-                  ? 'border-emerald-400 bg-emerald-500/20 text-emerald-100'
-                  : 'border-slate-800 bg-slate-900/60 text-slate-200 hover:border-slate-600'
-              }`}
+              className={`rounded-full border px-3 py-1.5 text-sm font-semibold transition ${dayFilter === label
+                ? 'border-emerald-400 bg-emerald-500/20 text-emerald-100'
+                : 'border-slate-800 bg-slate-900/60 text-slate-200 hover:border-slate-600'
+                }`}
             >
               {label === 'All' ? 'All days' : label}
             </button>
@@ -281,9 +219,15 @@ function EventsPage() {
         <div className="card p-8 text-center text-slate-300">No events match the selected filters.</div>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {filteredEvents.map((event) => (
-          <EventListCard key={event.id} event={event} />
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-items-center">
+        {filteredEvents.map((event, index) => (
+          <RouterLink
+            key={event.id}
+            to={`/events/${toSlug(event)}`}
+            className="flex w-full items-center justify-center transition hover:scale-105"
+          >
+            <EventPreviewCard event={event} index={index} />
+          </RouterLink>
         ))}
       </div>
     </section>

@@ -19,10 +19,11 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="fixed left-6 top-1/2 -translate-y-1/2 z-[99999]">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] w-[90%] max-w-[400px] md:w-auto md:max-w-none md:left-6 md:top-1/2 md:-translate-y-1/2 md:bottom-auto md:translate-x-0">
       <div
         className="
-          flex flex-col gap-6 p-3
+          flex flex-row justify-between items-center p-2 gap-1
+          md:flex-col md:gap-6 md:p-3
           rounded-2xl
           bg-gradient-to-b from-purple-900/80 to-black/90
           backdrop-blur-xl
@@ -35,13 +36,13 @@ const Sidebar = () => {
             to={path}
             title={label}
             className={({ isActive }) => `
-              w-11 h-11 rounded-xl
+              w-10 h-10 md:w-11 md:h-11 rounded-xl
               flex items-center justify-center
               transition-all duration-300
-              ${
-                isActive
-                  ? "bg-gradient-to-b from-purple-500 to-purple-700 text-white shadow-[0_0_22px_rgba(168,85,247,0.5)]"
-                  : "bg-white/10 text-purple-200 hover:bg-purple-500/30 hover:shadow-[0_0_14px_rgba(168,85,247,0.5)]"
+              shrink-0
+              ${isActive
+                ? "bg-gradient-to-b from-purple-500 to-purple-700 text-white shadow-[0_0_22px_rgba(168,85,247,0.5)]"
+                : "bg-white/10 text-purple-200 hover:bg-purple-500/30 hover:shadow-[0_0_14px_rgba(168,85,247,0.5)]"
               }
             `}
           >
