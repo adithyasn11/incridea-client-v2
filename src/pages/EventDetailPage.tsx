@@ -169,10 +169,10 @@ function EventDetailPage() {
       <div className="relative mx-auto w-full max-w-6xl px-4 py-6 sm:py-8 space-y-6 sm:space-y-8">
         <RouterLink
           to="/events"
-          className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/15 hover:border-white/30 hover:shadow-[0_0_20px_rgba(14,165,233,0.25)] transition-all duration-300"
+          className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/15 hover:border-white/30 hover:shadow-[0_0_20px_rgba(14,165,233,0.25)] transition-all duration-300"
           title="Back to events"
         >
-          <AiOutlineArrowLeft className="text-sky-300 text-lg hover:text-sky-200" />
+          <AiOutlineArrowLeft className="text-sky-300 text-lg sm:text-xl hover:text-sky-200" />
         </RouterLink>
 
         {/* GLASS CONTAINER: Event Header + Description + Coordinators */}
