@@ -78,7 +78,7 @@ function Layout() {
           <Link className="transition-colors duration-200 hover:text-slate-200 cursor-target" to="/privacy">
             Privacy Policy
           </Link>
-          <span className="hidden text-slate-600 md:inline">|</span>
+          <span className="hidden text-slate-900 md:inline">|</span>
           <Link className="transition-colors duration-200 hover:text-slate-200 cursor-target" to="/rules">
             Terms & Conditions
           </Link>

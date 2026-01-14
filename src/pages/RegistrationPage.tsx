@@ -4,7 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { signup, verifyOtp, type SignupPayload, type SignupResponse, type VerifyOtpResponse } from '../api/auth.ts'
+import { signup, verifyOtp, fetchMe, type SignupPayload, type SignupResponse, type VerifyOtpResponse } from '../api/auth.ts'
 import { fetchColleges } from '../api/colleges.ts'
 import { fetchRegistrationConfig, type RegistrationConfigResponse } from '../api/public.ts'
 import {
@@ -58,6 +58,20 @@ function RegistrationPage() {
     queryKey: ['colleges'],
     queryFn: fetchColleges,
   })
+
+  const { data: meData } = useQuery({
+    queryKey: ['me'],
+    queryFn: fetchMe,
+    enabled: !!localStorage.getItem('token'),
+    retry: false
+  })
+
+  useEffect(() => {
+    if (meData?.user?.pid) {
+      showToast('You are already registered!', 'info')
+      navigate('/profile')
+    }
+  }, [meData, navigate])
 
   const { data: registrationConfig } = useQuery<RegistrationConfigResponse>({
     queryKey: ['registration-config'],
@@ -638,7 +652,7 @@ function RegistrationPage() {
             </p>
           )}
           {otpVerified && <p className="text-sm text-emerald-300">Verified!</p>}
-        </div>
+        </div>  
       )}
 
       {step === 3 && (

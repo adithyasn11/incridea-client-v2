@@ -32,6 +32,7 @@ export interface UserPayload {
   isJudge?: boolean
   yearOfGraduation?: number | null
   alumniIdDocument?: string | null
+  pid?: string | null
 }
 
 export interface SignupResponse {

@@ -113,7 +113,12 @@ function ProfilePage() {
       <div className="card p-6">
         <p className="muted mb-2">Profile</p>
         <h1 className="text-2xl font-semibold text-slate-50">{userName}</h1>
-        <p className="text-sm text-slate-400">Manage your account details.</p>
+        {user?.pid && (
+            <div className="mt-2 inline-block rounded border border-sky-400/30 bg-sky-500/10 px-3 py-1 text-sm font-medium text-sky-200">
+                PID: {user.pid}
+            </div>
+        )}
+        <p className="text-sm text-slate-400 mt-2">Manage your account details.</p>
       </div>
 
       <div className="card space-y-4 p-6">

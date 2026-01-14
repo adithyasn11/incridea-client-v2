@@ -29,7 +29,16 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div style={backgroundStyle} className="fixed inset-0 w-full h-full -z-50 pointer-events-none transition-all duration-1000" />
+      <div className="fixed inset-0 flex items-center justify-center -z-50 pointer-events-none overflow-hidden">
+        <div 
+          style={{
+            ...backgroundStyle,
+            width: '200vmax',
+            height: '200vmax',
+          }} 
+          className="animate-slow-spin transition-all duration-1000" 
+        />
+      </div>
       <SocketProvider>
         <TargetCursor
             spinDuration={2.8}
