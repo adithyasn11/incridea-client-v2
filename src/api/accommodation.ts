@@ -31,3 +31,8 @@ export const getBookings = async (params: any) => {
     const { data } = await apiClient.get('/accommodation/admin/bookings', { params })
     return data
 }
+
+export const getUserByPid = async (pid: string) => {
+    const { data } = await apiClient.get(`/accommodation/user/${pid}`)
+    return data
+}
