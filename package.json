@@ -18,7 +18,7 @@
     "axios": "^1.13.2",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
-    "framer-motion": "^12.27.1",
+    "framer-motion": "^12.27.5",
     "gsap": "^3.14.2",
     "interactjs": "^1.10.27",
     "lucide-react": "^0.562.0",
