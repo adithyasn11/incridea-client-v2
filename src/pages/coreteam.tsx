@@ -10,6 +10,7 @@ const teamMembers = [
   { imageSrc: '/chill.jpg', title: 'Adithya SN', subtitle: 'Treasurer' },
   { imageSrc: '/chill.jpg', title: 'Adithya SN', subtitle: 'Event Coordinator' },
   { imageSrc: '/chill.jpg', title: 'Adithya SN', subtitle: 'Tech Lead' },
+  { imageSrc: '/chill.jpg', title: 'Adithya SN', subtitle: 'Tech Lead' },
 ];
 
 export default function CoreTeamPage() {
@@ -53,7 +54,7 @@ export default function CoreTeamPage() {
         </motion.h1>
 
         {/* Team Members Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 mt-16 w-full max-w-6xl justify-items-center">
+        <div className="flex flex-wrap  gap-16 mt-16 w-full max-w-6xl justify-center">
           {teamMembers.map((member, index) => (
             <CoreTeamCard
               key={index}

@@ -140,7 +140,7 @@ export default function TechTeamPage() {
         <div className="relative pt-20 mt-10 flex flex-col items-center justify-center w-full">
         {/* Animated Title - Fade Up */}
           <motion.h1
-            className="font-['Michroma'] text-4xl sm:text-5xl sm:top-13 md:top-11 lg:top-4  top-16 text-center md:text-6xl absolute lg:text-8xl font-bold w-full mt-12 bg-gradient-to-b from-white via-white to-transparent bg-clip-text text-transparent tracking-wider"
+            className="font-['Michroma'] text-3xl sm:text-5xl sm:top-13 md:top-11 lg:top-4  top-17 text-center md:text-6xl absolute lg:text-8xl font-bold w-full mt-12 bg-gradient-to-b from-white via-white to-transparent bg-clip-text text-transparent tracking-wider"
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
@@ -169,7 +169,7 @@ export default function TechTeamPage() {
         <div className="relative pt-20 mt-20 flex flex-col items-center justify-center w-full">
         {/* Animated Title - Fade Up */}
           <motion.h1
-            className="font-['Michroma'] text-4xl sm:text-5xl sm:top-13 md:top-11 lg:top-4  top-16 text-center md:text-6xl absolute lg:text-8xl font-bold w-full mt-12 bg-gradient-to-b from-white via-white to-transparent bg-clip-text text-transparent tracking-wider"
+            className="font-['Michroma'] text-3xl sm:text-5xl sm:top-13 md:top-11 lg:top-4  top-17 text-center md:text-6xl absolute lg:text-8xl font-bold w-full mt-12 bg-gradient-to-b from-white via-white to-transparent bg-clip-text text-transparent tracking-wider"
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
@@ -198,7 +198,7 @@ export default function TechTeamPage() {
         <div className="relative pt-20 mt-20 flex flex-col items-center justify-center w-full">
         {/* Animated Title - Fade Up */}
           <motion.h1
-            className="font-['Michroma'] text-4xl sm:text-5xl sm:top-13 md:top-11 lg:top-4  top-16 text-center md:text-6xl absolute lg:text-8xl font-bold w-full mt-12 bg-gradient-to-b from-white via-white to-transparent bg-clip-text text-transparent tracking-wider"
+            className="font-['Michroma'] text-3xl sm:text-5xl sm:top-13 md:top-11 lg:top-4  top-17 text-center md:text-6xl absolute lg:text-8xl font-bold w-full mt-12 bg-gradient-to-b from-white via-white to-transparent bg-clip-text text-transparent tracking-wider"
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
