@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { UploadButton } from '@uploadthing/react'
+
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -13,7 +13,7 @@ import {
   type RegistrationFormData,
 } from '../schemas/registrationSchema.ts'
 import { showToast } from '../utils/toast'
-import '@uploadthing/react/styles.css'
+
 
 function RegistrationPage() {
   const navigate = useNavigate()
@@ -23,14 +23,6 @@ function RegistrationPage() {
   const [otpSent, setOtpSent] = useState(false)
   const [otpVerified, setOtpVerified] = useState(false)
   const [step, setStep] = useState<1 | 2 | 3>(() => (location.state as { step?: 1 | 2 | 3 })?.step ?? 1)
-  const [showAccommodation, setShowAccommodation] = useState(false)
-  const [accommodationDraft, setAccommodationDraft] = useState({
-    gender: '',
-    checkIn: '',
-    checkOut: '',
-    idProofUrl: '',
-  })
-  const [isUploadingIdProof, setIsUploadingIdProof] = useState(false)
   const [registrationOption, setRegistrationOption] = useState('')
   const {
     register,
@@ -88,14 +80,9 @@ function RegistrationPage() {
       setValue('collegeId', 1)
       setValue('yearOfGraduation', undefined)
       setValue('idDocument', undefined)
-      setShowAccommodation(false)
     }
     if (selection === 'ALUMNI') {
       setValue('collegeId', 1)
-    }
-    if (selection === 'OTHER' || selection === 'ALUMNI') {
-      // keep toggle state as is but ensure draft persists per selection
-      setShowAccommodation((prev) => prev)
     }
     setRegistrationOption('')
   }, [selection, setValue])
@@ -250,28 +237,12 @@ function RegistrationPage() {
   )
 
   const onSubmit = (data: RegistrationFormData) => {
-    if (showAccommodation) {
-      if (!accommodationDraft.gender || !accommodationDraft.idProofUrl) {
-        showToast('Select gender and upload ID proof for accommodation.', 'error')
-        return
-      }
-    }
-
     const payload: SignupPayload = { ...data }
     if (selection === 'NMAMIT') {
       payload.collegeId = 1
     }
     if (selection === 'ALUMNI') {
       payload.collegeId = 1
-    }
-
-    if (showAccommodation) {
-      payload.accommodation = {
-        gender: accommodationDraft.gender as 'MALE' | 'FEMALE' | 'OTHER',
-        checkIn: accommodationDraft.checkIn || undefined,
-        checkOut: accommodationDraft.checkOut || undefined,
-        idProofUrl: accommodationDraft.idProofUrl,
-      }
     }
 
     return signupMutation.mutateAsync(payload)
@@ -479,125 +450,7 @@ function RegistrationPage() {
             </div>
           )}
 
-          {(selection === 'OTHER' || selection === 'ALUMNI') && (
-            <div className="space-y-3 rounded-lg border border-slate-800 bg-slate-900/70 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-slate-100">Avail accommodation</p>
-                  <p className="text-xs text-slate-400">Available only for alumni and external students</p>
-                </div>
-                <label className="inline-flex items-center gap-2 text-sm font-semibold text-slate-100">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4"
-                    checked={showAccommodation}
-                    onChange={(event) => setShowAccommodation(event.target.checked)}
-                  />
-                  <span>Yes</span>
-                </label>
-              </div>
 
-              {showAccommodation && (
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="label" htmlFor="accommodationGender">
-                      Gender
-                    </label>
-                    <select
-                      id="accommodationGender"
-                      className="input"
-                      value={accommodationDraft.gender}
-                      onChange={(event) =>
-                        setAccommodationDraft((prev) => ({ ...prev, gender: event.target.value }))
-                      }
-                    >
-                      <option value="">Select gender</option>
-                      <option value="MALE">Male</option>
-                      <option value="FEMALE">Female</option>
-                      <option value="OTHER">Other</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="label" htmlFor="accommodationIdProof">
-                      ID proof upload
-                    </label>
-                    <div className="flex flex-wrap items-center gap-3">
-                      {/* UploadThing types expect a server FileRouter; suppress on client side usage */}
-                      {/* @ts-expect-error UploadThing client typing simplified */}
-                      <UploadButton
-                        endpoint="accommodationIdProof"
-                        onUploadBegin={() => setIsUploadingIdProof(true)}
-                        onClientUploadComplete={(res: { url?: string; serverData?: { fileUrl?: string } }[] | undefined) => {
-                          setIsUploadingIdProof(false)
-                          const first = res?.[0]
-                          const url = first?.serverData?.fileUrl ?? first?.url ?? ''
-                          if (url) {
-                            setAccommodationDraft((prev) => ({ ...prev, idProofUrl: url }))
-                            showToast('ID proof uploaded', 'success')
-                          }
-                        }}
-                        onUploadError={(error: Error) => {
-                          setIsUploadingIdProof(false)
-                          showToast(error.message ?? 'Upload failed. Try again.', 'error')
-                        }}
-                      />
-                      {isUploadingIdProof && <span className="text-xs text-slate-400">Uploading…</span>}
-                      {!isUploadingIdProof && accommodationDraft.idProofUrl && (
-                        <span className="text-xs text-emerald-300">Upload saved</span>
-                      )}
-                    </div>
-                    <input
-                      id="accommodationIdProof"
-                      className="input"
-                      placeholder="Upload or paste link"
-                      value={accommodationDraft.idProofUrl}
-                      onChange={(event) =>
-                        setAccommodationDraft((prev) => ({ ...prev, idProofUrl: event.target.value }))
-                      }
-                    />
-                    <p className="text-xs text-slate-400">
-                      The uploaded file URL will be sent with your accommodation request.
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="label" htmlFor="accommodationCheckIn">
-                      Preferred check-in
-                    </label>
-                    <input
-                      id="accommodationCheckIn"
-                      className="input"
-                      placeholder="e.g., 2026-02-25 10:00"
-                      value={accommodationDraft.checkIn}
-                      onChange={(event) =>
-                        setAccommodationDraft((prev) => ({ ...prev, checkIn: event.target.value }))
-                      }
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="label" htmlFor="accommodationCheckOut">
-                      Preferred check-out
-                    </label>
-                    <input
-                      id="accommodationCheckOut"
-                      className="input"
-                      placeholder="e.g., 2026-02-28 18:00"
-                      value={accommodationDraft.checkOut}
-                      onChange={(event) =>
-                        setAccommodationDraft((prev) => ({ ...prev, checkOut: event.target.value }))
-                      }
-                    />
-                  </div>
-
-                  <p className="md:col-span-2 text-xs text-slate-400">
-                    Note: Accommodation details are captured for coordination and will be confirmed by the team separately.
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
 
           <button className="button" type="submit" disabled={isSubmitting || signupMutation.isPending}>
             {signupMutation.isPending ? 'Saving Details…' : 'Next: Verify Email'}

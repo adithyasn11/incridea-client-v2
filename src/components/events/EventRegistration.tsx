@@ -9,6 +9,7 @@ import {
   leaveTeam,
   deleteTeam,
 } from "../../api/registration";
+import { fetchMe } from "../../api/auth";
 import { showToast } from "../../utils/toast";
 import CreateTeamModal from "./CreateTeamModal";
 import JoinTeamModal from "./JoinTeamModal";
@@ -124,13 +125,21 @@ export default function EventRegistration({
     );
   }
 
-  if (isLoading) {
+  const { data: userData, isLoading: isUserLoading } = useQuery({
+    queryKey: ["me"],
+    queryFn: fetchMe,
+    enabled: !!token,
+  });
+
+  const isFestRegistered = !!userData?.user?.pid;
+
+  if (isLoading || (token && isUserLoading)) {
     return <div className="text-center text-slate-400">Loading status...</div>;
   }
 
   // Already registered/in a team
   if (team) {
-    const isLeader = team.leaderId === user.id;
+    const isLeader = team.Leader?.User?.id === user.id;
     return (
       <div className="w-full rounded-lg border border-sky-500/30 bg-sky-500/10 p-4 space-y-3">
         <div className="flex items-center justify-between">
@@ -148,12 +157,12 @@ export default function EventRegistration({
 
         <div className="space-y-1">
           <p className="text-xs text-slate-400 uppercase">Members</p>
-          {team.TeamMembers?.map((member) => (
+          {team.TeamMembers?.map((member: any) => (
             <div
-              key={member.userId}
+              key={member.id}
               className="text-sm text-slate-200 flex justify-between"
             >
-              <span>{member.User?.name || `User ${member.userId}`}</span>
+              <span>{member.PID?.User?.name || `User ${member.PID?.User?.email}`}</span>
             </div>
           ))}
         </div>
@@ -235,6 +244,29 @@ export default function EventRegistration({
   // Not registered
   const isSolo = type === "INDIVIDUAL" || type === "INDIVIDUAL_MULTIPLE_ENTRY";
 
+  if (token && !isFestRegistered) {
+    return (
+      <Link to="/register" className="w-full">
+        <button
+          className="group flex w-full shrink-0 items-center justify-center gap-2 rounded-full
+            px-6 py-2.5 capitalize text-white font-semibold
+            bg-teal-600 border border-teal-500
+            backdrop-blur-2xl
+            shadow-[0_8px_30px_rgba(0,0,0,0.35)]
+            hover:bg-teal-500 hover:border-teal-400 hover:shadow-[0_0_20px_rgba(20,184,166,0.25)]
+            transition-all duration-300
+            active:scale-[0.98]
+            relative overflow-hidden"
+        >
+          Register to Incridea
+          <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300">
+            <span className="absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-linear-to-r from-transparent via-white/40 to-transparent blur-md" />
+          </span>
+        </button>
+      </Link>
+    );
+  }
+
   if (isSolo) {
     return (
       <button
@@ -256,7 +288,7 @@ export default function EventRegistration({
           ? "Registering..."
           : "Register Now"}
         <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300">
-          <span className="absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/40 to-transparent blur-md" />
+          <span className="absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-linear-to-r from-transparent via-white/40 to-transparent blur-md" />
         </span>
       </button>
     );
@@ -280,7 +312,7 @@ export default function EventRegistration({
       >
         Create
         <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300">
-          <span className="absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/40 to-transparent blur-md" />
+          <span className="absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-linear-to-r from-transparent via-white/40 to-transparent blur-md" />
         </span>
       </button>
 
@@ -300,7 +332,7 @@ export default function EventRegistration({
       >
         <IoPeopleOutline /> Join Team
         <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300">
-          <span className="absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/40 to-transparent blur-md" />
+          <span className="absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-linear-to-r from-transparent via-white/40 to-transparent blur-md" />
         </span>
       </button>
 

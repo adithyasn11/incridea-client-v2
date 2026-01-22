@@ -10,12 +10,7 @@ export interface SignupPayload {
   collegeId?: number
   yearOfGraduation?: number
   idDocument?: string
-  accommodation?: {
-    gender: 'MALE' | 'FEMALE' | 'OTHER'
-    checkIn?: string
-    checkOut?: string
-    idProofUrl: string
-  }
+
 }
 
 export interface UserPayload {

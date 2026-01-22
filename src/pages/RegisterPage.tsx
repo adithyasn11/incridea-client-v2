@@ -6,6 +6,8 @@ import { fetchRegistrationConfig, type RegistrationConfigResponse } from '../api
 import { initiatePayment } from '../api/registration'
 import { fetchMe } from '../api/auth'
 import { showToast } from '../utils/toast'
+import { verifyPayment } from '../api/registration'
+import PaymentStatusModal from '../components/PaymentStatusModal'
 
 function RegisterPage() {
   const navigate = useNavigate()
@@ -47,12 +49,30 @@ function RegisterPage() {
   }, [isUserLoading, isUserError])
 
   const user = userData?.user
-  const [registrationOption, setRegistrationOption] = useState('')
+  
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean
+    status: 'success' | 'failure' | 'loading'
+    pid?: string | null
+  }>({
+    isOpen: false,
+    status: 'loading',
+    pid: null,
+  })
+
+  // Redirect if user already has PID and modal is closed
+  useEffect(() => {
+    if (user?.pid && !modalState.isOpen) {
+      navigate('/')
+    }
+  }, [user?.pid, modalState.isOpen, navigate])
 
   const { data: registrationConfig, isLoading: isConfigLoading } = useQuery<RegistrationConfigResponse>({
     queryKey: ['registration-config'],
     queryFn: fetchRegistrationConfig,
   })
+  
+  const [registrationOption, setRegistrationOption] = useState('')
 
   const computedSelection = useMemo(() => {
       if (!user) return 'NMAMIT';
@@ -178,11 +198,6 @@ function RegisterPage() {
              name: "Incridea'26 - Registration",
              description: 'Fest Registration',
              order_id: data.orderId,
-             handler: async function (response: any) {
-                 console.log(response)
-                 showToast('Payment Successful!', 'success')
-                 navigate('/')
-             },
              prefill: {
                  name: user?.name,
                  email: user?.email,
@@ -190,7 +205,68 @@ function RegisterPage() {
              },
              theme: {
                  color: '#460c78' 
-             }
+             },
+             handler: async function (response: any) {
+                setModalState({ isOpen: true, status: 'loading' })
+                try {
+                  await verifyPayment({
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature,
+                  })
+                  const { data: updatedUser } = await refetchUser()
+                  if (updatedUser?.user?.pid) {
+                    setModalState({
+                      isOpen: true,
+                      status: 'success',
+                      pid: updatedUser.user.pid,
+                    })
+                  } else {
+                     setModalState({
+                      isOpen: true,
+                      status: 'failure',
+                      pid: null,
+                    })
+                  }
+                } catch (error) {
+                  console.error(error)
+                   setModalState({
+                      isOpen: true,
+                      status: 'failure',
+                      pid: null,
+                    })
+                }
+              },
+              modal: {
+                ondismiss: async function () {
+                   const { data: updatedUser } = await refetchUser()
+                    if (updatedUser?.user?.pid) {
+                      setModalState({
+                        isOpen: true,
+                        status: 'success',
+                        pid: updatedUser.user.pid,
+                      })
+                      // The useEffect will handle the redirect when modal needs to close?
+                      // Actually, if modal is open, we stay.
+                      // ondismiss is called when user closes the payment popup (NOT the success modal we built).
+                      // Wait, `modal` in options refers to Razorpay modal.
+                      // If user dismisses Razorpay modal, we might want to check status or just do nothing.
+                      // The code here was setting modalState (our modal).
+                      // If user closed Razorpay without paying, we might show failure or just nothing.
+                      // If they paid but something happened... 
+                      
+                      // existing logic: checks if PID exists (maybe webhook updated it?) and shows success.
+                      // otherwise shows failure.
+                      
+                    } else {
+                       setModalState({
+                        isOpen: true,
+                        status: 'failure',
+                        pid: null,
+                      })
+                    }
+                },
+              },
          }
          
          const paymentObject = new (window as any).Razorpay(options)
@@ -276,6 +352,12 @@ function RegisterPage() {
              Complete Registration
            </button>
       </div>
+      <PaymentStatusModal
+        isOpen={modalState.isOpen}
+        onClose={() => setModalState({ ...modalState, isOpen: false })}
+        status={modalState.status}
+        pid={modalState.pid}
+      />
     </section>
   )
 }

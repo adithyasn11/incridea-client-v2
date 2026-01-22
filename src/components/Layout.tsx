@@ -24,7 +24,7 @@ function Layout() {
     localStorage.removeItem('userId')
     setToken(null)
     setUserName(null)
-    window.location.href = `${import.meta.env.VITE_AUTH_URL}/`
+
   }
 
   const fetchProfile = async () => {

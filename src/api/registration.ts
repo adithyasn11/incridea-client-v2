@@ -1,12 +1,15 @@
 import apiClient from './client'
 
 export interface TeamMember {
-  userId: number
+  id: number
+  pidId: number
   teamId: number
-  User?: {
-    id: number
-    name: string
-    email: string
+  PID?: {
+    User: {
+      id: number
+      name: string
+      email: string
+    }
   }
 }
 
@@ -17,6 +20,13 @@ export interface Team {
   leaderId: number
   confirmed: boolean
   TeamMembers: TeamMember[]
+  Leader?: {
+    User: {
+      id: number
+      name: string
+      email: string
+    }
+  }
 }
 
 export async function registerSoloEvent(eventId: number) {
@@ -66,5 +76,14 @@ export interface PaymentInitiateResponse {
 
 export async function initiatePayment(registrationId: string) {
   const { data } = await apiClient.post<PaymentInitiateResponse>('/payment/initiate', { registrationId })
+  return data
+}
+
+export async function verifyPayment(paymentDetails: {
+  razorpay_order_id: string
+  razorpay_payment_id: string
+  razorpay_signature: string
+}) {
+  const { data } = await apiClient.post<{ status: string; message: string }>('/payment/verify', paymentDetails)
   return data
 }

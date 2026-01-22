@@ -9,12 +9,7 @@ interface NavbarProps {
   isLoading: boolean;
 }
 
-const Navbar = ({
-  token,
-  userName,
-  onLogout,
-  isLoading,
-}: NavbarProps) => {
+const Navbar = ({ token, userName, onLogout, isLoading }: NavbarProps) => {
   return (
     <div className="fixed top-0 left-0 w-full z-50 px-4 md:px-14 py-2 md:py-4 grid grid-cols-3 items-start bg-transparent">
       {/* Logo */}
@@ -49,8 +44,8 @@ const Navbar = ({
         {token ? (
           <div className="flex items-center gap-2 md:gap-4">
             <a
-              href={`${import.meta.env.VITE_DASHBOARD_URL}/profile`}
-              className="hidden lg:flex items-center gap-2 text-white hover:text-purple-300 transition-colors font-['Orbitron'] text-sm cursor-target whitespace-nowrap"
+              href={`${import.meta.env.VITE_MAIN_URL}/profile`}
+              className="hidden md:flex items-center gap-2 text-white hover:text-purple-300 transition-colors font-['Orbitron'] text-sm  cursor-target"
               title="Profile"
             >
               <User size={18} />

@@ -13,7 +13,7 @@ import { showToast } from "../utils/toast";
 import EventRegistration from "../components/events/EventRegistration";
 import EventDetails from "../components/events/EventDetails";
 import { formatDate as formatDateIST } from "../utils/date";
-import Glass from "../components/ui/Glass";
+import LiquidGlassCard from "../components/liquidglass/LiquidGlassCard";
 
 function parseIdFromSlug(slug: string | undefined) {
   if (!slug) {
@@ -169,181 +169,179 @@ function EventDetailPage() {
           }`}
         </style>
 
-      <div className="relative mx-auto w-full max-w-6xl px-4 py-6 sm:py-8 space-y-6 sm:space-y-8">
-        <RouterLink
-          to="/events"
-          className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/15 hover:border-white/30 hover:shadow-[0_0_20px_rgba(14,165,233,0.25)] transition-all duration-300"
-          title="Back to events"
-        >
-          <AiOutlineArrowLeft className="text-sky-300 text-lg sm:text-xl hover:text-sky-200" />
-        </RouterLink>
+        <div className="relative mx-auto w-[95%] md:w-[72%] lg:w-[82%] xl:w-full max-w-[1000px] xl:max-w-6xl px-4 md:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+          <RouterLink
+            to="/events"
+            className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/15 hover:border-white/30 hover:shadow-[0_0_20px_rgba(14,165,233,0.25)] transition-all duration-300"
+            title="Back to events"
+          >
+            <AiOutlineArrowLeft className="text-sky-300 text-lg sm:text-xl hover:text-sky-200" />
+          </RouterLink>
 
-        {/* GLASS CONTAINER: Event Header + Description + Coordinators */}
-        <Glass className="w-full">
-          {/* Event Header Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(280px,340px)_1fr] gap-3 sm:gap-4 lg:gap-6 p-0 sm:p-2 lg:p-4 border-b border-white/10">
-            {/* LEFT: Poster Card */}
-            <div className="rounded-xl sm:rounded-2xl border border-white/15 overflow-hidden shadow-xl max-w-full">
-              <div className="relative aspect-4/5 w-full bg-linear-to-b from-white/20 to-black/40">
-                {event.image ? (
-                  <img
-                    src={event.image}
-                    alt={event.name}
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-linear-to-b from-white/60 via-white/25 to-black/70 flex items-center justify-center text-black/40">
-                    <div className="text-center text-sm">
-                      <div className="font-semibold">Portrait</div>
-                      <div>1080 × 1350 px (4:5)</div>
+          {/* GLASS CONTAINER: Event Header + Description + Coordinators */}
+          <LiquidGlassCard className="w-full">
+            {/* Event Header Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(280px,340px)_1fr] gap-3 sm:gap-4 lg:gap-6 p-0 sm:p-2 lg:p-4 border-b border-white/10">
+              {/* LEFT: Poster Card */}
+              <div className="rounded-xl sm:rounded-2xl border border-white/15 overflow-hidden shadow-xl max-w-full">
+                <div className="relative aspect-4/5 w-full bg-linear-to-b from-white/20 to-black/40">
+                  {event.image ? (
+                    <img
+                      src={event.image}
+                      alt={event.name}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-linear-to-b from-white/60 via-white/25 to-black/70 flex items-center justify-center text-black/40">
+                      <div className="text-center text-sm">
+                        <div className="font-semibold">Portrait</div>
+                        <div>1080 × 1350 px (4:5)</div>
+                      </div>
                     </div>
+                  )}
+                </div>
+              </div>
+
+              {/* RIGHT: Event Info */}
+              <div className="flex flex-col justify-between h-full">
+                {/* Category & Title */}
+                <div>
+                  <div className="inline-block px-4 py-2 rounded-2xl bg-slate-700/40 border border-white/20 mb-3">
+                    <p className="text-sm sm:text-base lg:text-lg uppercase tracking-wider text-yellow-400 font-bold italic">
+                      {event.category?.replaceAll("_", " ")}
+                    </p>
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* RIGHT: Event Info */}
-            <div className="flex flex-col justify-between h-full">
-              {/* Category & Title */}
-              <div>
-                <div className="inline-block px-4 py-2 rounded-2xl bg-slate-700/40 border border-white/20 mb-3">
-                  <p className="text-sm sm:text-base lg:text-lg uppercase tracking-wider text-yellow-400 font-bold italic">
-                    {event.category?.replaceAll("_", " ")}
-                  </p>
+                  <h1
+                    className="mt-1 sm:mt-2 text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight"
+                    style={{ fontFamily: "'New Rocker', cursive" }}
+                  >
+                    {event.name}
+                  </h1>
                 </div>
-                <h1
-                  className="mt-1 sm:mt-2 text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight"
-                  style={{ fontFamily: "'New Rocker', cursive" }}
-                >
-                  {event.name}
-                </h1>
-              </div>
 
-              {/* Key Details Grid */}
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-5 sm:gap-x-6 gap-y-2 sm:gap-y-6">
-                <InfoPill
-                  label="Event Type"
-                  value={formatEventType(event.eventType)}
-                />
-                <InfoPill
-                  label="Starts"
-                  value={
-                    event.rounds?.[0]?.date
-                      ? formatDateIST(event.rounds[0].date)
-                      : "TBD"
-                  }
-                />
-                <InfoPill
-                  label="Ends"
-                  value={
-                    event.rounds?.at(-1)?.date
-                      ? formatDateIST(event.rounds.at(-1)!.date)
-                      : "TBD"
-                  }
-                />
-                <InfoPill
-                  label="Team Size"
-                  value={formatTeamSize(event.minTeamSize, event.maxTeamSize)}
-                />
-                <InfoPill label="Venue" value={event.venue ?? "TBA"} />
-                <InfoPill
-                  label="Fee"
-                  value={event.fees ? `₹${event.fees}` : "Free"}
-                />
-                <InfoPill
-                  label="Capacity"
-                  value={event.maxTeams ? `${event.maxTeams}` : "Unlimited"}
-                />
-              </div>
+                {/* Key Details Grid */}
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-5 sm:gap-x-6 gap-y-2 sm:gap-y-6">
+                  <InfoPill
+                    label="Event Type"
+                    value={formatEventType(event.eventType)}
+                  />
+                  <InfoPill
+                    label="Starts"
+                    value={
+                      event.rounds?.[0]?.date
+                        ? formatDateIST(event.rounds[0].date)
+                        : "TBD"
+                    }
+                  />
+                  <InfoPill
+                    label="Ends"
+                    value={
+                      event.rounds?.at(-1)?.date
+                        ? formatDateIST(event.rounds.at(-1)!.date)
+                        : "TBD"
+                    }
+                  />
+                  <InfoPill
+                    label="Team Size"
+                    value={formatTeamSize(event.minTeamSize, event.maxTeamSize)}
+                  />
+                  <InfoPill label="Venue" value={event.venue ?? "TBA"} />
+                  <InfoPill
+                    label="Fee"
+                    value={event.fees ? `₹${event.fees}` : "Free"}
+                  />
+                  <InfoPill
+                    label="Capacity"
+                    value={event.maxTeams ? `${event.maxTeams}` : "Unlimited"}
+                  />
+                </div>
 
-              {/* Action Buttons */}
-              <div className="pt-1 sm:pt-2">
-                <EventRegistration
-                  fees={event.fees ?? 0}
-                  eventId={event.id}
-                  type={event.eventType}
-                />
+                {/* Action Buttons */}
+                <div className="pt-1 sm:pt-2">
+                  <EventRegistration
+                    fees={event.fees ?? 0}
+                    eventId={event.id}
+                    type={event.eventType}
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Description + Coordinators Section */}
-          <div className="px-2 sm:px-4 lg:px-6 py-6 sm:py-10 lg:py-12 space-y-8 sm:space-y-12 lg:space-y-16">
-            {/* Description Section */}
-            <div className="space-y-3 sm:space-y-6">
-              <div className="flex items-center justify-center gap-4">
-                <div className="h-1 w-16 rounded-full bg-linear-to-r from-teal-500 to-cyan-500" />
-                <h2
-                  className="text-2xl sm:text-4xl font-bold text-white text-center leading-tight"
+            {/* Description + Coordinators Section */}
+            <div className="px-2 sm:px-4 lg:px-6 py-6 sm:py-10 lg:py-12 space-y-8 sm:space-y-12 lg:space-y-16">
+              {/* Description Section */}
+              <div className="space-y-3 sm:space-y-6">
+                <div className="flex items-center justify-center gap-4">
+                  <div className="h-1 w-16 rounded-full bg-linear-to-r from-teal-500 to-cyan-500" />
+                  <h2
+                    className="text-2xl sm:text-4xl font-bold text-white text-center leading-tight"
+                    style={{ fontFamily: "'Macondo', cursive" }}
+                  >
+                    Description
+                  </h2>
+                  <div className="h-1 w-16 rounded-full bg-linear-to-r from-teal-500 to-cyan-500" />
+                </div>
+
+                <div
+                  className="prose prose-invert prose-slate max-w-none text-center"
                   style={{ fontFamily: "'Macondo', cursive" }}
                 >
-                  Description
-                </h2>
-                <div className="h-1 w-16 rounded-full bg-linear-to-r from-teal-500 to-cyan-500" />
+                  <EventDetails details={event.description ?? ""} />
+                </div>
               </div>
 
-              <div
-                className="prose prose-invert prose-slate max-w-none text-center"
-                style={{ fontFamily: "'Macondo', cursive" }}
-              >
-                <EventDetails details={event.description ?? ""} />
-              </div>
-            </div>
+              {/* Divider */}
+              <div className="h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
-            {/* Divider */}
-            <div className="h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
-
-            {/* Event Coordinators Section */}
-            <div className="space-y-3 sm:space-y-8">
-              <div className="flex items-center justify-center gap-4">
-                <div className="h-1 w-12 sm:w-16 rounded-full bg-linear-to-r from-pink-500 to-rose-500" />
-                <h2
-                  className="text-lg sm:text-4xl font-bold text-white text-center leading-tight"
-                  style={{ fontFamily: "'Macondo', cursive" }}
-                >
-                  Event Coordinators
-                </h2>
-                <div className="h-1 w-12 sm:w-16 rounded-full bg-linear-to-r from-pink-500 to-rose-500" />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-8 max-w-2xl mx-auto">
-                <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-xl border border-white/15 bg-white/8 backdrop-blur-sm hover:border-pink-500/40 hover:shadow-[0_0_20px_rgba(236,72,153,0.15)] transition-all">
-                  <p className="text-base sm:text-lg font-semibold text-white">
-                    Coordinator 1
-                  </p>
-                  <a
-                    href="tel:+91 0000000000"
-                    className="flex items-center gap-2 text-xs sm:text-sm text-white/80 hover:text-pink-300 transition-colors group"
+              {/* Event Coordinators Section */}
+              <div className="space-y-3 sm:space-y-8">
+                <div className="flex items-center justify-center gap-4">
+                  <div className="h-1 w-12 sm:w-16 rounded-full bg-linear-to-r from-pink-500 to-rose-500" />
+                  <h2
+                    className="text-lg sm:text-4xl font-bold text-white text-center leading-tight"
+                    style={{ fontFamily: "'Macondo', cursive" }}
                   >
-                    <span className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 bg-pink-500/30 rounded group-hover:bg-pink-500/50 transition-colors">
-                      <AiOutlinePhone className="text-pink-400 text-xs" />
-                    </span>
-                    <span>+91 0000000000</span>
-                  </a>
+                    Event Coordinators
+                  </h2>
+                  <div className="h-1 w-12 sm:w-16 rounded-full bg-linear-to-r from-pink-500 to-rose-500" />
                 </div>
 
-                <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-xl border border-white/15 bg-white/8 backdrop-blur-sm hover:border-pink-500/40 hover:shadow-[0_0_20px_rgba(236,72,153,0.15)] transition-all">
-                  <p className="text-base sm:text-lg font-semibold text-white">
-                    Coordinator 2
-                  </p>
-                  <a
-                    href="tel:+91 0000000000"
-                    className="flex items-center gap-2 text-xs sm:text-sm text-white/80 hover:text-pink-300 transition-colors group"
-                  >
-                    <span className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 bg-pink-500/30 rounded group-hover:bg-pink-500/50 transition-colors">
-                      <AiOutlinePhone className="text-pink-400 text-xs" />
-                    </span>
-                    <span>+91 0000000000</span>
-                  </a>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-8 max-w-2xl mx-auto">
+                  <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-xl border border-white/15 bg-white/8 backdrop-blur-sm hover:border-pink-500/40 hover:shadow-[0_0_20px_rgba(236,72,153,0.15)] transition-all">
+                    <p className="text-base sm:text-lg font-semibold text-white">
+                      Coordinator 1
+                    </p>
+                    <a
+                      href="tel:+91 0000000000"
+                      className="flex items-center gap-2 text-xs sm:text-sm text-white/80 hover:text-pink-300 transition-colors group"
+                    >
+                      <span className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 bg-pink-500/30 rounded group-hover:bg-pink-500/50 transition-colors">
+                        <AiOutlinePhone className="text-pink-400 text-xs" />
+                      </span>
+                      <span>+91 0000000000</span>
+                    </a>
+                  </div>
+
+                  <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-xl border border-white/15 bg-white/8 backdrop-blur-sm hover:border-pink-500/40 hover:shadow-[0_0_20px_rgba(236,72,153,0.15)] transition-all">
+                    <p className="text-base sm:text-lg font-semibold text-white">
+                      Coordinator 2
+                    </p>
+                    <a
+                      href="tel:+91 0000000000"
+                      className="flex items-center gap-2 text-xs sm:text-sm text-white/80 hover:text-pink-300 transition-colors group"
+                    >
+                      <span className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 bg-pink-500/30 rounded group-hover:bg-pink-500/50 transition-colors">
+                        <AiOutlinePhone className="text-pink-400 text-xs" />
+                      </span>
+                      <span>+91 0000000000</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Glass>
-
-
-      </div>
-    </section>
+          </LiquidGlassCard>
+        </div>
+      </section>
     </>
   );
 }
