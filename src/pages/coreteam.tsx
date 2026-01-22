@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import Slideshow from '../components/slideshow/slideshow'
 import CoreTeamCard from '../components/core-teamcard'
+import MovieCredits from '../components/MovieCredits'
 
 // Sample team members data - replace with actual data
 const teamMembers = [
@@ -11,6 +12,22 @@ const teamMembers = [
   { imageSrc: '/chill.jpg', title: 'Adithya SN', subtitle: 'Event Coordinator' },
   { imageSrc: '/chill.jpg', title: 'Adithya SN', subtitle: 'Tech Lead' },
   { imageSrc: '/chill.jpg', title: 'Adithya SN', subtitle: 'Tech Lead' },
+];
+
+// Credits data for other committees
+const creditsData = [
+  {
+    title: 'Requirement Committee',
+    members: Array(28).fill('Adithya S Nayak')
+  },
+  {
+    title: 'Tech Team',
+    members: Array(28).fill('Adithya S Nayak')
+  },
+  {
+    title: 'Event Management',
+    members: Array(28).fill('Adithya S Nayak')
+  },
 ];
 
 export default function CoreTeamPage() {
@@ -63,6 +80,11 @@ export default function CoreTeamPage() {
               subtitle={member.subtitle}
             />
           ))}
+        </div>
+
+        {/* Movie Credits Section */}
+        <div className="w-full mt-5">
+          <MovieCredits sections={creditsData} />
         </div>
       </section>
     </>

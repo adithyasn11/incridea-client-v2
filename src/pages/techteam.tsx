@@ -114,12 +114,12 @@ export default function TechTeamPage() {
         <div className="relative pt-20 flex flex-col items-center justify-center w-full">
           {/* Animated Title - Fade Up */}
           <motion.h1
-            className="font-['Michroma'] text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-20 md:mb-24 bg-gradient-to-b from-white via-white to-transparent bg-clip-text text-transparent tracking-wider text-center whitespace-nowrap"
+            className="font-['Michroma'] text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-4 md:mb-6 bg-gradient-to-b from-white via-white to-transparent bg-clip-text text-transparent tracking-wider text-center whitespace-nowrap"
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 1,
-              ease: "easeOut", 
+              ease: "easeOut",
               delay: 0.5
             }}
           >

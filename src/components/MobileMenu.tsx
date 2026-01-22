@@ -73,7 +73,7 @@ const MobileMenu = ({ onLogout, isAuthenticated }: MobileMenuProps) => {
                                             }`
                                         }
                                     >
-                                        {({ isActive }) => (
+                                        {() => (
                                             <>
                                                 <span className="absolute inset-0 bg-violet-600/20 -skew-x-12 transition-transform duration-300 -translate-x-[120%] group-hover:translate-x-0" />
                                                 <span className="relative z-10 flex items-center gap-4">
