@@ -68,7 +68,7 @@ function ContactPage() {
           </div>
 
           <div className="overflow-hidden rounded-2xl border border-slate-800 shadow-xl shadow-slate-950/40">
-            <div className="aspect-[16/9] w-full">
+            <div className="aspect-video w-full">
               <iframe
                 title="NMAMIT Location"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3884.6730538655893!2d74.92911808195412!3d13.183002554024787!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bbb56415ad85e5b%3A0x10b77ac6f6afc7fa!2sNitte%20Mahalinga%20Adyantaya%20Memorial%20Institute%20of%20Technology!5e0!3m2!1sen!2sin!4v1738765768735!5m2!1sen!2sin"

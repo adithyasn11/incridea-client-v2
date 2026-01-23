@@ -14,6 +14,7 @@ import PrivacyPage from '../pages/PrivacyPage.tsx'
 import RulesPage from '../pages/RulesPage.tsx'
 import QuizPage from '../pages/QuizPage.tsx'
 import RegisterPage from '../pages/RegisterPage.tsx'
+import ProfilePage from '../pages/ProfilePage.tsx'
 
 const AuthRedirect = () => {
     const params = new URLSearchParams(window.location.search)
@@ -50,7 +51,7 @@ function AppRoutes() {
         <Route path="/login" element={<AuthRedirect />} />
         <Route path="/reset-password" element={<ResetRedirect />} />
         <Route path="/quiz/:quizId" element={<QuizPage />} />
-
+        <Route path='/profile' element={<ProfilePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/test" element={<TestPage />} />
       </Route>
