@@ -44,7 +44,7 @@ const Navbar = ({ token, userName, onLogout, isLoading }: NavbarProps) => {
         {token ? (
           <div className="flex items-center gap-2 md:gap-4">
             <a
-              href={`${import.meta.env.VITE_MAIN_URL}/profile`}
+              href={`/profile`}
               className="hidden md:flex items-center gap-2 text-white hover:text-purple-300 transition-colors font-['Orbitron'] text-sm  cursor-target"
               title="Profile"
             >
