@@ -42,6 +42,7 @@ export interface PublicEvent {
   eventType: PublicEventType
   category: PublicEventCategory
   rounds: PublicEventRound[]
+  day: ('Day1' | 'Day2' | 'Day3' | 'Day4')[]
 }
 
 export interface PublicEventOrganiser {

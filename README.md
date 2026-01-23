@@ -1,73 +1,95 @@
-# React + TypeScript + Vite
+# Incridea Client v2
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Incridea Client v2 is the frontend application powering **Incridea**, the annual techno-cultural fest organized by NMAM Institute of Technology.  
+This repository contains the client-side codebase built with **React**, **TypeScript**, and **Tailwind CSS**, designed to deliver a modern, responsive, and interactive user experience for event browsing, registrations, and participant engagement.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+- **React + TypeScript** for scalable and type-safe frontend development
+- **Tailwind CSS** for rapid UI styling and responsive design
+- **React Router** for seamless navigation across pages
+- **Axios** integration for API communication with the backend
+- **Reusable components** for consistent UI/UX
+- Environment configuration via `.env` file
+- Ready-to-deploy setup with **Vercel/VPS**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 📂 Project Structure
+incridea-client-v2/
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+├── public/                # Static assets (images, icons, etc.)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+├── src/                   # Application source code  
+│   ├── components/        # Reusable UI components  
+│   ├── pages/             # Page-level components  
+│   ├── hooks/             # Custom React hooks  
+│   ├── utils/             # Helper functions  
+│   ├── App.tsx            # Root component  
+│   └── index.tsx          # Entry point  
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+├── .env.example           # Example environment variables  
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+├── package.json           # Dependencies and scripts  
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+├── tsconfig.json          # TypeScript configuration  
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+└── README.md              # Project documentation  
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+## ⚙️ Tech Stack
+
+- **Language:** TypeScript
+- **Framework:** React
+- **Styling:** Tailwind CSS
+- **Routing:** React Router
+- **API Communication:** Axios
+- **Deployment:** Vercel / VPS
+
+---
+
+## 🔧 Setup Instructions
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Incridea-NMAMIT/incridea-client-v2.git
+   cd incridea-client-v2
+2. **Install Dependencies**
+   ```bash
+   npm install
+3. **Configure environment variables**
+    - Copy .env.example to .env
+4. **Start development server**
+   ```bash
+   npm run dev
+
+**📡 Integration**
+
+The client communicates with the Incridea Server v2 backend via RESTful APIs to:
+
+Fetch event details
+
+Handle user registrations
+
+Manage participant dashboards
+
+Provide admin interfaces (if enabled)
+
+**🛠 Scripts**
+
+npm run dev – Start development server
+
+npm run build – Build production-ready files
+
+npm run preview – Preview production build locally
+
+npm run lint – Run ESLint checks
+
+
+**📜 License**
+
+This project is licensed under the MIT License.
+You are free to use, modify, and distribute this software in compliance with the license terms.

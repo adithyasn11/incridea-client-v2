@@ -76,18 +76,29 @@ function EventsPage() {
       const matchesQuery = event.name.toLowerCase().includes(searchTerm);
       const matchesCategory =
         categoryFilter === "ALL" || event.category === categoryFilter;
-      const selectedDayIso = activeDayKey
-        ? dayConfig?.[activeDayKey] ?? null
-        : null;
-      const matchesDay = !selectedDayIso
-        ? true
-        : event.rounds.some((round) => {
-            if (!round.date) return false;
-            return isSameUtcDay(new Date(round.date), new Date(selectedDayIso));
-          });
+      
+      const selectedDayLabel = DAY_FILTERS.find((d) => d.label === dayFilter);
+      let matchesDay = true;
+      if (dayFilter !== "All" && selectedDayLabel) {
+         // Map day1 to Day1, day2 to Day2 etc.
+         const dayEnum = selectedDayLabel.key.replace("day", "Day"); 
+         if (event.day && Array.isArray(event.day)) {
+            matchesDay = event.day.includes(dayEnum as any);
+         } else {
+             // Fallback or legacy check if day is somehow missing (though it shouldn't be with proper types)
+             const selectedDayIso = activeDayKey ? dayConfig?.[activeDayKey] ?? null : null;
+             matchesDay = !selectedDayIso
+             ? true
+             : event.rounds.some((round) => {
+                 if (!round.date) return false;
+                 return isSameUtcDay(new Date(round.date), new Date(selectedDayIso));
+               });
+         }
+      }
+
       return matchesQuery && matchesCategory && matchesDay;
     });
-  }, [dayConfig, events, categoryFilter, activeDayKey, query]);
+  }, [dayConfig, events, categoryFilter, activeDayKey, query, dayFilter]);
 
   if (isLoading) {
     return (
@@ -146,19 +157,20 @@ function EventsPage() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {CATEGORY_FILTERS.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setCategoryFilter(category)}
-                  className={`rounded-full border px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all ${
-                    categoryFilter === category
-                      ? "border-sky-500 bg-sky-500/20 text-sky-300"
-                      : "border-white/5 bg-white/5 text-slate-400 hover:border-white/20"
-                  }`}
-                >
-                  {category === "ALL" ? "All" : category.replace("_", " ")}
-                </button>
-              ))}
+              <div className="flex items-center gap-2">
+                 <span className="text-sm font-semibold text-slate-400">Category:</span>
+                 <select
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value as PublicEventCategory | "ALL")}
+                    className="bg-slate-950/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500/50 transition-all"
+                  >
+                    {CATEGORY_FILTERS.map((category) => (
+                      <option key={category} value={category}>
+                        {category === "ALL" ? "All" : category.replace("_", " ")}
+                      </option>
+                    ))}
+                  </select>
+              </div>
             </div>
           </div>
         </Glass>

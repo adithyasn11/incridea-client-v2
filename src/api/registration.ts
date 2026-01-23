@@ -79,11 +79,42 @@ export async function initiatePayment(registrationId: string) {
   return data
 }
 
-export async function verifyPayment(paymentDetails: {
-  razorpay_order_id: string
-  razorpay_payment_id: string
-  razorpay_signature: string
-}) {
-  const { data } = await apiClient.post<{ status: string; message: string }>('/payment/verify', paymentDetails)
+
+export async function verifyPaymentSignature(response: any) {
+  const { data } = await apiClient.post<any>('/payment/verify', response)
   return data
+}
+
+export async function getPaymentStatus() {
+  try {
+     const { data } = await apiClient.get<any>('/payment/my-status')
+     if (data.status === 'success' && data.pid && data.receipt) {
+         return { 
+           status: 'success', 
+           message: 'Payment verified', 
+           pid: data.pid, 
+           receipt: data.receipt, 
+           processingStep: 'COMPLETED'
+         }
+     }
+     if (data.status === 'processing' || data.status === 'pending') {
+        return {
+          status: 'pending',
+          message: data.message || 'Processing...',
+          processingStep: data.processingStep,
+          receipt: data.receipt,
+          pid: data.pid
+        }
+     }
+     if (data.status === 'failed') {
+         return {
+             status: 'failed',
+             message: data.message || 'Payment Verification Failed',
+             processingStep: null
+         }
+     }
+  } catch (e) {
+    // Ignore error
+  }
+  return { status: 'pending', message: 'Payment verification pending', processingStep: null }
 }

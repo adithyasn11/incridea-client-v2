@@ -245,12 +245,29 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
 
     window.addEventListener('mouseover', enterHandler as EventListener);
 
+    const handleDocLeave = () => {
+      if (cursorRef.current) {
+        gsap.to(cursorRef.current, { opacity: 0, duration: 0.2 });
+      }
+    };
+
+    const handleDocEnter = () => {
+      if (cursorRef.current) {
+        gsap.to(cursorRef.current, { opacity: 1, duration: 0.2 });
+      }
+    };
+
+    document.addEventListener('mouseleave', handleDocLeave);
+    document.addEventListener('mouseenter', handleDocEnter);
+
     return () => {
       if (tickerFnRef.current) {
         gsap.ticker.remove(tickerFnRef.current);
       }
       window.removeEventListener('mousemove', moveHandler);
       window.removeEventListener('mouseover', enterHandler as EventListener);
+      document.removeEventListener('mouseleave', handleDocLeave);
+      document.removeEventListener('mouseenter', handleDocEnter);
       window.removeEventListener('scroll', scrollHandler);
       window.removeEventListener('mousedown', mouseDownHandler);
       window.removeEventListener('mouseup', mouseUpHandler);

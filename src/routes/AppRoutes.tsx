@@ -17,6 +17,23 @@ import RegisterPage from "../pages/RegisterPage.tsx";
 import AccommodationPage from '../pages/AccommodationPage.tsx'
 import TechTeamPage from '../pages/techteam.tsx'
 import CoreTeamPage from '../pages/coreteam.tsx'
+import { Route, Routes } from 'react-router-dom'
+import Layout from '../components/Layout.tsx'
+import HomePage from '../pages/HomePage.tsx'
+import NotFoundPage from '../pages/NotFoundPage.tsx'
+import ContactPage from '../pages/ContactPage.tsx'
+import AboutPage from '../pages/AboutPage.tsx'
+import RefundPage from '../pages/RefundPage.tsx'
+import GuidelinesPage from '../pages/GuidelinesPage.tsx'
+import EventsPage from '../pages/EventsPage.tsx'
+import EventDetailPage from '../pages/EventDetailPage.tsx'
+
+import PrivacyPage from '../pages/PrivacyPage.tsx'
+import RulesPage from '../pages/RulesPage.tsx'
+import QuizPage from '../pages/QuizPage.tsx'
+import RegisterPage from '../pages/RegisterPage.tsx'
+import AccommodationPage from '../pages/AccommodationPage.tsx'
+import ProfilePage from '../pages/ProfilePage.tsx'
 
 const AuthRedirect = () => {
   const params = new URLSearchParams(window.location.search);

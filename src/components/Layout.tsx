@@ -3,28 +3,31 @@ import { useEffect, useState } from 'react'
 import Navbar from './Navbar'
 
 import { logoutUser, fetchMe } from '../api/auth'
+import { useSocket } from '../hooks/useSocket'
 
 
 function Layout() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('userName') ? 'logged-in' : null)
   const [userName, setUserName] = useState<string | null>(localStorage.getItem('userName'))
   const [isLoading, setIsLoading] = useState(true)
+  const { socket } = useSocket()
 
 
   // Removed direct localStorage monitoring as we rely on server session
-
-  const handleLogout = async () => {
-    try {
-      await logoutUser()
-    } catch (error) {
-      console.error('Logout failed', error)
-    }
+  // But for logout, we should clear it immediately for better UX
+  
+  const handleLogout = () => {
+    // Clear local state immediately
     localStorage.removeItem('token')
     localStorage.removeItem('userName')
     localStorage.removeItem('userId')
     setToken(null)
     setUserName(null)
 
+    // Fire API call
+    logoutUser().catch((error) => {
+      console.error('Logout failed', error)
+    })
   }
 
   const fetchProfile = async () => {
@@ -62,6 +65,22 @@ function Layout() {
     }
 
   useEffect(() => {
+    if (!socket) return
+
+    const handleAuthEvent = () => {
+      void fetchProfile()
+    }
+
+    socket.on('auth:login', handleAuthEvent)
+    socket.on('auth:logout', handleAuthEvent)
+
+    return () => {
+      socket.off('auth:login', handleAuthEvent)
+      socket.off('auth:logout', handleAuthEvent)
+    }
+  }, [socket])
+
+  useEffect(() => {
     void fetchProfile()
 
     const handleStorageChange = (event: StorageEvent) => {
@@ -85,6 +104,17 @@ function Layout() {
         window.removeEventListener('focus', handleFocus)
     }
   }, [])
+
+  if (isLoading) {
+    return (
+        <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-slate-50">
+            <div className="text-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-purple-500 mx-auto mb-4"></div>
+                <p>Loading...</p>
+            </div>
+        </div>
+    )
+  }
 
   return (
     <div className={`flex min-h-screen flex-col text-slate-50`}>

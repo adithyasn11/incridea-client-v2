@@ -21,6 +21,10 @@
 			"path": "../../../incridea-dashboard"
 		},
 		{
+			"name": "incridea-cultural",
+			"path": "../../../incridea-cultural"
+		},
+		{
 			"name": "incridea-client-main",
 			"path": "C:/Users/dnshi/Downloads/Softwares/incridea-client-main/incridea-client-main"
 		},

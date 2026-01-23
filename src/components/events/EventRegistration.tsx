@@ -137,6 +137,34 @@ export default function EventRegistration({
     return <div className="text-center text-slate-400">Loading status...</div>;
   }
 
+  if (token && !isFestRegistered) {
+    return (
+      <Link to="/register" className="w-full">
+        <button
+          className="group flex w-full shrink-0 items-center justify-center gap-2 rounded-full
+            px-6 py-2.5 capitalize text-white font-semibold
+            bg-teal-600 border border-teal-500
+            backdrop-blur-2xl
+            shadow-[0_8px_30px_rgba(0,0,0,0.35)]
+            hover:bg-teal-500 hover:border-teal-400 hover:shadow-[0_0_20px_rgba(20,184,166,0.25)]
+            transition-all duration-300
+            active:scale-[0.98]
+            relative overflow-hidden"
+        >
+          Register to Incridea
+          <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300">
+            <span className="absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-linear-to-r from-transparent via-white/40 to-transparent blur-md" />
+          </span>
+        </button>
+      </Link>
+    );
+  }
+
+  // Hide registration for Alumni
+  if (userData?.user?.category === "ALUMNI" || userData?.user?.roles?.includes("ALUMNI")) {
+    return null;
+  }
+
   // Already registered/in a team
   if (team) {
     const isLeader = team.Leader?.User?.id === user.id;
@@ -244,28 +272,7 @@ export default function EventRegistration({
   // Not registered
   const isSolo = type === "INDIVIDUAL" || type === "INDIVIDUAL_MULTIPLE_ENTRY";
 
-  if (token && !isFestRegistered) {
-    return (
-      <Link to="/register" className="w-full">
-        <button
-          className="group flex w-full shrink-0 items-center justify-center gap-2 rounded-full
-            px-6 py-2.5 capitalize text-white font-semibold
-            bg-teal-600 border border-teal-500
-            backdrop-blur-2xl
-            shadow-[0_8px_30px_rgba(0,0,0,0.35)]
-            hover:bg-teal-500 hover:border-teal-400 hover:shadow-[0_0_20px_rgba(20,184,166,0.25)]
-            transition-all duration-300
-            active:scale-[0.98]
-            relative overflow-hidden"
-        >
-          Register to Incridea
-          <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300">
-            <span className="absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-linear-to-r from-transparent via-white/40 to-transparent blur-md" />
-          </span>
-        </button>
-      </Link>
-    );
-  }
+
 
   if (isSolo) {
     return (
