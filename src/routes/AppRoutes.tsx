@@ -1,4 +1,4 @@
-import { Layout } from "lucide-react";
+import Layout from "../components/Layout";
 import { Route, Routes } from "react-router";
 import HomePage from "../pages/HomePage";
 import ContactPage from "../pages/ContactPage";
