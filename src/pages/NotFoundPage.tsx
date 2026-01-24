@@ -14,18 +14,10 @@ function NotFoundPage() {
           }
 
           @keyframes float {
-            0%, 100% {
-              transform: translateY(0);
-            }
-            25% {
-              transform: translateY(15px);
-            }
-            50% {
-              transform: translateY(-15px);
-            }
-            75% {
-              transform: translateY(10px);
-            }
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(15px); }
+            50% { transform: translateY(-15px); }
+            75% { transform: translateY(10px); }
           }
 
           .floating-image {
@@ -34,6 +26,44 @@ function NotFoundPage() {
 
           .floating-text {
             animation: float 8s ease-in-out infinite;
+          }
+
+          /* Glitch Effect */
+          .glitch { position: relative; }
+          .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0.8;
+          }
+          .glitch::before {
+            color: #0ff;
+            z-index: -1;
+            animation: glitch-effect-1 3s infinite linear alternate-reverse;
+          }
+          .glitch::after {
+            color: #f0f;
+            z-index: -2;
+            animation: glitch-effect-2 2s infinite linear alternate-reverse;
+          }
+
+          @keyframes glitch-effect-1 {
+            0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px,0); }
+            20% { clip-path: inset(60% 0 10% 0); transform: translate(2px,0); }
+            40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px,0); }
+            60% { clip-path: inset(80% 0 5% 0); transform: translate(2px,0); }
+            80% { clip-path: inset(10% 0 70% 0); transform: translate(-2px,0); }
+            100% { clip-path: inset(30% 0 20% 0); transform: translate(2px,0); }
+          }
+
+          @keyframes glitch-effect-2 {
+            0% { clip-path: inset(10% 0 60% 0); transform: translate(2px,0); }
+            20% { clip-path: inset(30% 0 20% 0); transform: translate(-2px,0); }
+            40% { clip-path: inset(70% 0 10% 0); transform: translate(2px,0); }
+            60% { clip-path: inset(20% 0 50% 0); transform: translate(-2px,0); }
+            80% { clip-path: inset(50% 0 30% 0); transform: translate(2px,0); }
+            100% { clip-path: inset(0% 0 80% 0); transform: translate(-2px,0); }
           }
         `}
       </style>
@@ -45,33 +75,29 @@ function NotFoundPage() {
           backgroundPosition: "center",
         }}
       >
-        {/* Content Container */}
-        <div className="relative z-10 flex items-center justify-center gap-12 px-6">
-          {/* Image Section */}
-          <div className="flex-shrink-0 floating-image">
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 px-6">
+          <div className="flex-shrink-0 floating-image flex justify-center w-full md:w-auto">
             <img
+              /* I have updated this back to your JPEG name. 
+                 If this still fails, please rename your file to simply 'img.jpg' 
+                 and update this line to '/notfound/img.jpg' */
               src="/notfound/image1.png"
-              alt="404"
-              className="max-w-sm md:max-w-md"
+              alt="404 Access Denied"
+              className="w-full max-w-[280px] sm:max-w-sm md:max-w-md h-auto object-contain drop-shadow-2xl"
             />
           </div>
 
-          {/* Text Section */}
-          <div className="text-center flex flex-col items-center floating-text">
+          <div className="text-center md:text-left flex flex-col items-center md:items-start floating-text">
             <h1
-              className="text-7xl md:text-8xl font-bold mb-4 jersey-10-regular"
-              style={{
-                color: "#ffffff",
-                letterSpacing: "0.05em",
-              }}
+              className="text-7xl md:text-8xl font-bold mb-4 jersey-10-regular glitch"
+              data-text="404 Not Found"
+              style={{ color: "#ffffff", letterSpacing: "0.05em" }}
             >
               404 Not Found
             </h1>
             <p
               className="text-lg md:text-3xl mb-8 leading-relaxed max-w-md jersey-10-regular"
-              style={{
-                color: "#ffffff",
-              }}
+              style={{ color: "#ffffff" }}
             >
               Access denied: Ryouko sealed the rift,
               <br />

@@ -19,7 +19,7 @@ import {
 } from "../api/auth";
 import { useForm } from "react-hook-form";
 import { showToast } from "../utils/toast";
-import { Pencil, QrCode } from "lucide-react";
+import { Pencil, QrCode, X } from "lucide-react";
 import LiquidGlassCard from "../components/liquidglass/LiquidGlassCard";
 import InfiniteScroll from "../components/InfiniteScroll";
 
@@ -48,7 +48,7 @@ function ProfilePage() {
 
   useEffect(() => {
     if (!token) {
-      void navigate("/");
+      // void navigate("/");
     }
   }, [token, navigate]);
 
@@ -156,7 +156,8 @@ function ProfilePage() {
         {/* Profile Card */}
         <div className="w-full max-w-[92%] sm:max-w-[80%] md:max-w-[72%] lg:max-w-[65%] mt-4 px-2 sm:px-4">
           <div className="relative">
-            <LiquidGlassCard className="p-4 md:p-6">
+            <LiquidGlassCard className="p-4 md:p-6 rounded-3xl">
+              <div className="mt-4"></div>
               {/* Edit Profile Button */}
               <button
                 onClick={() => {
@@ -242,6 +243,7 @@ function ProfilePage() {
                   </div>
                 </div>
               </div>
+              <div className="mt-6"></div>
             </LiquidGlassCard>
           </div>
         </div>
@@ -250,9 +252,9 @@ function ProfilePage() {
         {/* TODO: Replace hardcoded missions with mapped events once signup events API is available. */}
         {/* Cards count should equal number of events user has signed up for. */}
         <div className="w-full max-w-[92%] sm:max-w-[80%] md:max-w-[72%] lg:max-w-[65%] mt-12">
-          <LiquidGlassCard className="p-6 md:p-8">
+          <LiquidGlassCard className="p-6 md:p-8 rounded-3xl">
             {/* Header */}
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-8 mt-4">
               <h2
                 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-400"
                 style={{ fontFamily: "'New Rocker', cursive" }}
@@ -292,10 +294,10 @@ function ProfilePage() {
               ].map((mission) => (
                 <LiquidGlassCard
                   key={mission.code}
-                  className="!w-49 !max-w-49 !p-4.5 flex flex-col gap-2"
+                  className="!w-49 !max-w-49 !p-4.5 flex flex-col gap-2 !rounded-3xl"
                 >
                   {/* Mission Image/Poster */}
-                  <div className="relative aspect-[4/5] w-full bg-linear-to-b from-white/20 to-black/40 rounded-xl overflow-hidden">
+                  <div className="relative aspect-[4/5] w-full bg-linear-to-b from-white/20 to-black/40 rounded-3xl overflow-hidden">
                     {mission.image ? (
                       <img
                         src={mission.image}
@@ -345,6 +347,7 @@ function ProfilePage() {
               pauseOnHover={true}
               autoScroll={false}
             />
+            <div className="mt-6"></div>
           </LiquidGlassCard>
         </div>
 
@@ -354,33 +357,33 @@ function ProfilePage() {
               className="
                 !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
                 !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
-                flex-none space-y-4 p-6
+                flex-none space-y-7 md:space-y-8 px-9 md:px-10 py-8 md:py-9 rounded-3xl
               "
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="muted">Your Profile</p>
-                  <h3 className="text-lg font-semibold text-slate-50">
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="pt-1">
+                  <h3 className="text-lg font-semibold text-slate-50 pl-0.5">
                     QR Code
                   </h3>
                 </div>
                 <button
                   type="button"
-                  className="text-sm text-slate-300 hover:text-sky-300"
+                  className="text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
                   onClick={() => setShowQRCode(false)}
+                  aria-label="Close"
                 >
-                  Close
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="flex flex-col items-center space-y-4">
+              <div className="flex flex-col items-center space-y-6 md:space-y-7 pb-1">
                 {/* QR Code Placeholder */}
-                <div className="w-64 h-64 bg-white rounded-lg p-4 flex items-center justify-center">
-                  <div className="w-full h-full bg-slate-200 rounded flex items-center justify-center">
+                <div className="w-64 h-64 bg-white rounded-2xl p-5 flex items-center justify-center shadow-inner">
+                  <div className="w-full h-full bg-slate-200 rounded-xl flex items-center justify-center">
                     <QrCode className="w-32 h-32 text-slate-400" />
                   </div>
                 </div>
-                <p className="text-sm text-slate-400 text-center">
+                <p className="text-sm text-slate-400 text-center pb-1">
                   Scan this QR code
                 </p>
               </div>
@@ -394,41 +397,39 @@ function ProfilePage() {
               className="
                 !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
                 !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
-                flex-none space-y-4 p-6
+                flex-none space-y-6 px-8 md:px-9 py-7 md:py-8 rounded-3xl
               "
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-50 p-0.5">
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="pt-1">
+                  <h3 className="text-lg font-semibold text-slate-50 pl-1">
                     Edit profile
                   </h3>
                 </div>
                 <button
                   type="button"
-                  className="text-sm text-slate-300 hover:text-sky-300"
+                  className="text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
                   onClick={handleCloseModal}
+                  aria-label="Close"
                 >
-                  Close
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="space-y-4 mt-1">
-                <div className="space-y-2">
-                  <label className="label" htmlFor="fullName">
-                    Full Name
-                  </label>
+              <div className="space-y-5">
+                <div className="space-y-3 pt-3">
                   <input
                     id="fullName"
                     type="text"
-                    className="input"
+                    className="w-full !px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
                     value={editFullName}
                     onChange={(e) => setEditFullName(e.target.value)}
                     placeholder="Enter your full name"
                   />
                 </div>
-                <div className="mt-2 flex justify-center items-center gap-1.5">
+                <div className="flex justify-center items-center gap-4 pb-3">
                   <button
-                    className="button bg-orange-500 hover:bg-orange-600 px-5 py-1.5 rounded-md text-white text-base font-medium transition"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
                     type="button"
                     onClick={() => {
                       if (editFullName.trim()) {
@@ -442,7 +443,7 @@ function ProfilePage() {
                     Save
                   </button>
                   <button
-                    className="button secondary bg-slate-600 hover:bg-slate-700 px-5 py-1.5 rounded-md text-white text-base font-medium transition"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
                     type="button"
                     onClick={handleCloseModal}
                   >
@@ -460,67 +461,67 @@ function ProfilePage() {
               className="
                 !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
                 !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
-                flex-none space-y-4 p-6
+                flex-none space-y-6 px-8 md:px-9 py-7 md:py-8 rounded-3xl
               "
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="muted">Security</p>
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="pt-1">
                   <h3 className="text-lg font-semibold text-slate-50">
                     Change password
                   </h3>
                 </div>
                 <button
                   type="button"
-                  className="text-sm text-slate-300 hover:text-sky-300"
+                  className="text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
                   onClick={handleCloseModal}
+                  aria-label="Close"
                 >
-                  Close
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
               <form
-                className="space-y-4"
+                className="space-y-5 pt-3"
                 onSubmit={(event) => void onSubmit(event)}
               >
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   <label className="label" htmlFor="currentPassword">
                     Current password
                   </label>
                   <input
                     id="currentPassword"
                     type="password"
-                    className="input"
+                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
                     {...form.register("currentPassword", { required: true })}
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   <label className="label" htmlFor="newPassword">
                     New password
                   </label>
                   <input
                     id="newPassword"
                     type="password"
-                    className="input"
+                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
                     {...form.register("newPassword", { required: true })}
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   <label className="label" htmlFor="confirmNewPassword">
                     Confirm new password
                   </label>
                   <input
                     id="confirmNewPassword"
                     type="password"
-                    className="input"
+                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
                     {...form.register("confirmNewPassword", {
                       required: true,
                     })}
                   />
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center gap-4 pb-3">
                   <button
-                    className="button"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
                     type="submit"
                     disabled={changePasswordMutation.isPending}
                   >
@@ -529,7 +530,7 @@ function ProfilePage() {
                       : "Update password"}
                   </button>
                   <button
-                    className="button secondary"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
                     type="button"
                     onClick={handleCloseModal}
                     disabled={changePasswordMutation.isPending}
