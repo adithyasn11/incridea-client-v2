@@ -6,8 +6,8 @@ import { fetchRegistrationConfig, type RegistrationConfigResponse } from '../api
 import { initiatePayment, verifyPaymentSignature } from '../api/registration'
 import { fetchMe } from '../api/auth'
 import { showToast } from '../utils/toast'
+import PaymentProcessingModal from '../components/PaymentProcessingModal'
 // verifyPayment removed from here, used in Modal now
-import PaymentStatusModal from '../components/PaymentStatusModal'
 
 function RegisterPage() {
   const navigate = useNavigate()
@@ -250,23 +250,6 @@ function RegisterPage() {
      }
   }
 
-  const handleVerificationResult = (result: { success: boolean; pid?: string }) => {
-    if (result.success && result.pid) {
-        setModalState({
-            isOpen: true,
-            status: 'SUCCESS',
-            pid: result.pid,
-        })
-        void refetchUser()
-    } else {
-        // Fallback or failed
-        setModalState({
-            isOpen: true,
-            status: 'FAILED',
-            pid: null,
-        })
-    }
-  }
 
   if (isUserLoading || isConfigLoading) {
       return <div className="p-8 text-center text-slate-400">Loading...</div>
@@ -339,12 +322,19 @@ function RegisterPage() {
              Complete Registration
            </button>
       </div>
-      <PaymentStatusModal
+
+      <PaymentProcessingModal 
         isOpen={modalState.isOpen}
-        onClose={() => setModalState({ ...modalState, isOpen: false })}
-        status={modalState.status}
-        pid={modalState.pid}
-        onVerificationResult={handleVerificationResult}
+        onClose={() => {
+            setModalState(prev => ({ ...prev, isOpen: false }))
+            // Optionally refetch user or redirect
+            if (modalState.status === 'SUCCESS' || modalState.pid) {
+                navigate('/')
+            }
+        }}
+        userId={user?.id}
+        completedPid={modalState.pid}
+        failed={modalState.status === 'FAILED'}
       />
     </section>
   )

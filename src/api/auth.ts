@@ -97,7 +97,7 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
 }
 
 export async function fetchMe(): Promise<MeResponse> {
-  const { data } = await apiClient.get<MeResponse>('/auth/me', { skipAuth: true } as any)
+  const { data } = await apiClient.get<MeResponse>('/auth/me')
   return data
 }
 

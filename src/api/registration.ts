@@ -85,7 +85,7 @@ export async function verifyPaymentSignature(response: any) {
   return data
 }
 
-export async function verifyPayment() {
+export async function getPaymentStatus() {
   try {
      const { data } = await apiClient.get<any>('/payment/my-status')
      if (data.status === 'success' && data.pid && data.receipt) {
@@ -101,7 +101,9 @@ export async function verifyPayment() {
         return {
           status: 'pending',
           message: data.message || 'Processing...',
-          processingStep: data.processingStep 
+          processingStep: data.processingStep,
+          receipt: data.receipt,
+          pid: data.pid
         }
      }
      if (data.status === 'failed') {

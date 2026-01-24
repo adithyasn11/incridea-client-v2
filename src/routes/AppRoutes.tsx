@@ -1,19 +1,21 @@
-import { Route, Routes } from "react-router-dom";
-import Layout from "../components/Layout.tsx";
-import HomePage from "../pages/HomePage.tsx";
-import NotFoundPage from "../pages/NotFoundPage.tsx";
-import ContactPage from "../pages/ContactPage.tsx";
-import AboutPage from "../pages/AboutPage.tsx";
-import RefundPage from "../pages/RefundPage.tsx";
-import GuidelinesPage from "../pages/GuidelinesPage.tsx";
-import EventsPage from "../pages/EventsPage.tsx";
-import EventDetailPage from "../pages/EventDetailPage.tsx";
-import ProfilePage from "../pages/ProfilePage.tsx";
-import PrivacyPage from "../pages/PrivacyPage.tsx";
-import RulesPage from "../pages/RulesPage.tsx";
-import QuizPage from "../pages/QuizPage.tsx";
-import RegisterPage from "../pages/RegisterPage.tsx";
+import Layout from "../components/Layout";
+import { Route, Routes } from "react-router";
+import HomePage from "../pages/HomePage";
+import ContactPage from "../pages/ContactPage";
+import AboutPage from "../pages/AboutPage";
+import EventsPage from "../pages/EventsPage";
+import EventDetailPage from "../pages/EventDetailPage";
+import RefundPage from "../pages/RefundPage";
+import GuidelinesPage from "../pages/GuidelinesPage";
+import PrivacyPage from "../pages/PrivacyPage";
+import RulesPage from "../pages/RulesPage";
+import QuizPage from "../pages/QuizPage";
+import ProfilePage from "../pages/ProfilePage";
+import RegisterPage from "../pages/RegisterPage";
 import AccommodationPage from "../pages/AccommodationPage.tsx";
+import TechTeamPage from "../pages/techteam.tsx";
+import CoreTeamPage from "../pages/coreteam.tsx";
+import NotFoundPage from "../pages/NotFoundPage";
 
 const AuthRedirect = () => {
   const params = new URLSearchParams(window.location.search);
@@ -57,6 +59,8 @@ function AppRoutes() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/accommodation" element={<AccommodationPage />} />
+        <Route path="/techteam" element={<TechTeamPage />} />
+        <Route path="/coreteam" element={<CoreTeamPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

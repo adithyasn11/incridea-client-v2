@@ -7,28 +7,28 @@ const GALLERY_ITEMS = [
 
 function AboutPage() {
   return (
-    <div className="min-h-screen px-4 pb-16 pt-10 text-white md:px-6">
-      <div className="mx-auto flex max-w-5xl flex-col gap-12">
-        <header className="card isolate grid gap-6 p-6 md:p-10 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="space-y-4">
+    <div className="min-h-screen px-3 sm:px-4 pb-28 md:pb-16 pt-8 sm:pt-10 text-white md:px-6">
+      <div className="mx-auto flex max-w-5xl flex-col gap-8 sm:gap-12">
+        <header className="card isolate grid gap-4 sm:gap-6 p-4 sm:p-6 md:p-10 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="space-y-3 sm:space-y-4">
             <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Discover</p>
-            <h1 className="text-4xl font-semibold text-white md:text-5xl">About Incridea</h1>
-            <p className="max-w-3xl text-base text-slate-300 md:text-lg">
+            <h1 className="text-3xl sm:text-4xl font-semibold text-white md:text-5xl">About Incridea</h1>
+            <p className="max-w-3xl text-sm sm:text-base text-slate-300 md:text-lg">
               Innovate, Create, Ideate — a national-level techno-cultural fest crafted by students.
               We build the platforms, design the experiences, and host the performances that bring
               together technology, art, and community.
             </p>
             <div className="grid grid-cols-3 gap-3 text-center text-sm text-slate-100 sm:max-w-md">
-              <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
-                <p className="text-2xl font-bold text-sky-200">40+</p>
+              <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-2 sm:p-3">
+                <p className="text-xl sm:text-2xl font-bold text-sky-200">40+</p>
                 <p className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">Events</p>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
-                <p className="text-2xl font-bold text-emerald-200">45K</p>
+              <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-2 sm:p-3">
+                <p className="text-xl sm:text-2xl font-bold text-emerald-200">45K</p>
                 <p className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">Footfall</p>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
-                <p className="text-2xl font-bold text-amber-200">200</p>
+              <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-2 sm:p-3">
+                <p className="text-xl sm:text-2xl font-bold text-amber-200">200</p>
                 <p className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">Colleges</p>
               </div>
             </div>
@@ -49,18 +49,18 @@ function AboutPage() {
           </div>
         </header>
 
-        <section className="card isolate grid gap-8 p-6 md:p-10 lg:grid-cols-[1fr_1fr]">
-          <div className="flex flex-col gap-6">
-            <div className="flex items-center gap-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+        <section className="card isolate grid gap-6 sm:gap-8 p-4 sm:p-6 md:p-10 lg:grid-cols-[1fr_1fr]">
+          <div className="flex flex-col gap-4 sm:gap-6">
+            <div className="flex items-center gap-3 sm:gap-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-3 sm:p-4">
               <img
                 src="/nmamit.png"
                 alt="NMAMIT logo"
-                className="h-20 w-auto rounded-lg border border-slate-800 bg-slate-950/70 p-2 shadow-inner shadow-slate-950/40"
+                className="h-14 sm:h-16 md:h-20 w-auto rounded-lg border border-slate-800 bg-slate-950/70 p-2 shadow-inner shadow-slate-950/40"
                 loading="lazy"
               />
               <div className="space-y-1">
                 <p className="muted">Nitte, Karnataka</p>
-                <h3 className="text-xl font-semibold text-white">NMAM Institute of Technology</h3>
+                <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white">NMAM Institute of Technology</h3>
               </div>
             </div>
             <p className="text-sm leading-6 text-slate-300 md:text-base">
@@ -80,7 +80,7 @@ function AboutPage() {
           <div className="flex flex-col gap-4">
             <div>
               <p className="muted">Built by students</p>
-              <h3 className="text-2xl font-semibold text-white">Why Incridea stands out</h3>
+              <h3 className="text-xl sm:text-2xl font-semibold text-white">Why Incridea stands out</h3>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               {GALLERY_ITEMS.map((item, index) => (
@@ -102,26 +102,26 @@ function AboutPage() {
           </div>
         </section>
 
-        <section className="card isolate grid gap-6 p-6 md:p-10 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="space-y-4">
+        <section className="card isolate grid gap-4 sm:gap-6 p-4 sm:p-6 md:p-10 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="space-y-3 sm:space-y-4">
             <p className="muted">Experience</p>
-            <h3 className="text-2xl font-semibold text-white">What to expect</h3>
+            <h3 className="text-xl sm:text-2xl font-semibold text-white">What to expect</h3>
             <p className="text-sm leading-6 text-slate-300 md:text-base">
               Pronites with renowned artists and DJs, competitions that test skill and teamwork, and
               workshops that encourage hands-on learning. Whether you are coding, building, or
               performing, there is a stage for you at Incridea.
             </p>
             <div className="grid grid-cols-2 gap-3 text-sm text-slate-100 sm:grid-cols-3">
-              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-center">
-                <p className="text-xl font-bold text-sky-200">Workshops</p>
+              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 sm:p-4 text-center">
+                <p className="text-lg sm:text-xl font-bold text-sky-200">Workshops</p>
                 <p className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">Hands-on</p>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-center">
-                <p className="text-xl font-bold text-emerald-200">Pronites</p>
+              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 sm:p-4 text-center">
+                <p className="text-lg sm:text-xl font-bold text-emerald-200">Pronites</p>
                 <p className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">Live acts</p>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-center">
-                <p className="text-xl font-bold text-amber-200">Showcases</p>
+              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 sm:p-4 text-center">
+                <p className="text-lg sm:text-xl font-bold text-amber-200">Showcases</p>
                 <p className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">Projects</p>
               </div>
             </div>
