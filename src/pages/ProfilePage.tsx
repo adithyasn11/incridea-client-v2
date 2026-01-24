@@ -173,7 +173,7 @@ function ProfilePage() {
               </button>
               <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 lg:gap-0">
                 {/* Avatar Circle - Overlapping */}
-                <div className="flex-shrink-0 lg:-mr-20 z-10 md:mb-0 relative flex items-center justify-center">
+                <div className="flex-shrink-0 lg:-mr-20 z-10 md:mb-0 relative flex items-center justify-center ml-3 sm:ml-6 md:ml-8 lg:ml-10">
                   <div
                     className={`w-28 h-28 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center shadow-xl transition-transform duration-500 ${
                       isRotating ? "rotate-180" : "rotate-0"
@@ -201,7 +201,7 @@ function ProfilePage() {
 
                 {/* Profile Info & Buttons - Purple Glass Container */}
                 <div className="flex-1 w-full max-w-full min-w-0 md:pl-8 lg:pl-16">
-                  <LiquidGlassCard className="rounded-2xl min-h-48 flex items-center justify-center p-4 md:p-6 w-full max-w-full">
+                  <div className="rounded-2xl min-h-48 flex items-center justify-center p-4 md:p-6 w-full max-w-full">
                     <div className="space-y-3 md:space-y-4 w-full max-w-full min-w-0">
                       {/* Name */}
                       <div className="text-center">
@@ -239,7 +239,7 @@ function ProfilePage() {
                         </button>
                       </div>
                     </div>
-                  </LiquidGlassCard>
+                  </div>
                 </div>
               </div>
             </LiquidGlassCard>
@@ -267,22 +267,22 @@ function ProfilePage() {
                 {
                   title: "Design Bootcamp",
                   code: "DB1N9R4",
-                  image: null,
+                  image: "/tempprofile/1.png",
                 },
                 {
                   title: "Hackathon 2026",
                   code: "HX7K2P9",
-                  image: null,
+                  image: "/tempprofile/2.png",
                 },
                 {
                   title: "Code Sprint Championship",
                   code: "CS9M4L1",
-                  image: null,
+                  image: "/tempprofile/3.png",
                 },
                 {
                   title: "Web Dev Masters",
                   code: "WD2X8B5",
-                  image: null,
+                  image: "/tempprofile/4.png",
                 },
                 {
                   title: "AI Innovation Summit",
@@ -323,7 +323,7 @@ function ProfilePage() {
 
                     {/* Venue Field */}
                     <div className="flex items-center justify-between bg-slate-900/40 rounded px-1.5 py-1">
-                      <span className="text-xs text-slate-400">VENUE:</span>
+                      <span className="text-xs text-teal-400">VENUE:</span>
                       <span className="text-xs font-semibold text-amber-300">
                         TBA
                       </span>
@@ -331,21 +331,11 @@ function ProfilePage() {
 
                     {/* Time Field */}
                     <div className="flex items-center justify-between bg-slate-900/40 rounded px-1.5 py-1">
-                      <span className="text-xs text-slate-400">TIME:</span>
+                      <span className="text-xs text-pink-400">TIME:</span>
                       <span className="text-xs font-semibold text-amber-300">
                         TBA
                       </span>
                     </div>
-
-                    {/* Action Button - anchored to bottom */}
-                    <button
-                      className="w-full py-1.5 px-2 rounded bg-orange-600/60 hover:bg-orange-600/80 text-slate-100 text-xs font-medium transition-all duration-200 hover:shadow-lg hover:shadow-orange-500/30 mt-auto"
-                      onClick={() => {
-                        showToast("More details coming soon!", "info");
-                      }}
-                    >
-                      Details
-                    </button>
                   </div>
                 </LiquidGlassCard>
               ))}
