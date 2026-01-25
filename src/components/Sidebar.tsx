@@ -9,8 +9,11 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
-const Sidebar = () => {
-  const token = localStorage.getItem("token");
+interface SidebarProps {
+  token: string | null;
+}
+
+const Sidebar = ({ token }: SidebarProps) => {
 
   const items = [
     { icon: Home, path: "/", label: "Home" },

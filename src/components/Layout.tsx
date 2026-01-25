@@ -1,6 +1,7 @@
 import { Link, Outlet } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import Navbar from './Navbar'
+import Sidebar from './Sidebar'
 
 import { logoutUser, fetchMe } from '../api/auth'
 import { useSocket } from '../hooks/useSocket'
@@ -118,6 +119,7 @@ function Layout() {
         onLogout={handleLogout}
         isLoading={isLoading}
       />
+      <Sidebar token={token} />
 
       <main className="w-screen flex justify-center items-center flex-1 px-4 lg:pl-24 pt-32 pb-10">
         <Outlet />
