@@ -84,39 +84,37 @@ const ComingSoon = () => {
       />
 
       {/* ================= CONTENT ================= */}
-      <div className="cs-root relative z-10 flex h-full w-full">
+      <div className="cs-root relative z-10 flex h-full w-full flex-col justify-between pt-20 lg:flex-row lg:justify-normal lg:pt-0">
         {/* LEFT SIDE */}
-        <div className="flex h-full w-1/2 items-center">
-          <div className="flex flex-col items-start pl-24">
+        <div className="flex h-auto w-full items-center justify-center lg:h-full lg:w-1/2 lg:justify-start">
+          <div className="flex flex-col items-center text-center pt-0 lg:items-start lg:text-left lg:pl-24 lg:pt-0">
             <div className="relative mb-4">
-              <span className="absolute -left-10 -top-3 text-white/60 text-sm">
-                ⌖
-              </span>
-              <h1 className="text-white text-[72px] font-semibold tracking-[0.28em] leading-none">
+
+              <h1 className="text-[40px] font-semibold leading-none tracking-[0.28em] text-white lg:text-[72px]">
                 PORTAL
               </h1>
             </div>
 
-            <h2 className="ml-1 text-white/60 text-[22px] tracking-[0.45em] uppercase">
+            <h2 className="ml-1 text-lg uppercase tracking-[0.45em] text-white/60 lg:text-[22px]">
               IN
             </h2>
 
-            <h1 className="mt-1 text-white text-[72px] font-semibold tracking-[0.28em] leading-none">
+            <h1 className="mt-1 text-[40px] font-semibold leading-none tracking-[0.28em] text-white lg:text-[72px]">
               PROGRESS
             </h1>
 
-            <p className="mt-6 text-xs tracking-[0.4em] text-[#b8c6ff]">
+            <p className="mt-6 text-[10px] tracking-[0.4em] text-[#b8c6ff] lg:text-xs">
               STAY TUNED
             </p>
           </div>
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="relative flex h-full w-1/2 items-center justify-center">
+        <div className="relative flex h-auto w-full items-center justify-center lg:h-full lg:w-1/2">
           <img
             src="/comingsoon/path.png"
             alt="Path"
-            className="absolute bottom-[-2%] left-[100%] w-[250%] -translate-x-1/2 object-contain opacity-80 z-0 pointer-events-none"
+            className="pointer-events-none absolute bottom-0 right-[-55%] left-auto z-0 w-[160%] object-contain opacity-80 lg:bottom-[-2%] lg:left-[100%] lg:right-auto lg:w-[160%] lg:-translate-x-1/2"
             style={{
               transform: `translate(calc(-50% + ${(mousePos.x - 0.5) * -30}px), ${(mousePos.y - 0.5) * -30}px)`,
               filter: `brightness(${0.8 + (0.5 - mousePos.y) * 0.3}) drop-shadow(0 0 20px rgba(168, 85, 247, 0.4))`
@@ -126,7 +124,7 @@ const ComingSoon = () => {
             <img
               src="/comingsoon/on.png"
               alt="Character"
-              className="character-glow h-[70vh] object-contain transition-all duration-100 ease-out"
+              className="character-glow h-[40vh] object-contain transition-all duration-100 ease-out lg:h-[70vh]"
               style={{
                 transform: `translate(${(mousePos.x - 0.5) * -30}px, ${(mousePos.y - 0.5) * -30}px)`,
                 filter: `
