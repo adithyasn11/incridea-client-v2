@@ -1,23 +1,32 @@
-import { type PropsWithChildren } from "react";
+import { type ComponentPropsWithoutRef, type ElementType, type PropsWithChildren } from "react";
 import "./LiquidGlassCard.css";
 
-type ColorScheme = "dark" | "orange" | "purple";
+type ColorScheme = "dark" | "orange" | "purple" | "light";
 
-type LiquidGlassCardProps = PropsWithChildren<{
+type LiquidGlassCardProps<T extends ElementType> = PropsWithChildren<{
   className?: string;
   colorScheme?: ColorScheme;
-}>;
+  as?: T;
+}> &
+  ComponentPropsWithoutRef<T>;
 
-export default function LiquidGlassCard({
+export default function LiquidGlassCard<T extends ElementType = "div">({
   children,
   className = "",
   colorScheme = "dark",
-}: LiquidGlassCardProps) {
+  as,
+  ...rest
+}: LiquidGlassCardProps<T>) {
+  const Component = as || (rest.onClick ? "button" : "div");
+
   return (
     <>
-      <div className={`card card--${colorScheme} ${className}`}>
+      <Component
+        className={`card card--${colorScheme} ${className}`}
+        {...rest}
+      >
         <div className="card__content">{children}</div>
-      </div>
+      </Component>
 
       <svg style={{ display: "none" }}>
         <filter id="displacementFilter">

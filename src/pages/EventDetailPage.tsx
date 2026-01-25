@@ -106,7 +106,7 @@ function EventDetailPage() {
       <div
         className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url(/temp_event_bg.png)",
+          backgroundImage: "url(/eventpagebg/bg3.png)",
         }}
       >
         <div className="absolute inset-0 bg-black/60" />
@@ -172,7 +172,7 @@ function EventDetailPage() {
         <div className="relative mx-auto w-[95%] md:w-[72%] lg:w-[82%] xl:w-full max-w-[1000px] xl:max-w-6xl px-4 md:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
           <RouterLink
             to="/events"
-            className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/15 hover:border-white/30 hover:shadow-[0_0_20px_rgba(14,165,233,0.25)] transition-all duration-300"
+            className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/15 hover:border-white/30 hover:shadow-[0_0_20px_rgba(14,165,233,0.25)] transition-all duration-300 cursor-target"
             title="Back to events"
           >
             <AiOutlineArrowLeft className="text-sky-300 text-lg sm:text-xl hover:text-sky-200" />

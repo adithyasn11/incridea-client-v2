@@ -1,12 +1,12 @@
 const RulesPage = () => {
   return (
-    <div className="w-full">
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 rounded-2xl p-6 text-slate-100 shadow-xl ring-1 ring-slate-800 md:p-10">
-        <div className="flex flex-col gap-4 text-center p-20">
+    <div className="min-h-screen px-3 sm:px-4 pb-28 md:pb-16 pt-8 sm:pt-10 text-slate-100 md:px-6">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 rounded-2xl bg-slate-950/50 border border-slate-800 p-6 md:p-10 shadow-xl">
+        <div className="flex flex-col gap-4 text-center">
           <h1 className="text-4xl font-life-craft tracking-wider text-sky-200 md:text-6xl">Terms and Conditions</h1>
         </div>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Overview</h2>
           <p>
             This website is operated by NMAM Institute of Technology. Throughout the site, the terms "we", "us" and
@@ -37,7 +37,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 1 - Incridea 2026 Participation Terms</h2>
           <p>
             You may not use our event platform for any illegal or unauthorized purpose nor may you, in the use of the
@@ -58,7 +58,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 2 - General Conditions for Incridea 2026 Participation</h2>
           <p>
             We reserve the right to refuse participation to anyone for any reason at any time, including but not limited
@@ -80,7 +80,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 3 - Accuracy, Completeness and Timeliness of Information</h2>
           <p>
             We strive to ensure that all information provided on the Incridea 2026 event platform is accurate, complete,
@@ -101,7 +101,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 4 - Modifications to Incridea 2026 and Registration Prices</h2>
           <p>
             Prices for registration and events at Incridea 2026 are subject to change without notice.
@@ -116,7 +116,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 5 - Events and Services at Incridea 2026</h2>
           <p>
             Certain events and services may be available exclusively through the Incridea 2026 website. These events and
@@ -140,7 +140,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 6 - Accuracy of Registration and Account Information</h2>
           <p>
             We reserve the right to refuse attendance or participation in any event or service organized by Incridea
@@ -160,7 +160,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 7 - Optional Tools</h2>
           <p>
             Incridea 2026 may provide you with access to third-party tools over which we have no control or input.
@@ -182,7 +182,7 @@ const RulesPage = () => {
           <p>For more detail, please review our Privacy Policy.</p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 8 - Third-party Links</h2>
           <p>
             Certain content, products, and services available via Incridea 2026 may include materials from third parties.
@@ -202,7 +202,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 9 - User Comments, Feedback, and Other Submissions</h2>
           <p>
             If, at our request, you send certain specific submissions related to Incridea 2026 (for example, contest
@@ -229,7 +229,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 10 - Personal Information</h2>
           <p>
             Your submission of personal information through the Incridea 2026 website is governed by our Privacy Policy.
@@ -237,7 +237,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 11 - Errors, Inaccuracies and Omissions</h2>
           <p>
             Occasionally there may be information on the Incridea 2026 website or in the Service that contains
@@ -253,7 +253,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 12 - Prohibited Uses</h2>
           <p>
             In addition to other prohibitions as set forth in these terms and conditions, all participants of Incridea
@@ -273,7 +273,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 13 - Disclaimer of Warranties; Limitation of Liability</h2>
           <p>
             We do not guarantee, represent, or warrant that your use of our service will be uninterrupted, timely,
@@ -307,7 +307,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 14 - Indemnification</h2>
           <p>
             You agree to indemnify, defend and hold harmless NMAM Institute of Technology and its organisers, staff,
@@ -318,7 +318,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 15 - Severability</h2>
           <p>
             In the event that any provision of these Terms of Service is determined to be unlawful, void or
@@ -328,7 +328,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 16 - Termination</h2>
           <p>
             The obligations and liabilities of the parties incurred prior to the termination date shall survive the
@@ -343,7 +343,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 17 - Entire Agreement</h2>
           <p>
             The failure of us to exercise or enforce any right or provision of these Terms of Service shall not
@@ -358,7 +358,7 @@ const RulesPage = () => {
           <p>Any ambiguities in the interpretation of these Terms of Service shall not be construed against the drafting party.</p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 18 - Governing Law</h2>
           <p>
             These Terms of Service and any separate agreements whereby we provide the event shall be governed by and
@@ -366,7 +366,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 19 - Changes to Terms of Service</h2>
           <p>
             We may modify, update, or replace any part of these Terms of Service at our sole discretion by posting
@@ -380,7 +380,7 @@ const RulesPage = () => {
           </p>
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 text-slate-300">
           <h2 className="text-2xl font-semibold text-sky-100">Section 20 - Contact Information</h2>
           <p>
             Any questions about the Terms of Service should be directed to the student organisers and college staff at:

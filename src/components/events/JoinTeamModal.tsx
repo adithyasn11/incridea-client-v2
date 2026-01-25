@@ -54,7 +54,7 @@ export default function JoinTeamModal({
       <div className="w-full max-w-md rounded-3xl border border-white/20 bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-2xl shadow-[0_0_40px_rgba(0,255,255,0.15)] p-6 sm:p-8 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-cyan-500/10 before:via-fuchsia-500/8 before:to-emerald-500/10 before:blur-2xl before:-z-10">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-white/75 hover:text-white transition-colors z-10"
+          className="absolute right-4 top-4 text-white/75 hover:text-white transition-colors z-10 cursor-target"
         >
           <IoClose size={24} />
         </button>
@@ -76,7 +76,7 @@ export default function JoinTeamModal({
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 px-6 py-3 font-semibold text-white hover:from-sky-400 hover:to-cyan-400 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.5)]"
+            className="w-full flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 px-6 py-3 font-semibold text-white hover:from-sky-400 hover:to-cyan-400 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.5)] cursor-target"
           >
             {loading ? (
               "Joining..."

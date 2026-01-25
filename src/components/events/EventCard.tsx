@@ -50,9 +50,8 @@ const EventCard = ({ event, index }: EventCardProps) => {
 
   return (
     <div
-      className={`flex items-center justify-center p-4 font-sans animate-float hover:z-50 ${
-        index % 2 !== 0 ? "lg:mt-24" : "mt-0"
-      }`}
+      className={`flex items-center justify-center p-4 font-sans animate-float hover:z-50 ${index % 2 !== 0 ? "lg:mt-24" : "mt-0"
+        }`}
       style={{
         animationName: `floating${(index % 3) + 1}`,
         animationDuration: `${4 + (index % 3)}s`,

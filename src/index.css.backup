@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
@@ -85,10 +86,10 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 20rem;
   min-height: 100vh;
+  background-color: #000;
+  overflow-x: hidden;
 }
 
 h1 {

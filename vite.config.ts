@@ -2,21 +2,27 @@ import type { PluginOption } from 'vite'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), (tailwindcss as unknown as () => PluginOption)()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
+  },
   server: {
     host: true,
     port: 3000,
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL ||  'http://localhost:4000',
+        target: process.env.VITE_API_URL || 'http://localhost:4000',
         changeOrigin: true,
       },
     },
   },
-    preview:{
+  preview: {
     allowedHosts: ["incridea.in"],
   }
 })

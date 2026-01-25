@@ -1,6 +1,7 @@
 import { Link, Outlet } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import Navbar from './Navbar'
+import Sidebar from './Sidebar'
 
 import { logoutUser, fetchMe } from '../api/auth'
 import { useSocket } from '../hooks/useSocket'
@@ -8,22 +9,20 @@ import { useSocket } from '../hooks/useSocket'
 
 function Layout() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('userName') ? 'logged-in' : null)
-  const [userName, setUserName] = useState<string | null>(localStorage.getItem('userName'))
   const [isLoading, setIsLoading] = useState(true)
   const { socket } = useSocket()
 
 
   // Removed direct localStorage monitoring as we rely on server session
   // But for logout, we should clear it immediately for better UX
-  
+
   const handleLogout = () => {
     // Clear local state immediately
     localStorage.removeItem('token')
     localStorage.removeItem('userName')
     localStorage.removeItem('userId')
     setToken(null)
-    setUserName(null)
-
+    window.location.reload()
     // Fire API call
     logoutUser().catch((error) => {
       console.error('Logout failed', error)
@@ -31,38 +30,36 @@ function Layout() {
   }
 
   const fetchProfile = async () => {
-      // setIsLoading(true) // Don't flicker loading on focus check
-      try {
-        const { user } = await fetchMe()
-        const name = user && typeof user === 'object'
-          ? typeof user.name === 'string'
-            ? user.name
-            : typeof user.email === 'string'
-              ? user.email
-              : null
-          : null
+    // setIsLoading(true) // Don't flicker loading on focus check
+    try {
+      const { user } = await fetchMe()
+      const name = user && typeof user === 'object'
+        ? typeof user.name === 'string'
+          ? user.name
+          : typeof user.email === 'string'
+            ? user.email
+            : null
+        : null
 
 
-        if (name) {
-          setUserName(name)
-          setToken('logged-in')
-          localStorage.setItem('userName', name)
-          if (!localStorage.getItem('token')) {
-              localStorage.setItem('token', 'cookie-session')
-          }
+      if (name) {
+        setToken('logged-in')
+        localStorage.setItem('userName', name)
+        if (!localStorage.getItem('token')) {
+          localStorage.setItem('token', 'cookie-session')
         }
-
-      } catch {
-        // If auth fails, just clear local state
-        localStorage.removeItem('token')
-        localStorage.removeItem('userName')
-        localStorage.removeItem('userId')
-        setToken(null)
-        setUserName(null)
-      } finally {
-        setIsLoading(false)
       }
+
+    } catch {
+      // If auth fails, just clear local state
+      localStorage.removeItem('token')
+      localStorage.removeItem('userName')
+      localStorage.removeItem('userId')
+      setToken(null)
+    } finally {
+      setIsLoading(false)
     }
+  }
 
   useEffect(() => {
     if (!socket) return
@@ -84,35 +81,34 @@ function Layout() {
     void fetchProfile()
 
     const handleStorageChange = (event: StorageEvent) => {
-        if (event.key === 'token' && event.newValue === null) {
-            setToken(null)
-            setUserName(null)
-            // No strict redirect for client as guest view is allowed
-        }
+      if (event.key === 'token' && event.newValue === null) {
+        setToken(null)
+        // No strict redirect for client as guest view is allowed
+      }
     }
 
     const handleFocus = () => {
-       // Re-verify session when returning to the tab
-       void fetchProfile() 
+      // Re-verify session when returning to the tab
+      void fetchProfile()
     }
 
     window.addEventListener('storage', handleStorageChange)
     window.addEventListener('focus', handleFocus)
 
     return () => {
-        window.removeEventListener('storage', handleStorageChange)
-        window.removeEventListener('focus', handleFocus)
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('focus', handleFocus)
     }
   }, [])
 
   if (isLoading) {
     return (
-        <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-slate-50">
-            <div className="text-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-purple-500 mx-auto mb-4"></div>
-                <p>Loading...</p>
-            </div>
+      <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-slate-50">
+        <div className="text-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-purple-500 mx-auto mb-4"></div>
+          <p>Loading...</p>
         </div>
+      </div>
     )
   }
 
@@ -120,12 +116,12 @@ function Layout() {
     <div className={`flex min-h-screen flex-col text-slate-50`}>
       <Navbar
         token={token}
-        userName={userName}
         onLogout={handleLogout}
         isLoading={isLoading}
       />
+      <Sidebar token={token} />
 
-      <main className="w-screen flex justify-center items-center flex-1 px-4 pt-32 pb-10">
+      <main className="w-screen flex justify-center items-center flex-1 px-4 lg:pl-24 pt-32 pb-10">
         <Outlet />
       </main>
 
@@ -152,7 +148,7 @@ function Layout() {
           </Link>
         </div>
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-1 px-4 pb-5 text-[11px] font-semibold tracking-wide text-slate-200">
-          <Link className="inline-flex items-center gap-1 transition-all hover:tracking-wider hover:text-slate-100 cursor-target" to="/team">
+          <Link className="inline-flex items-center gap-1 transition-all hover:tracking-wider hover:text-slate-100 cursor-target" to="/techteam">
             Made with <span className="text-rose-400">❤</span> by Technical Team
           </Link>
           <p className='cursor-target'>© Incridea {new Date().getFullYear()}</p>
