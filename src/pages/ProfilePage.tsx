@@ -19,7 +19,7 @@ import {
 } from "../api/auth";
 import { useForm } from "react-hook-form";
 import { showToast } from "../utils/toast";
-import { Pencil, QrCode } from "lucide-react";
+import { Pencil, QrCode, X } from "lucide-react";
 import LiquidGlassCard from "../components/liquidglass/LiquidGlassCard";
 import InfiniteScroll from "../components/InfiniteScroll";
 
@@ -28,7 +28,6 @@ function ProfilePage() {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const [showChangePassword, setShowChangePassword] = useState(false);
-  const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [editFullName, setEditFullName] = useState("");
   const [showQRCode, setShowQRCode] = useState(false);
@@ -49,7 +48,7 @@ function ProfilePage() {
 
   useEffect(() => {
     if (!token) {
-      void navigate("/");
+      // void navigate("/");
     }
   }, [token, navigate]);
 
@@ -139,7 +138,6 @@ function ProfilePage() {
 
   const handleCloseModal = () => {
     setShowChangePassword(false);
-    setShowPasswordForm(false);
     setShowEditProfile(false);
     setEditFullName("");
     form.reset();
@@ -156,9 +154,10 @@ function ProfilePage() {
       <div className="absolute inset-0 bg-black/40"></div>
       <section className="relative h-screen overflow-y-auto pt-32 md:pt-24 pb-12 flex flex-col items-center justify-start">
         {/* Profile Card */}
-        <div className="w-full max-w-[95%] sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] mt-4 px-2 sm:px-4">
+        <div className="w-full max-w-[92%] sm:max-w-[80%] md:max-w-[72%] lg:max-w-[65%] mt-4 px-2 sm:px-4">
           <div className="relative">
-            <LiquidGlassCard className="p-4 md:p-6">
+            <LiquidGlassCard className="p-4 md:p-6 rounded-3xl">
+              <div className="mt-4"></div>
               {/* Edit Profile Button */}
               <button
                 onClick={() => {
@@ -175,7 +174,7 @@ function ProfilePage() {
               </button>
               <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 lg:gap-0">
                 {/* Avatar Circle - Overlapping */}
-                <div className="flex-shrink-0 lg:-mr-20 z-10 md:mb-0 relative flex items-center justify-center">
+                <div className="flex-shrink-0 lg:-mr-20 z-10 md:mb-0 relative flex items-center justify-center ml-3 sm:ml-6 md:ml-8 lg:ml-10">
                   <div
                     className={`w-28 h-28 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center shadow-xl transition-transform duration-500 ${
                       isRotating ? "rotate-180" : "rotate-0"
@@ -203,7 +202,7 @@ function ProfilePage() {
 
                 {/* Profile Info & Buttons - Purple Glass Container */}
                 <div className="flex-1 w-full max-w-full min-w-0 md:pl-8 lg:pl-16">
-                  <LiquidGlassCard className="rounded-2xl min-h-48 flex items-center justify-center p-4 md:p-6 w-full max-w-full">
+                  <div className="rounded-2xl min-h-48 flex items-center justify-center p-4 md:p-6 w-full max-w-full">
                     <div className="space-y-3 md:space-y-4 w-full max-w-full min-w-0">
                       {/* Name */}
                       <div className="text-center">
@@ -224,7 +223,9 @@ function ProfilePage() {
                         <button
                           className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-3xl transition-colors duration-200 w-full sm:w-auto sm:flex-1 sm:min-w-[10rem] sm:max-w-[15rem]"
                           type="button"
-                          onClick={() => setShowChangePassword(true)}
+                          onClick={() => {
+                            setShowChangePassword(true);
+                          }}
                         >
                           Change password
                         </button>
@@ -239,9 +240,10 @@ function ProfilePage() {
                         </button>
                       </div>
                     </div>
-                  </LiquidGlassCard>
+                  </div>
                 </div>
               </div>
+              <div className="mt-6"></div>
             </LiquidGlassCard>
           </div>
         </div>
@@ -249,10 +251,10 @@ function ProfilePage() {
         {/* My Missions Section */}
         {/* TODO: Replace hardcoded missions with mapped events once signup events API is available. */}
         {/* Cards count should equal number of events user has signed up for. */}
-        <div className="w-full max-w-[95%] sm:max-w-[70%] mt-12">
-          <LiquidGlassCard className="p-6 md:p-8">
+        <div className="w-full max-w-[92%] sm:max-w-[80%] md:max-w-[72%] lg:max-w-[65%] mt-12">
+          <LiquidGlassCard className="p-6 md:p-8 rounded-3xl">
             {/* Header */}
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-8 mt-4">
               <h2
                 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-400"
                 style={{ fontFamily: "'New Rocker', cursive" }}
@@ -267,41 +269,49 @@ function ProfilePage() {
                 {
                   title: "Design Bootcamp",
                   code: "DB1N9R4",
-                  image: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                  image: "/tempprofile/1.png",
                 },
                 {
                   title: "Hackathon 2026",
                   code: "HX7K2P9",
-                  image: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  image: "/tempprofile/2.png",
                 },
                 {
                   title: "Code Sprint Championship",
                   code: "CS9M4L1",
-                  image: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                  image: "/tempprofile/3.png",
                 },
                 {
                   title: "Web Dev Masters",
                   code: "WD2X8B5",
-                  image: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                  image: "/tempprofile/4.png",
                 },
                 {
                   title: "AI Innovation Summit",
                   code: "AI6P3K7",
-                  image: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+                  image: null,
                 },
               ].map((mission) => (
                 <LiquidGlassCard
                   key={mission.code}
-                  className="!w-49 !max-w-49 !p-4.5 flex flex-col gap-2"
+                  className="!w-49 !max-w-49 !p-4.5 flex flex-col gap-2 !rounded-3xl"
                 >
                   {/* Mission Image/Poster */}
-                  <div
-                    className="w-full aspect-[4/5] bg-cover bg-center relative overflow-hidden rounded-xl flex-shrink-0 object-cover"
-                    style={{
-                      backgroundImage: mission.image,
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300" />
+                  <div className="relative aspect-[4/5] w-full bg-linear-to-b from-white/20 to-black/40 rounded-3xl overflow-hidden">
+                    {mission.image ? (
+                      <img
+                        src={mission.image}
+                        alt={mission.title}
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-linear-to-b from-white/60 via-white/25 to-black/70 flex items-center justify-center text-black/40">
+                        <div className="text-center text-sm">
+                          <div className="font-semibold">Portrait</div>
+                          <div>1080 × 1350 px (4:5)</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Mission Card Content */}
@@ -315,7 +325,7 @@ function ProfilePage() {
 
                     {/* Venue Field */}
                     <div className="flex items-center justify-between bg-slate-900/40 rounded px-1.5 py-1">
-                      <span className="text-xs text-slate-400">VENUE:</span>
+                      <span className="text-xs text-teal-400">VENUE:</span>
                       <span className="text-xs font-semibold text-amber-300">
                         TBA
                       </span>
@@ -323,21 +333,11 @@ function ProfilePage() {
 
                     {/* Time Field */}
                     <div className="flex items-center justify-between bg-slate-900/40 rounded px-1.5 py-1">
-                      <span className="text-xs text-slate-400">TIME:</span>
+                      <span className="text-xs text-pink-400">TIME:</span>
                       <span className="text-xs font-semibold text-amber-300">
                         TBA
                       </span>
                     </div>
-
-                    {/* Action Button - anchored to bottom */}
-                    <button
-                      className="w-full py-1.5 px-2 rounded bg-orange-600/60 hover:bg-orange-600/80 text-slate-100 text-xs font-medium transition-all duration-200 hover:shadow-lg hover:shadow-orange-500/30 mt-auto"
-                      onClick={() => {
-                        showToast("More details coming soon!", "info");
-                      }}
-                    >
-                      Details
-                    </button>
                   </div>
                 </LiquidGlassCard>
               ))}
@@ -347,6 +347,7 @@ function ProfilePage() {
               pauseOnHover={true}
               autoScroll={false}
             />
+            <div className="mt-6"></div>
           </LiquidGlassCard>
         </div>
 
@@ -356,33 +357,33 @@ function ProfilePage() {
               className="
                 !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
                 !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
-                flex-none space-y-4 p-6
+                flex-none space-y-7 md:space-y-8 px-9 md:px-10 py-8 md:py-9 rounded-3xl
               "
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="muted">Your Profile</p>
-                  <h3 className="text-lg font-semibold text-slate-50">
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="pt-1">
+                  <h3 className="text-lg font-semibold text-slate-50 pl-0.5">
                     QR Code
                   </h3>
                 </div>
                 <button
                   type="button"
-                  className="text-sm text-slate-300 hover:text-sky-300"
+                  className="text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
                   onClick={() => setShowQRCode(false)}
+                  aria-label="Close"
                 >
-                  Close
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="flex flex-col items-center space-y-4">
+              <div className="flex flex-col items-center space-y-6 md:space-y-7 pb-1">
                 {/* QR Code Placeholder */}
-                <div className="w-64 h-64 bg-white rounded-lg p-4 flex items-center justify-center">
-                  <div className="w-full h-full bg-slate-200 rounded flex items-center justify-center">
+                <div className="w-64 h-64 bg-white rounded-2xl p-5 flex items-center justify-center shadow-inner">
+                  <div className="w-full h-full bg-slate-200 rounded-xl flex items-center justify-center">
                     <QrCode className="w-32 h-32 text-slate-400" />
                   </div>
                 </div>
-                <p className="text-sm text-slate-400 text-center">
+                <p className="text-sm text-slate-400 text-center pb-1">
                   Scan this QR code
                 </p>
               </div>
@@ -396,41 +397,39 @@ function ProfilePage() {
               className="
                 !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
                 !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
-                flex-none space-y-4 p-6
+                flex-none space-y-6 px-8 md:px-9 py-7 md:py-8 rounded-3xl
               "
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-50 p-0.5">
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="pt-1">
+                  <h3 className="text-lg font-semibold text-slate-50 pl-1">
                     Edit profile
                   </h3>
                 </div>
                 <button
                   type="button"
-                  className="text-sm text-slate-300 hover:text-sky-300"
+                  className="text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
                   onClick={handleCloseModal}
+                  aria-label="Close"
                 >
-                  Close
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="space-y-4 mt-1">
-                <div className="space-y-2">
-                  <label className="label" htmlFor="fullName">
-                    Full Name
-                  </label>
+              <div className="space-y-5">
+                <div className="space-y-3 pt-3">
                   <input
                     id="fullName"
                     type="text"
-                    className="input"
+                    className="w-full !px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
                     value={editFullName}
                     onChange={(e) => setEditFullName(e.target.value)}
                     placeholder="Enter your full name"
                   />
                 </div>
-                <div className="mt-2 flex justify-center items-center gap-1.5">
+                <div className="flex justify-center items-center gap-4 pb-3">
                   <button
-                    className="button bg-orange-500 hover:bg-orange-600 px-5 py-1.5 rounded-md text-white text-base font-medium transition"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
                     type="button"
                     onClick={() => {
                       if (editFullName.trim()) {
@@ -444,7 +443,7 @@ function ProfilePage() {
                     Save
                   </button>
                   <button
-                    className="button secondary bg-slate-600 hover:bg-slate-700 px-5 py-1.5 rounded-md text-white text-base font-medium transition"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
                     type="button"
                     onClick={handleCloseModal}
                   >
@@ -462,114 +461,91 @@ function ProfilePage() {
               className="
                 !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
                 !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
-                flex-none space-y-4 p-6
+                flex-none space-y-6 px-8 md:px-9 py-7 md:py-8 rounded-3xl
               "
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="muted">Security</p>
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="pt-1">
                   <h3 className="text-lg font-semibold text-slate-50">
                     Change password
                   </h3>
                 </div>
                 <button
                   type="button"
-                  className="text-sm text-slate-300 hover:text-sky-300"
+                  className="text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
                   onClick={handleCloseModal}
+                  aria-label="Close"
                 >
-                  Close
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {!showPasswordForm ? (
-                <div className="space-y-3">
-                  <p className="text-sm text-slate-400">Choose an option:</p>
+              <form
+                className="space-y-5 pt-3"
+                onSubmit={(event) => void onSubmit(event)}
+              >
+                <div className="space-y-2.5">
+                  <label className="label" htmlFor="currentPassword">
+                    Current password
+                  </label>
+                  <input
+                    id="currentPassword"
+                    type="password"
+                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                    {...form.register("currentPassword", { required: true })}
+                  />
+                </div>
+                <div className="space-y-2.5">
+                  <label className="label" htmlFor="newPassword">
+                    New password
+                  </label>
+                  <input
+                    id="newPassword"
+                    type="password"
+                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                    {...form.register("newPassword", { required: true })}
+                  />
+                </div>
+                <div className="space-y-2.5">
+                  <label className="label" htmlFor="confirmNewPassword">
+                    Confirm new password
+                  </label>
+                  <input
+                    id="confirmNewPassword"
+                    type="password"
+                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                    {...form.register("confirmNewPassword", {
+                      required: true,
+                    })}
+                  />
+                </div>
+                <div className="flex items-center justify-center gap-4 pb-3">
                   <button
-                    className="w-full p-2 md:p-3 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors duration-200"
-                    type="button"
-                    onClick={() => setShowPasswordForm(true)}
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
+                    type="submit"
+                    disabled={changePasswordMutation.isPending}
                   >
-                    Change Password
+                    {changePasswordMutation.isPending
+                      ? "Updating…"
+                      : "Update password"}
                   </button>
                   <button
-                    className="w-full p-2 md:p-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
                     type="button"
-                    onClick={() => {
-                      handleResetRequest();
-                      handleCloseModal();
-                    }}
+                    onClick={handleCloseModal}
+                    disabled={changePasswordMutation.isPending}
                   >
-                    Send Reset Link to Email
+                    Cancel
                   </button>
                 </div>
-              ) : (
-                <form
-                  className="space-y-4"
-                  onSubmit={(event) => void onSubmit(event)}
-                >
-                  <div className="space-y-2">
-                    <label className="label" htmlFor="currentPassword">
-                      Current password
-                    </label>
-                    <input
-                      id="currentPassword"
-                      type="password"
-                      className="input"
-                      {...form.register("currentPassword", { required: true })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="label" htmlFor="newPassword">
-                      New password
-                    </label>
-                    <input
-                      id="newPassword"
-                      type="password"
-                      className="input"
-                      {...form.register("newPassword", { required: true })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="label" htmlFor="confirmNewPassword">
-                      Confirm new password
-                    </label>
-                    <input
-                      id="confirmNewPassword"
-                      type="password"
-                      className="input"
-                      {...form.register("confirmNewPassword", {
-                        required: true,
-                      })}
-                    />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      className="button"
-                      type="submit"
-                      disabled={changePasswordMutation.isPending}
-                    >
-                      {changePasswordMutation.isPending
-                        ? "Updating…"
-                        : "Update password"}
-                    </button>
-                    <button
-                      className="button secondary"
-                      type="button"
-                      onClick={handleCloseModal}
-                      disabled={changePasswordMutation.isPending}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                  {changePasswordMutation.isError && (
-                    <p className="text-sm text-rose-300">
-                      {changePasswordMutation.error instanceof Error
-                        ? changePasswordMutation.error.message
-                        : "Failed to update password."}
-                    </p>
-                  )}
-                </form>
-              )}
+                {changePasswordMutation.isError && (
+                  <p className="text-sm text-rose-300">
+                    {changePasswordMutation.error instanceof Error
+                      ? changePasswordMutation.error.message
+                      : "Failed to update password."}
+                  </p>
+                )}
+              </form>
             </LiquidGlassCard>
           </div>
         )}
