@@ -1,6 +1,25 @@
 import LightRays from '../components/LightRays'
+import { useEffect, useRef, useState } from 'react'
 
 const ComingSoon = () => {
+  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.2 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Track mouse even if not hovering container, or stick to window
+      const x = e.clientX / window.innerWidth;
+      const y = e.clientY / window.innerHeight;
+      setMousePos({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Calculate light direction for shadows
+  const lightAngleX = (mousePos.x - 0.5) * 100;
+  const lightAngleY = (mousePos.y - 0.2) * 50;
   return (
     <div className="relative flex h-screen w-full overflow-hidden bg-gradient-to-b from-[#1a1026] via-[#0d0716] to-black">
 
@@ -75,7 +94,16 @@ const ComingSoon = () => {
           <img
             src="/comingsoon/on.png"
             alt="Character"
-            className="character-glow h-[80%] object-contain transition-all duration-700 ease-out"
+            className="character-glow h-[80%] object-contain transition-all duration-100 ease-out"
+            style={{
+              transform: `translate(${(mousePos.x - 0.5) * -30}px, ${(mousePos.y - 0.5) * -30}px)`,
+              filter: `
+                brightness(${1 + (0.5 - mousePos.y) * 0.4})
+                contrast(1.1)
+                drop-shadow(${-lightAngleX * 0.3}px ${-lightAngleY * 0.5}px 40px rgba(199, 125, 255, ${0.6 - mousePos.y * 0.3}))
+                drop-shadow(${-lightAngleX * 0.5}px ${-lightAngleY * 0.8}px 80px rgba(157, 78, 221, ${0.4 - mousePos.y * 0.2}))
+              `
+            }}
           />
         </div>
 
