@@ -69,7 +69,7 @@ const ComingSoon = () => {
             width: 600px;
             height: auto;
             position: relative;
-            transition: filter 0.1s ease-out, drop-shadow 0.1s ease-out;
+            transition: filter 0.1s ease-out, drop-shadow 0.1s ease-out, transform 0.1s ease-out;
           }
           
           .content {
@@ -77,7 +77,7 @@ const ComingSoon = () => {
             flex-direction: column;
             align-items: flex-start;
             position: relative;
-            transition: filter 0.1s ease-out, text-shadow 0.1s ease-out;
+            transition: filter 0.1s ease-out, text-shadow 0.1s ease-out, transform 0.1s ease-out;
           }
           
           .coming-soon h1 {
@@ -87,6 +87,19 @@ const ComingSoon = () => {
             transition: text-shadow 0.1s ease-out;
           }
           
+          .path-image {
+            position: absolute;
+            bottom: -180px;
+            left: 45%;
+            transform: translateX(-50%);
+            width: 1000px;
+            max-width: none;
+            z-index: 0;
+            pointer-events: none;
+            transition: transform 0.1s ease-out, filter 0.1s ease-out;
+            opacity: 1;
+          }
+
           .coming-soon p {
             color: #ccc;
             font-size: 0.9rem;
@@ -118,6 +131,7 @@ const ComingSoon = () => {
             alt="Flickering Portal"
             className="flicker-portal"
             style={{
+              transform: `translate(${(mousePos.x - 0.5) * -30}px, ${(mousePos.y - 0.5) * -30}px)`,
               filter: `
                 brightness(${1 + (0.5 - mousePos.y) * 0.4})
                 contrast(1.1)
@@ -126,21 +140,17 @@ const ComingSoon = () => {
               `
             }}
           />
-          <div
-            className="content"
+          <img
+            src="/comingsoon/path.png"
+            alt="Path"
+            className="path-image"
             style={{
-              filter: `brightness(${1 + (0.5 - mousePos.y) * 0.3})`
+              transform: `translate(${(mousePos.x - 0.5) * -20}px, ${(mousePos.y - 0.5) * -10}px)`,
+              filter: `brightness(${0.8 + (0.5 - mousePos.y) * 0.3}) drop-shadow(0 0 20px rgba(168, 85, 247, 0.4))`
             }}
-          >
-            <h1
-              style={{
-                textShadow: `
-                  ${-lightAngleX * 0.2}px ${-lightAngleY * 0.3}px 30px rgba(199, 125, 255, ${0.8 - mousePos.y * 0.4}),
-                  ${-lightAngleX * 0.3}px ${-lightAngleY * 0.5}px 60px rgba(157, 78, 221, ${0.5 - mousePos.y * 0.3}),
-                  0 0 100px rgba(199, 125, 255, ${0.3 - mousePos.y * 0.2})
-                `
-              }}
-            >
+          />
+          <div className="content">
+            <h1>
               COMING SOON
             </h1>
             <p>This module is still being worked across classes.</p>
