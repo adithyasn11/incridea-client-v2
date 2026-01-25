@@ -221,7 +221,7 @@ function ProfilePage() {
                       {/* Buttons */}
                       <div className="flex flex-col sm:flex-row flex-wrap gap-3 justify-center items-stretch">
                         <button
-                          className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-3xl transition-colors duration-200 w-full sm:w-auto sm:flex-1 sm:min-w-[10rem] sm:max-w-[15rem]"
+                          className="px-6 py-2.5 card card--dark text-white font-medium rounded-3xl transition-all duration-200 w-full sm:w-auto sm:flex-1 sm:min-w-[10rem] sm:max-w-[15rem] hover:opacity-80 active:opacity-60"
                           type="button"
                           onClick={() => {
                             setShowChangePassword(true);
@@ -230,7 +230,7 @@ function ProfilePage() {
                           Change password
                         </button>
                         <button
-                          className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-3xl transition-colors duration-200 w-full sm:w-auto sm:flex-1 sm:min-w-[10rem] sm:max-w-[15rem]"
+                          className="px-6 py-2.5 card card--dark text-white font-medium rounded-3xl transition-all duration-200 w-full sm:w-auto sm:flex-1 sm:min-w-[10rem] sm:max-w-[15rem] hover:opacity-80 active:opacity-60"
                           type="button"
                           onClick={() => {
                             void handleLogout();
@@ -397,7 +397,7 @@ function ProfilePage() {
               className="
                 !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
                 !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
-                flex-none space-y-6 px-8 md:px-9 py-7 md:py-8 rounded-3xl
+                flex-none space-y-6 px-9 md:px-10 py-7 md:py-8 rounded-3xl
               "
             >
               <div className="flex items-start justify-between gap-3 mb-2">
@@ -461,11 +461,11 @@ function ProfilePage() {
               className="
                 !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
                 !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
-                flex-none space-y-6 px-8 md:px-9 py-7 md:py-8 rounded-3xl
+                flex-none space-y-8 px-8 md:px-9 py-8 md:py-9 rounded-3xl
               "
             >
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <div className="pt-1">
+              <div className="flex items-start justify-between gap-3">
+                <div className="pt-0.5 pl-0.5">
                   <h3 className="text-lg font-semibold text-slate-50">
                     Change password
                   </h3>
@@ -481,47 +481,59 @@ function ProfilePage() {
               </div>
 
               <form
-                className="space-y-5 pt-3"
+                className="space-y-7 pt-2"
                 onSubmit={(event) => void onSubmit(event)}
               >
-                <div className="space-y-2.5">
-                  <label className="label" htmlFor="currentPassword">
+                <div className="space-y-1.5">
+                  <label
+                    className="label text-sm font-medium text-slate-200 block px-5 md:px-6"
+                    htmlFor="currentPassword"
+                  >
                     Current password
                   </label>
                   <input
                     id="currentPassword"
                     type="password"
-                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-gradient-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200"
                     {...form.register("currentPassword", { required: true })}
+                    placeholder="Enter your current password"
                   />
                 </div>
-                <div className="space-y-2.5">
-                  <label className="label" htmlFor="newPassword">
+                <div className="space-y-1.5">
+                  <label
+                    className="label text-sm font-medium text-slate-200 block px-5 md:px-6"
+                    htmlFor="newPassword"
+                  >
                     New password
                   </label>
                   <input
                     id="newPassword"
                     type="password"
-                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-gradient-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200"
                     {...form.register("newPassword", { required: true })}
+                    placeholder="Create a new password"
                   />
                 </div>
-                <div className="space-y-2.5">
-                  <label className="label" htmlFor="confirmNewPassword">
+                <div className="space-y-1.5">
+                  <label
+                    className="label text-sm font-medium text-slate-200 block px-5 md:px-6"
+                    htmlFor="confirmNewPassword"
+                  >
                     Confirm new password
                   </label>
                   <input
                     id="confirmNewPassword"
                     type="password"
-                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-gradient-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200"
                     {...form.register("confirmNewPassword", {
                       required: true,
                     })}
+                    placeholder="Confirm your new password"
                   />
                 </div>
-                <div className="flex items-center justify-center gap-4 pb-3">
+                <div className="flex items-center justify-center gap-4 pt-3">
                   <button
-                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
+                    className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 active:brightness-95 text-white font-semibold rounded-3xl transition-all duration-200 min-w-[9rem] shadow-lg hover:shadow-amber-500/20"
                     type="submit"
                     disabled={changePasswordMutation.isPending}
                   >
@@ -530,7 +542,7 @@ function ProfilePage() {
                       : "Update password"}
                   </button>
                   <button
-                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
+                    className="px-6 py-2.5 bg-slate-600/40 hover:bg-slate-600/60 text-slate-100 font-semibold rounded-3xl transition-all duration-200 min-w-[9rem]"
                     type="button"
                     onClick={handleCloseModal}
                     disabled={changePasswordMutation.isPending}
@@ -539,7 +551,7 @@ function ProfilePage() {
                   </button>
                 </div>
                 {changePasswordMutation.isError && (
-                  <p className="text-sm text-rose-300">
+                  <p className="text-sm text-rose-300 pt-1">
                     {changePasswordMutation.error instanceof Error
                       ? changePasswordMutation.error.message
                       : "Failed to update password."}
