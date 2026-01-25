@@ -1,11 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import LightRays from "../components/LightRays";
 
 const ComingSoon = () => {
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 }); // Reset to center default
-
+  const initialOrientation = useRef<{ beta: number; gamma: number } | null>(null);
+  const [permissionGranted, setPermissionGranted] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
+    // Check if we need permission (iOS 13+)
+    try {
+      if (
+        typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof (DeviceOrientationEvent as any).requestPermission === 'function'
+      ) {
+        setIsIOS(true);
+      } else {
+        setPermissionGranted(true); // Non-iOS doesn't need explicit permission usually
+      }
+    } catch (e) {
+      // Fallback if DeviceOrientationEvent is missing or errors
+      setPermissionGranted(true);
+    }
+
     const handleMouseMove = (e: MouseEvent) => {
       // Track mouse even if not hovering container, or stick to window
       const x = e.clientX / window.innerWidth;
@@ -14,36 +31,66 @@ const ComingSoon = () => {
     };
 
     const handleOrientation = (e: DeviceOrientationEvent) => {
+      // If we haven't received valid data yet, don't update
       if (e.beta === null || e.gamma === null) return;
 
-      // Gamma: Left/Right tilt [-90, 90]
-      // Map -25 to 25 degrees to 0-1 for X axis
-      const gamma = Math.max(-25, Math.min(25, e.gamma));
-      const x = (gamma + 25) / 50;
+      if (!initialOrientation.current) {
+        initialOrientation.current = { beta: e.beta, gamma: e.gamma };
+        return;
+      }
 
-      // Beta: Front/Back tilt [-180, 180]
-      // Map 20 to 70 degrees to 0-1 for Y axis (holding phone at ~45 deg)
-      const beta = Math.max(20, Math.min(70, e.beta));
-      const y = (beta - 20) / 50;
+      // Calculate change from initial position
+      // X axis (Gamma - Left/Right): +/- 30 degrees range
+      const maxTilt = 30;
+      const deltaGamma = e.gamma - initialOrientation.current.gamma;
+      // Clamp delta to range [-30, 30], then map to [0, 1] (0.5 is center)
+      const x = Math.min(Math.max((deltaGamma + maxTilt) / (maxTilt * 2), 0), 1);
+
+      // Y axis (Beta - Front/Back): +/- 30 degrees range
+      const deltaBeta = e.beta - initialOrientation.current.beta;
+      const y = Math.min(Math.max((deltaBeta + maxTilt) / (maxTilt * 2), 0), 1);
 
       setMousePos({ x, y });
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('deviceorientation', handleOrientation);
+    if (permissionGranted) {
+      window.addEventListener('deviceorientation', handleOrientation);
+    }
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('deviceorientation', handleOrientation);
     };
-  }, []);
+  }, [permissionGranted]);
+
+  const handlePermission = async () => {
+    if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+      try {
+        const response = await (DeviceOrientationEvent as any).requestPermission();
+        if (response === 'granted') {
+          setPermissionGranted(true);
+        }
+      } catch (e) {
+        console.error("Gyro permission failed", e);
+      }
+    }
+  };
 
   // Calculate light direction for shadows
   const lightAngleX = (mousePos.x - 0.5) * 100;
   const lightAngleY = (mousePos.y - 0.5) * 100;
 
   return (
-    <div className="relative flex h-screen w-full overflow-hidden bg-gradient-to-b from-[#1a1026] via-[#0d0716] to-black">
+    <div className="relative flex h-[100dvh] w-full touch-none select-none overflow-hidden bg-gradient-to-b from-[#1a1026] via-[#0d0716] to-black overscroll-none">
+      {isIOS && !permissionGranted && (
+        <button
+          onClick={handlePermission}
+          className="absolute left-1/2 top-4 z-50 -translate-x-1/2 rounded-full border border-white/20 bg-black/50 px-4 py-2 text-xs font-medium tracking-widest text-white backdrop-blur-md transition-all hover:bg-white/10"
+        >
+          ENABLE MOTION
+        </button>
+      )}
       {/* ================= INLINE FONT (NO OTHER FILES TO TOUCH) ================= */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
@@ -88,6 +135,11 @@ const ComingSoon = () => {
         {/* LEFT SIDE */}
         <div className="flex h-auto w-full items-center justify-center lg:h-full lg:w-1/2 lg:justify-start">
           <div className="flex flex-col items-center text-center pt-0 lg:items-start lg:text-left lg:pl-24 lg:pt-0">
+            <img
+              src="/incridea.png.png"
+              alt="Incridea Logo"
+              className="w-32 mb-8 lg:w-40 lg:mb-10 object-contain"
+            />
             <div className="relative mb-4">
 
               <h1 className="text-[40px] font-semibold leading-none tracking-[0.28em] text-white lg:text-[72px]">
