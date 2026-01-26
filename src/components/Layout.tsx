@@ -16,17 +16,19 @@ function Layout() {
   // Removed direct localStorage monitoring as we rely on server session
   // But for logout, we should clear it immediately for better UX
 
-  const handleLogout = () => {
-    // Clear local state immediately
-    localStorage.removeItem('token')
-    localStorage.removeItem('userName')
-    localStorage.removeItem('userId')
-    setToken(null)
-    window.location.reload()
-    // Fire API call
-    logoutUser().catch((error) => {
+  const handleLogout = async () => {
+    try {
+      await logoutUser()
+    } catch (error) {
       console.error('Logout failed', error)
-    })
+    } finally {
+      // Clear local state immediately
+      localStorage.removeItem('token')
+      localStorage.removeItem('userName')
+      localStorage.removeItem('userId')
+      setToken(null)
+      window.location.reload()
+    }
   }
 
   const fetchProfile = async () => {
