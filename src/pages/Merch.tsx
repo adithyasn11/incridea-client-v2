@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { motion } from "framer-motion";
 import LiquidGlassCard from "../components/liquidglass/LiquidGlassCard";
 import MerchBuyModal from "../components/merch/MerchBuyModal";
+import TShirt3DModel from "../components/merch/TShirt3DModel";
 import shirt from "../assets/merch/shirt.svg";
 
 const Merch = () => {
@@ -114,19 +115,31 @@ const Merch = () => {
                 </motion.button>
               </div>
 
-              {/* Right Panel - Visual (3D Model placeholder) */}
-              <div className="flex items-center justify-center order-1 lg:order-2">
+              {/* Right Panel - 3D Model Viewer */}
+              <div className="flex items-center justify-center order-1 lg:order-2 min-h-[400px]">
                 <motion.div
                   initial={{ scale: 0.9, rotate: -5 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ delay: 0.2, type: "spring" }}
-                  className="w-full aspect-square flex items-center justify-center bg-gradient-to-br from-purple-900/20 to-indigo-900/20 rounded-xl border border-white/10 p-4 sm:p-6 md:p-8"
+                  className="w-full h-full min-h-[400px] flex items-center justify-center bg-black/80 rounded-xl border border-white/10 overflow-hidden"
                 >
-                  <img
-                    src={tshirtItem.image}
-                    alt={tshirtItem.name}
-                    className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
-                  />
+                  <Suspense
+                    fallback={
+                      <div className="w-full h-full flex flex-col items-center justify-center p-8">
+                        <div className="relative mb-6">
+                          <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+                        </div>
+                        <img
+                          src={shirt}
+                          alt={tshirtItem.name}
+                          className="w-48 h-48 object-contain opacity-30"
+                        />
+                        <p className="mt-4 text-gray-400 text-sm animate-pulse">Loading 3D Model...</p>
+                      </div>
+                    }
+                  >
+                    <TShirt3DModel modelPath="/models/shirt.glb" />
+                  </Suspense>
                 </motion.div>
               </div>
             </div>
