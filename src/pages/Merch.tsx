@@ -26,7 +26,6 @@ const styles = `
 
 const Merch = () => {
   const [showModal, setShowModal] = useState(false);
-  const defaultSize = "M";
 
   const tshirtItem = {
     id: "tshirt",
@@ -165,8 +164,8 @@ const Merch = () => {
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.8 }}
             >
-              {/* T-SHIRT VISUAL CARD */}
-              <div className="relative w-full aspect-square bg-[#1a1b2e]/80 backdrop-blur-xl rounded-3xl border border-white/10 flex flex-col items-center justify-center p-6 sm:p-8 overflow-hidden group">
+              {/* T-SHIRT 3D MODEL CARD */}
+              <div className="relative w-full aspect-square bg-black/80 backdrop-blur-xl rounded-3xl border border-white/10 flex flex-col items-center justify-center overflow-hidden group">
                   
                   {/* Purple glow background inside card */}
                   <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-transparent opacity-60" />
@@ -174,20 +173,29 @@ const Merch = () => {
                   {/* Scanlines Animation */}
                   <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_40%,rgba(52,211,153,0.05)_50%,transparent_60%)] bg-[length:100%_200%] pointer-events-none animate-scan opacity-50" />
 
-                  {/* Inner Dark Card holding the shirt */}
-                  <div className="relative w-3/4 h-3/4 bg-[#0f111a] rounded-2xl flex items-center justify-center shadow-2xl border border-white/5 group-hover:border-emerald-500/20 transition-colors duration-500">
-                    {/* Placeholder Grid inside inner card */}
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
-                    
-                    <img
-                        src={shirt}
-                        alt="T-Shirt 3D"
-                        className="w-[65%] h-[65%] object-contain z-10 drop-shadow-[0_0_20px_rgba(139,92,246,0.2)] group-hover:scale-105 transition-transform duration-500"
-                    />
+                  {/* 3D Model Viewer */}
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    <Suspense
+                      fallback={
+                        <div className="w-full h-full flex flex-col items-center justify-center p-8">
+                          <div className="relative mb-6">
+                            <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+                          </div>
+                          <img
+                            src={shirt}
+                            alt="T-Shirt"
+                            className="w-48 h-48 object-contain opacity-30"
+                          />
+                          <p className="mt-4 text-gray-400 text-sm animate-pulse">Loading 3D Model...</p>
+                        </div>
+                      }
+                    >
+                      <TShirt3DModel modelPath="/models/shirt.glb" />
+                    </Suspense>
                   </div>
 
                   {/* Text Label */}
-                  <div className="mt-6 sm:mt-8 text-white font-serif text-lg sm:text-xl tracking-wide z-10 opacity-90">
+                  <div className="absolute bottom-6 text-white font-serif text-lg sm:text-xl tracking-wide z-10 opacity-90">
                     T-Shirt
                   </div>
               </div>
@@ -212,26 +220,10 @@ const Merch = () => {
                     <span className="text-2xl sm:text-3xl font-black text-white font-mono">₹{tshirtItem.price}</span>
                 </div>
               </div>
+            </motion.div>
 
-              {/* Right Panel - Visual (3D Model placeholder) */}
-              <div className="flex items-center justify-center order-1 lg:order-2">
-                <motion.div
-                  initial={{ scale: 0.9, rotate: -5 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.2, type: "spring" }}
-                  className="w-full aspect-square flex items-center justify-center bg-gradient-to-br from-purple-900/20 to-indigo-900/20 rounded-xl border border-white/10 p-4 sm:p-6 md:p-8"
-                >
-                  <img
-                    src={tshirtItem.image}
-                    alt={tshirtItem.name}
-                    className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
-                  />
-                </motion.div>
-              </div>
-            </div>
-          </LiquidGlassCard>
-        </motion.div>
-      </div>
+          </div>
+        </div>
 
         {/* Modal */}
         <MerchBuyModal
@@ -239,7 +231,6 @@ const Merch = () => {
           onClose={() => setShowModal(false)}
           productName={tshirtItem.name}
           productPrice={tshirtItem.price}
-          productSize={defaultSize} 
         />
       </div>
     </div>
