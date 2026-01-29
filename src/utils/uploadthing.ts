@@ -11,4 +11,6 @@ export type ClientUploadRouter = {
   }
 }
 
-export const UploadButton = generateUploadButton<any>();
+export const UploadButton = generateUploadButton<any>({
+  url: `${import.meta.env.VITE_API_URL}/api/uploadthing`,
+});

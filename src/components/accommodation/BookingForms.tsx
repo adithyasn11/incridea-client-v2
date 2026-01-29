@@ -5,24 +5,31 @@ import { z } from 'zod'
 import { UploadButton } from '../../utils/uploadthing'
 import { toast } from 'react-toastify'
 import { bookIndividual } from '../../api/accommodation'
-import { Loader2 } from 'lucide-react'
+import { Loader2, X, FileText } from 'lucide-react'
 
 // Schemas
 const individualSchema = z.object({
-  gender: z.enum(['MALE', 'FEMALE']),
+
   checkIn: z.string().min(1, 'Check-in time is required'),
   checkOut: z.string().min(1, 'Check-out time is required'),
-  idCard: z.string().url('ID Card image is required'),
+  idCard: z.string({ message: 'Please upload your college id photo' }).url('ID Card image is required'),
 })
 
 type IndividualForm = z.infer<typeof individualSchema>
 
+
+import PaymentProcessingModal from '../PaymentProcessingModal'
+import { useAuth } from '../../hooks/useAuth'
+
 export const IndividualBookingForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const [loading, setLoading] = useState(false)
+  const { user } = useAuth()
+  const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
+  
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<IndividualForm>({
     resolver: zodResolver(individualSchema),
     defaultValues: {
-      gender: 'MALE'
+
     }
   })
 
@@ -65,12 +72,14 @@ export const IndividualBookingForm = ({ onSuccess }: { onSuccess: () => void }) 
           description: "Accommodation Booking",
           order_id: payment.orderId,
           handler: function (_response: any) {
-             toast.success('Payment Successful!')
-             // Ideally verify payment here
-             onSuccess()
+             // Open Modal to track status
+             setPaymentModalOpen(true)
+             // onSuccess() // Do not call immediate onSuccess, let modal handle it
           },
           prefill: {
-              // We could pass user details if available
+              name: user?.name,
+              email: user?.email,
+              contact: user?.phoneNumber
           },
           theme: {
               color: '#3399cc'
@@ -91,16 +100,10 @@ export const IndividualBookingForm = ({ onSuccess }: { onSuccess: () => void }) 
   }
 
   return (
+    <>
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-white">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Gender</label>
-          <select {...register('gender')} className="w-full bg-white/10 border border-white/20 rounded p-2 focus:outline-none focus:border-primary-500">
-            <option value="MALE" className="text-black">Male</option>
-            <option value="FEMALE" className="text-black">Female</option>
-          </select>
-          {errors.gender && <p className="text-red-400 text-xs mt-1">{errors.gender.message}</p>}
-        </div>
+
 
         <div>
            {/* Date pickers - simple datetime-local for now */}
@@ -117,17 +120,49 @@ export const IndividualBookingForm = ({ onSuccess }: { onSuccess: () => void }) 
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">ID Card (Government/College ID)</label>
+        <label className="block text-sm font-medium mb-1">ID Card (College ID)</label>
         <div className="border border-white/20 border-dashed rounded p-4 flex flex-col items-center justify-center bg-white/5">
             {idCard ? (
-                <div className="text-green-400 text-sm">ID Card Uploaded</div>
+                <div className="relative w-full h-48 group">
+                    {idCard.toLowerCase().endsWith('.pdf') ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-white/10 text-white rounded-md p-4">
+                            <FileText className="w-12 h-12 mb-2 text-white/70" />
+                            <span className="text-xs text-white/70 break-all text-center max-w-full truncate px-2">
+                                {idCard.split('/').pop()}
+                            </span>
+                        </div>
+                    ) : (
+                        <img 
+                          src={idCard} 
+                          alt="ID Card" 
+                          className="w-full h-full object-contain rounded-md" 
+                        />
+                    )}
+                    
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center gap-2 rounded-md transition-opacity">
+                        <button
+                            type="button"
+                            onClick={() => setValue('idCard', '')}
+                            className="p-2 bg-red-500/80 hover:bg-red-500 rounded-full text-white transition-colors backdrop-blur-sm"
+                            title="Remove Image"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
             ) : (
                 <UploadButton
                     endpoint="accommodationIdProof"
                     onClientUploadComplete={(res) => {
-                        if (res?.[0]?.url) {
-                            setValue('idCard', res[0].url)
+                        console.log('Upload response:', res)
+                        const file = res?.[0]
+                        const url = file?.serverData?.fileUrl || file?.url
+                        if (url) {
+                            setValue('idCard', url)
                             toast.success('Upload complete')
+                        } else {
+                            console.error('Upload successful but no URL found:', file)
+                            toast.error('Upload complete but URL missing')
                         }
                     }}
                     onUploadError={(error: Error) => {
@@ -143,6 +178,17 @@ export const IndividualBookingForm = ({ onSuccess }: { onSuccess: () => void }) 
         {loading ? <Loader2 className="animate-spin" /> : 'Book & Pay'}
       </button>
     </form>
+    
+    <PaymentProcessingModal 
+        isOpen={isPaymentModalOpen} 
+        onClose={() => {
+            setPaymentModalOpen(false)
+            onSuccess() // Refresh or cleanup on close
+        }}
+        userId={user?.id}
+        paymentType='ACCOMMODATION'
+    />
+    </>
   )
 }
 

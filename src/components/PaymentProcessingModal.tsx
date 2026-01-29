@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import { useSocket } from '../hooks/useSocket'
@@ -7,12 +8,14 @@ import { FaIdCard, FaSpinner } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { getPaymentStatus } from '../api/registration'
 
+
 interface PaymentProcessingModalProps {
   isOpen: boolean
   onClose: () => void
   userId: number | string | undefined
   completedPid?: string | null
   failed?: boolean
+  paymentType?: 'FEST' | 'ACCOMMODATION'
 }
 
 type StepStatus = 'pending' | 'loading' | 'success' | 'error' | 'skipped'
@@ -26,9 +29,10 @@ const glassCardStyle = {
     WebkitBackdropFilter: "brightness(1.1) blur(1px)",
 }
 
-export default function PaymentProcessingModal({ isOpen, onClose, userId, completedPid, failed }: PaymentProcessingModalProps) {
+export default function PaymentProcessingModal({ isOpen, onClose, userId, completedPid, failed, paymentType = 'FEST' }: PaymentProcessingModalProps) {
   const { socket } = useSocket()
   const navigate = useNavigate()
+
   
   const [steps, setSteps] = useState({
     payment: (failed ? 'error' : 'success') as StepStatus, 
@@ -83,18 +87,47 @@ export default function PaymentProcessingModal({ isOpen, onClose, userId, comple
         setSteps(prev => ({ ...prev, payment: 'error', pid: 'error' }))
     }
 
+    // Accommodation specific events
+    const handleBookingConfirmed = () => {
+        if (paymentType === 'ACCOMMODATION') {
+            setSteps(prev => ({ ...prev, payment: 'success', pid: 'success' })) // Treat 'pid' step as 'booking' step internally
+            setTimeout(() => {
+                setShowSlotMachine(true)
+            }, 500)
+        }
+    }
+
+    const handlePaymentSuccess = () => {
+         // Generic success, waiting for next step
+         setSteps(prev => ({ ...prev, payment: 'success' }))
+         if (paymentType === 'ACCOMMODATION') {
+             // For accommodation, success payment usually means confirmed unless manual confirm step exists
+             // But we wait for 'booking_confirmed' or just show success
+         }
+    }
+
     socket.on('generating_pid', handleGeneratingPid)
     socket.on('pid_generated', handlePidGenerated)
     socket.on('payment_failed', handlePaymentFailed)
+    socket.on('payment_success', handlePaymentSuccess)
+    socket.on('booking_confirmed', handleBookingConfirmed)
     
     // Initial Status Check
     const checkStatus = async () => {
         try {
-            const statusData = await getPaymentStatus()
-            if (statusData.pid) {
-                 setSteps(prev => ({ ...prev, pid: 'success', payment: 'success' }))
-                 setFinalPid(statusData.pid)
-                 setShowSlotMachine(true)
+            const apiType = paymentType === 'ACCOMMODATION' ? 'ACCOMMODATION' : 'FEST_REGISTRATION'
+             // @ts-ignore
+            const statusData = await getPaymentStatus(apiType)
+            
+            if (statusData.status === 'success') {
+                if (paymentType === 'ACCOMMODATION') {
+                     setSteps(prev => ({ ...prev, pid: 'success', payment: 'success' }))
+                     setShowSlotMachine(true)
+                } else if (statusData.pid) {
+                     setSteps(prev => ({ ...prev, pid: 'success', payment: 'success' }))
+                     setFinalPid(statusData.pid)
+                     setShowSlotMachine(true)
+                }
             } else if (statusData.processingStep === 'GENERATING_PID') {
                  setSteps(prev => ({ ...prev, pid: 'loading', payment: 'success' }))
             }
@@ -107,11 +140,13 @@ export default function PaymentProcessingModal({ isOpen, onClose, userId, comple
         socket.off('generating_pid', handleGeneratingPid)
         socket.off('pid_generated', handlePidGenerated)
         socket.off('payment_failed', handlePaymentFailed)
+        socket.off('payment_success', handlePaymentSuccess)
+        socket.off('booking_confirmed', handleBookingConfirmed)
         socket.emit('leave-room', room)
     }
-  }, [socket, userId, isOpen])
+  }, [socket, userId, isOpen, paymentType])
 
-  // Confetti Effect when Slot Machine finishes (simulated delay or pure visual)
+  // Confetti Effect
   const triggerConfetti = () => {
       if (hasTriggeredConfetti.current) return
       hasTriggeredConfetti.current = true
@@ -143,8 +178,8 @@ export default function PaymentProcessingModal({ isOpen, onClose, userId, comple
   }
 
   if (!isOpen) return null
-
-  return (
+  
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
        <motion.div 
          initial={{ opacity: 0, scale: 0.95 }}
@@ -158,7 +193,10 @@ export default function PaymentProcessingModal({ isOpen, onClose, userId, comple
 
          <button
             onClick={() => {
-                if(finalPid) navigate('/') // Redirect home on close if done
+                // If done, redirect to home
+                if (steps.payment === 'success' && steps.pid === 'success') {
+                  navigate('/')
+                }
                 onClose()
             }}
             className="absolute right-4 top-4 text-white/50 hover:text-white transition-colors z-10"
@@ -168,7 +206,7 @@ export default function PaymentProcessingModal({ isOpen, onClose, userId, comple
 
           {!showSlotMachine ? (
               <div className="space-y-6 py-4">
-                  <h2 className="text-2xl font-bold text-white text-center">Processing Registration</h2>
+                  <h2 className="text-2xl font-bold text-white text-center">Processing {paymentType === 'ACCOMMODATION' ? 'Booking' : 'Registration'}</h2>
                   
                   <div className="space-y-4">
                       {/* Step 1: Payment Verification */}
@@ -184,9 +222,10 @@ export default function PaymentProcessingModal({ isOpen, onClose, userId, comple
                           <StepItem 
                             icon={<FaIdCard />} 
                             label={
-                                steps.pid === 'loading' ? "Generating PID..." : 
-                                steps.pid === 'success' ? "PID Generated" :
-                                "Generate PID"
+                                paymentType === 'ACCOMMODATION' ? 
+                                    (steps.pid === 'loading' ? 'Confirming Booking...' : steps.pid === 'success' ? 'Booking Confirmed' : 'Confirm Booking')
+                                :
+                                    (steps.pid === 'loading' ? "Generating PID..." : steps.pid === 'success' ? "PID Generated" : "Generate PID")
                             }
                             status={steps.pid} 
                           />
@@ -201,14 +240,19 @@ export default function PaymentProcessingModal({ isOpen, onClose, userId, comple
                   )}
               </div>
           ) : (
-             <PIDReveal 
-                pid={finalPid || "INC-0000"} 
-                onComplete={triggerConfetti} 
-             />
+             paymentType === 'ACCOMMODATION' ? (
+                 <BookingConfirmation onComplete={triggerConfetti} />
+             ) : (
+                 <PIDReveal 
+                    pid={finalPid || "INC-0000"} 
+                    onComplete={triggerConfetti} 
+                 />
+             )
           )}
 
        </motion.div>
-    </div>
+    </div>,
+    document.body
   )
 }
 
@@ -229,6 +273,36 @@ function StepItem({ icon, label, status }: { icon: any, label: string, status: S
                 icon} 
             </div>
             <span className="font-medium">{label}</span>
+        </div>
+    )
+}
+
+function BookingConfirmation({ onComplete }: { onComplete: () => void }) {
+    useEffect(() => {
+        onComplete()
+    }, [])
+
+    return (
+        <div className="py-8 flex flex-col items-center justify-center space-y-6 text-center">
+             <motion.div
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+             >
+                <div className="h-16 w-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4 text-emerald-400 text-3xl">
+                    <IoCheckmarkCircle />
+                </div>
+                <h2 className="text-3xl font-bold bg-linear-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent">
+                    Booking Confirmed!
+                </h2>
+                <p className="text-slate-400 mt-2">Your accommodation has been successfully booked.</p>
+             </motion.div>
+
+             <div className="p-4 bg-white/5 rounded-xl border border-white/10 max-w-sm">
+                 <p className="text-sm text-slate-300">
+                     We have sent a confirmation email with the receipt to your registered email address.
+                 </p>
+             </div>
         </div>
     )
 }
@@ -341,3 +415,5 @@ function SlotDigit({ digit, delay }: { digit: string, delay: number }) {
         </motion.span>
     )
 }
+
+
