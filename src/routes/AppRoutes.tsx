@@ -24,13 +24,13 @@ const AuthRedirect = () => {
   const token = params.get("token");
 
   if (token) {
-    localStorage.setItem("token", token);
+    // Rely on cookie
     window.location.href = "/";
     return null;
   }
 
   window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${
-    window.location.href
+    window.location.origin
   }`;
   return null;
 };
@@ -45,8 +45,8 @@ const ResetRedirect = () => {
 function AppRoutes() {
   return (
     <Routes>
+    <Route path="/" element={<HomePage />} />
       <Route element={<Layout />}>
-        <Route path="/" element={<HomePage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/events" element={<EventsPage />} />

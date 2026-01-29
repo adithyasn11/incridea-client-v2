@@ -17,6 +17,33 @@ export default function AccommodationPage() {
     queryFn: getAccommodationStats,
   })
 
+  // Auth Guard
+  const { isError: isAuthError, isLoading: isAuthLoading } = useQuery({
+      queryKey: ['me'],
+      queryFn: async () => {
+          try {
+             const { user } = await import('../api/auth').then(m => m.fetchMe())
+             return user
+          } catch (e) {
+              throw e
+          }
+      },
+      retry: false
+  })
+
+  if (isAuthError) {
+       window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${window.location.href}`
+       return null
+  }
+
+  if (isAuthLoading) {
+      return (
+        <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-slate-50">
+             <Loader2 className="w-10 h-10 animate-spin text-purple-500" />
+        </div>
+      )
+  }
+
   // Simple check - in real app might want to check user gender context too if applicable
   const accommodationsFull = stats && stats.boys.available <= 0 && stats.girls.available <= 0
 

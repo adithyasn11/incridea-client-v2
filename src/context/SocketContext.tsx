@@ -17,7 +17,15 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Connect to the server. Adjust the URL if needed.
-    const socketInstance = io(import.meta.env.VITE_API_URL || 'http://localhost:8000')
+    let socketUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+    if (socketUrl.endsWith('/api')) {
+        socketUrl = socketUrl.replace(/\/api$/, '')
+    }
+
+    const socketInstance = io(socketUrl, {
+        withCredentials: true,
+        transports: ['websocket', 'polling']
+    })
 
     socketInstance.on('connect', () => {
       // eslint-disable-next-line no-console

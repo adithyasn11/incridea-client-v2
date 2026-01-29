@@ -32,13 +32,13 @@ export default function EventRegistration({
   type,
   fees,
 }: EventRegistrationProps) {
-  const token = localStorage.getItem("token");
-  const user = token
-    ? {
-      name: localStorage.getItem("userName"),
-      id: Number(localStorage.getItem("userId")),
-    }
-    : null;
+  const { data: userData, isLoading: isUserLoading } = useQuery({
+    queryKey: ["me"],
+    queryFn: fetchMe,
+  });
+
+  const user = userData?.user;
+  const token = !!user; // Derived auth state
   const queryClient = useQueryClient();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -125,11 +125,7 @@ export default function EventRegistration({
     );
   }
 
-  const { data: userData, isLoading: isUserLoading } = useQuery({
-    queryKey: ["me"],
-    queryFn: fetchMe,
-    enabled: !!token,
-  });
+  // userData fetch moved up
 
   const isFestRegistered = !!userData?.user?.pid;
 
@@ -167,7 +163,7 @@ export default function EventRegistration({
 
   // Already registered/in a team
   if (team) {
-    const isLeader = team.Leader?.User?.id === user.id;
+    const isLeader = String(team.Leader?.User?.id) === String(user.id);
     return (
 
       <div className="w-full rounded-lg border border-sky-500/30 bg-sky-500/10 p-4 space-y-3">

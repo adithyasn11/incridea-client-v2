@@ -2,12 +2,12 @@ import { NavLink } from "react-router-dom";
 import MobileMenu from "./MobileMenu";
 
 interface NavbarProps {
-  token: string | null;
+  isAuthenticated: boolean;
   onLogout: () => void;
   isLoading: boolean;
 }
 
-const Navbar = ({ token, onLogout, isLoading }: NavbarProps) => {
+const Navbar = ({ isAuthenticated, onLogout, isLoading }: NavbarProps) => {
   return (
     <div className="fixed top-0 left-0 w-full z-50 px-4 md:px-14 pt-6 pb-2 md:pt-8 md:pb-4 flex justify-between items-center lg:grid lg:grid-cols-3 lg:items-start bg-transparent">
       {/* Logo */}
@@ -50,7 +50,7 @@ const Navbar = ({ token, onLogout, isLoading }: NavbarProps) => {
 
       {/* Right User Section */}
       <div className="flex items-center gap-2 md:gap-4 ml-auto lg:ml-60 justify-end lg:mt-5">
-        {token ? (
+        {isAuthenticated ? (
           <div className="flex items-center gap-2 md:gap-4">
             <button
               onClick={onLogout}
@@ -89,7 +89,7 @@ const Navbar = ({ token, onLogout, isLoading }: NavbarProps) => {
             </NavLink>
           )
         )}
-        <MobileMenu onLogout={onLogout} isAuthenticated={!!token} />
+        <MobileMenu onLogout={onLogout} isAuthenticated={isAuthenticated} />
       </div>
     </div>
   );
