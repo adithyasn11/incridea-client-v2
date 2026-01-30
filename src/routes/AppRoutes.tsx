@@ -6,6 +6,7 @@ import AboutPage from "../pages/AboutPage";
 import EventsPage from "../pages/EventsPage";
 import EventDetailPage from "../pages/EventDetailPage";
 import RefundPage from "../pages/RefundPage";
+import MerchPage from "../pages/Merch";
 import GuidelinesPage from "../pages/GuidelinesPage";
 import PrivacyPage from "../pages/PrivacyPage";
 import RulesPage from "../pages/RulesPage";
@@ -62,6 +63,7 @@ function AppRoutes() {
         <Route path="/accommodation" element={<AccommodationPage />} />
         <Route path="/techteam" element={<TechTeamPage />} />
         <Route path="/coreteam" element={<CoreTeamPage />} />
+        <Route path="/merch" element={<MerchPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
       <Route path="/comingsoon" element={<ComingSoon />} />
