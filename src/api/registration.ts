@@ -85,10 +85,12 @@ export async function verifyPaymentSignature(response: any) {
   return data
 }
 
-export async function getPaymentStatus() {
+export async function getPaymentStatus(type?: string) {
   try {
-     const { data } = await apiClient.get<any>('/payment/my-status')
-     if (data.status === 'success' && data.pid && data.receipt) {
+     const url = type ? `/payment/my-status?type=${type}` : '/payment/my-status'
+     const { data } = await apiClient.get<any>(url)
+     if (data.status === 'success') {
+         // Accept success even without PID/Receipt if logic allows (for accommodation without PID gen)
          return { 
            status: 'success', 
            message: 'Payment verified', 

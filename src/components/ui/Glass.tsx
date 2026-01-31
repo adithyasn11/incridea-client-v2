@@ -26,7 +26,7 @@ const Glass = <T extends React.ElementType = "div">({
         backgroundColor: "rgba(18, 20, 28, 0.6)",
         ...style,
       }}
-      {...props}
+      {...(props as any)}
     >
       <div
         className="pointer-events-none absolute inset-0 animate-shine bg-[linear-gradient(120deg,transparent_35%,rgba(255,255,255,0.05)_50%,transparent_65%)] bg-size-[280%_100%]"

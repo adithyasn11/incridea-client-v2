@@ -247,10 +247,6 @@ function EventDetailPage() {
                   />
                   <InfoPill label="Venue" value={event.venue ?? "TBA"} />
                   <InfoPill
-                    label="Fee"
-                    value={event.fees ? `₹${event.fees}` : "Free"}
-                  />
-                  <InfoPill
                     label="Capacity"
                     value={event.maxTeams ? `${event.maxTeams}` : "Unlimited"}
                   />
@@ -259,7 +255,6 @@ function EventDetailPage() {
                 {/* Action Buttons */}
                 <div className="pt-1 sm:pt-2">
                   <EventRegistration
-                    fees={event.fees ?? 0}
                     eventId={event.id}
                     type={event.eventType}
                   />

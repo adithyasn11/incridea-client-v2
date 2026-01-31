@@ -6,6 +6,7 @@ import AboutPage from "../pages/AboutPage";
 import EventsPage from "../pages/EventsPage";
 import EventDetailPage from "../pages/EventDetailPage";
 import RefundPage from "../pages/RefundPage";
+import MerchPage from "../pages/Merch";
 import GuidelinesPage from "../pages/GuidelinesPage";
 import PrivacyPage from "../pages/PrivacyPage";
 import RulesPage from "../pages/RulesPage";
@@ -24,7 +25,7 @@ const AuthRedirect = () => {
   const token = params.get("token");
 
   if (token) {
-    localStorage.setItem("token", token);
+    // Rely on cookie
     window.location.href = "/";
     return null;
   }
@@ -43,8 +44,8 @@ const ResetRedirect = () => {
 function AppRoutes() {
   return (
     <Routes>
+    <Route path="/" element={<HomePage />} />
       <Route element={<Layout />}>
-        <Route path="/" element={<HomePage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/events" element={<EventsPage />} />
@@ -62,6 +63,7 @@ function AppRoutes() {
         <Route path="/techteam" element={<TechTeamPage />} />
         <Route path="/coreteam" element={<CoreTeamPage />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/merch" element={<MerchPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
       <Route path="/comingsoon" element={<ComingSoon />} />

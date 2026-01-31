@@ -25,7 +25,6 @@ export interface BranchRepEvent {
   organisers: BranchRepOrganiser[]
   description: string | null
   image: string | null
-  fees: number
   venue: string | null
   minTeamSize: number
   maxTeamSize: number
@@ -38,7 +37,6 @@ export interface CreateBranchRepEventPayload {
   name: string
   description?: string
   venue?: string
-  fees?: number
   minTeamSize?: number
   maxTeamSize?: number
   maxTeams?: number | null
@@ -52,7 +50,6 @@ export interface BranchRepEventDetails {
   name: string
   description: string | null
   image: string | null
-  fees: number
   venue: string | null
   minTeamSize: number
   maxTeamSize: number
@@ -134,7 +131,6 @@ export async function updateBranchRepEvent(
     name: string
     description: string | null
     venue: string | null
-    fees: number
     minTeamSize: number
     maxTeamSize: number
     maxTeams: number | null

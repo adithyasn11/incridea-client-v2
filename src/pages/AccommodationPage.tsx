@@ -1,21 +1,46 @@
-import { useState } from 'react'
-import { Tab } from '@headlessui/react'
+
 import { useQuery } from '@tanstack/react-query'
-import { IndividualBookingForm, TeamBookingForm } from '../components/accommodation/BookingForms'
+import { IndividualBookingForm } from '../components/accommodation/BookingForms'
 import { getAccommodationStats } from '../api/accommodation'
-import { Loader2, Moon, Users, User, ArrowLeft } from 'lucide-react'
+import { Loader2, Moon, User, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
 import LiquidGlassCard from '../components/liquidglass/LiquidGlassCard'
 
 export default function AccommodationPage() {
-  const [activeTab, setActiveTab] = useState(0)
-
   const { data: stats, isLoading, refetch } = useQuery({
     queryKey: ['accommodationStats'],
     queryFn: getAccommodationStats,
   })
+
+  // Auth Guard
+  const { data: meData, isError: isAuthError, isLoading: isAuthLoading } = useQuery({
+      queryKey: ['me'],
+      queryFn: async () => {
+          try {
+             return await import('../api/auth').then(m => m.fetchMe())
+          } catch (e) {
+              throw e
+          }
+      },
+      retry: false
+  })
+
+  const user = meData?.user
+
+  if (isAuthError) {
+       window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${window.location.href}`
+       return null
+  }
+
+  if (isAuthLoading) {
+      return (
+        <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-slate-50">
+             <Loader2 className="w-10 h-10 animate-spin text-purple-500" />
+        </div>
+      )
+  }
 
   // Simple check - in real app might want to check user gender context too if applicable
   const accommodationsFull = stats && stats.boys.available <= 0 && stats.girls.available <= 0
@@ -54,14 +79,14 @@ export default function AccommodationPage() {
                                 <span className="text-gray-300">Boys</span>
                                 <span className={clsx("font-bold px-2 py-1 rounded text-sm", 
                                     (stats?.boys.available || 0) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400")}>
-                                    {stats?.boys.available} Beds Left
+                                    {stats?.boys.available} Slots Left
                                 </span>
                             </div>
                             <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
                                 <span className="text-gray-300">Girls</span>
                                 <span className={clsx("font-bold px-2 py-1 rounded text-sm", 
                                     (stats?.girls.available || 0) > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400")}>
-                                    {stats?.girls.available} Beds Left
+                                    {stats?.girls.available} Slots Left
                                 </span>
                             </div>
                         </div>
@@ -75,46 +100,27 @@ export default function AccommodationPage() {
                 {/* Booking Forms */}
                 <div className="lg:col-span-2">
                      <LiquidGlassCard>
-                        <Tab.Group selectedIndex={activeTab} onChange={setActiveTab}>
-                            <Tab.List className="flex border-b border-white/10">
-                                <Tab className={({ selected }) =>
-                                    clsx('flex-1 py-4 text-sm font-medium focus:outline-none transition-colors flex justify-center items-center',
-                                    selected ? 'bg-white/10 text-white border-b-2 border-purple-500' : 'text-gray-400 hover:text-white hover:bg-white/5')
-                                }>
-                                    <User className="w-4 h-4 mr-2" /> Individual
-                                </Tab>
-                                <Tab className={({ selected }) =>
-                                    clsx('flex-1 py-4 text-sm font-medium focus:outline-none transition-colors flex justify-center items-center',
-                                    selected ? 'bg-white/10 text-white border-b-2 border-purple-500' : 'text-gray-400 hover:text-white hover:bg-white/5')
-                                }>
-                                    <Users className="w-4 h-4 mr-2" /> Team
-                                </Tab>
-                            </Tab.List>
-                            <Tab.Panels className="p-6">
-                                <Tab.Panel>
-                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                                        {accommodationsFull ? (
-                                            <div className="text-center py-10 text-red-400">
-                                                Accommodation is currently full. Please check back later.
-                                            </div>
-                                        ) : (
-                                            <IndividualBookingForm onSuccess={() => refetch()} />
-                                        )}
-                                    </motion.div>
-                                </Tab.Panel>
-                                <Tab.Panel>
-                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                                         {accommodationsFull ? (
-                                            <div className="text-center py-10 text-red-400">
-                                                Accommodation is currently full. Please check back later.
-                                            </div>
-                                        ) : (
-                                            <TeamBookingForm onSuccess={() => refetch()} />
-                                        )}
-                                    </motion.div>
-                                </Tab.Panel>
-                            </Tab.Panels>
-                        </Tab.Group>
+                        <div className="p-6">
+                            <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-white/10 pb-4">
+                                <User className="w-5 h-5 mr-2 text-purple-500" /> Individual Booking
+                            </h2>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                                {accommodationsFull ? (
+                                    <div className="text-center py-10 text-red-400">
+                                        Accommodation is currently full. Please check back later.
+                                    </div>
+                                ) : !user?.pid ? (
+                                    <div className="text-center py-10 space-y-3">
+                                        <p className="text-red-400">You need to register to Incridea first to book accommodation.</p>
+                                        <Link to="/register" className="inline-block px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors">
+                                            Register for Incridea
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    <IndividualBookingForm onSuccess={() => refetch()} />
+                                )}
+                            </motion.div>
+                        </div>
                      </LiquidGlassCard>
                 </div>
             </div>

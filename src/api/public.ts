@@ -34,7 +34,6 @@ export interface PublicEvent {
   description?: string | null
   image?: string | null
   venue?: string | null
-  fees?: number | null
   maxTeams?: number | null
   minTeamSize: number
   maxTeamSize: number

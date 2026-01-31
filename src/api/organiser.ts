@@ -6,7 +6,6 @@ export interface OrganiserEvent {
   eventType: 'INDIVIDUAL' | 'TEAM' | 'INDIVIDUAL_MULTIPLE_ENTRY' | 'TEAM_MULTIPLE_ENTRY'
   category: string
   venue: string | null
-  fees: number
   startDateTime: string | null
   endDateTime: string | null
   published: boolean

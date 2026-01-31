@@ -108,11 +108,8 @@ export async function logoutUser(): Promise<{ message: string }> {
 
 export async function changePassword(
   payload: ChangePasswordPayload,
-  token: string,
 ): Promise<ChangePasswordResponse> {
-  const { data } = await apiClient.post<ChangePasswordResponse>('/auth/change-password', payload, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
+  const { data } = await apiClient.post<ChangePasswordResponse>('/auth/change-password', payload)
   return data
 }
 
@@ -136,11 +133,10 @@ export interface VerifyMasterKeyResponse {
   message: string
 }
 
-export async function verifyMasterKey(key: string, token: string): Promise<VerifyMasterKeyResponse> {
+export async function verifyMasterKey(key: string): Promise<VerifyMasterKeyResponse> {
   const { data } = await apiClient.post<VerifyMasterKeyResponse>(
     '/auth/verify-master',
-    { key },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { key }
   )
   return data
 }

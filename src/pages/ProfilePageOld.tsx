@@ -21,8 +21,7 @@ import { showToast } from "../utils/toast";
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = null; // Removed localStorage access
   const [showChangePassword, setShowChangePassword] = useState(false);
 
   const toErrorMessage = (error: unknown, fallback: string) =>
@@ -52,9 +51,8 @@ function ProfilePage() {
   };
 
   const profileQuery = useQuery<MeResponse>({
-    queryKey: ["me", token],
+    queryKey: ["me"],
     queryFn: profileQueryFn,
-    enabled: Boolean(token),
   });
 
   const form = useForm<ChangePasswordPayload>({
@@ -69,10 +67,7 @@ function ProfilePage() {
     ChangePasswordResponse,
     ChangePasswordPayload
   > = (payload) => {
-    if (!token) {
-      throw new Error("Unauthorized");
-    }
-    return changePassword(payload, token);
+    return changePassword(payload);
   };
 
   const changePasswordMutation = useMutation<

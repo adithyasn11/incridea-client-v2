@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none">
+  <rect width="160" height="160" rx="20" fill="#111827" />
+  <circle cx="80" cy="70" r="36" fill="#ef4444" stroke="#f97316" stroke-width="3" />
+  <text x="80" y="110" font-size="12" text-anchor="middle" fill="#f3f4f6">Sticker</text>
+</svg>
