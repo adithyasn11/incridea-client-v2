@@ -1,12 +1,11 @@
-import { MdCall, MdLocationOn, MdMail } from 'react-icons/md'
-import { FaYoutube, FaInstagram, FaLinkedin } from 'react-icons/fa'
+
 import LiquidGlassCard from '../components/liquidglass/LiquidGlassCard'
 
 const RulesPage = () => {
   return (
     <>
       <div className="min-h-screen text-white relative overflow-x-hidden">
-        <div 
+        <div
           className="fixed inset-0 w-full h-full -z-10"
           style={{
             backgroundImage: 'url(/temp_event_bg.png)',
@@ -16,7 +15,7 @@ const RulesPage = () => {
             backgroundAttachment: 'fixed'
           }}
         />
-        
+
         <div className="fixed inset-0 bg-black/40 -z-10" />
 
         <div className="fixed inset-0 -z-10 overflow-hidden">
