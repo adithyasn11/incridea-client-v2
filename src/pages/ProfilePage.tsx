@@ -35,10 +35,12 @@ function ProfilePage() {
 
 
 
+  /* 
+   * ProfilePage Logic Refactor
+   * - Strict handling of Loading/Error/Success states
+   * - No auto-redirects prevents infinite loops
+   */
   const profileQueryFn: QueryFunction<MeResponse> = () => {
-    // if (!token) {
-    //   throw new Error("Unauthorized");
-    // }
     return fetchMe();
   };
 
@@ -46,22 +48,42 @@ function ProfilePage() {
     queryKey: ["me"], 
     queryFn: profileQueryFn,
     retry: false, 
+    staleTime: 1000 * 60 * 5, // Cache for 5 mins
   });
 
+  // Handle Error State Explicitly
   if (profileQuery.isError) {
-      window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${encodeURIComponent(window.location.href)}`;
-      return null;
-  }
-  
-  if (profileQuery.isLoading) {
+      const authUrl = import.meta.env.VITE_AUTH_URL || "http://localhost:3001";
+      const loginUrl = `${authUrl}/?redirect=${encodeURIComponent(window.location.href)}`;
+      
       return (
-        <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-slate-50">
-           <div className="text-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-purple-500 mx-auto mb-4"></div>
-           </div>
+        <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-slate-50 flex-col gap-4">
+           <LiquidGlassCard className="p-8 rounded-2xl max-w-md w-full text-center">
+              <h1 className="text-xl font-bold mb-4 text-slate-200">Unable to load profile</h1>
+              <p className="text-sm text-slate-400 mb-6">
+                {(profileQuery.error as Error).message || "We couldn't verify your implementation. Please login again."}
+              </p>
+              <div className="flex gap-4 justify-center">
+                <a 
+                  href="/"
+                  className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-full transition-colors text-sm font-medium"
+                >
+                  Back to Home
+                </a>
+                <a 
+                  href={loginUrl}
+                  className="px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-colors text-sm font-medium shadow-lg hover:shadow-amber-500/20"
+                >
+                  Login
+                </a>
+              </div>
+           </LiquidGlassCard>
         </div>
       );
   }
+  
+  // Handle Loading State - Removed blocking return to match ProfilePageOld behavior
+  // if (profileQuery.isLoading) { ... }
 
   const form = useForm<ChangePasswordPayload>({
     defaultValues: {
@@ -98,7 +120,7 @@ function ProfilePage() {
   );
 
   const user = profileQuery.data?.user;
-  const userName = user?.name ?? user?.email ?? "User";
+  const userName = profileQuery.isLoading ? "Loading..." : (user?.name ?? user?.email ?? "User");
   // Removed unused userEmail
 
   // Removed unused handleResetRequest to avoid noUnusedLocals errors
@@ -182,7 +204,7 @@ function ProfilePage() {
                   <p className="text-2xl lg:text-3xl font-semibold text-slate-50">
                     {userName}
                   </p>
-                  <p className="text-sm text-slate-300">{"No College Info"}</p>
+                  <p className="text-sm text-slate-300">{user?.college || "No College Info"}</p>
                 </div>
 
                 {/* Buttons */}
@@ -532,10 +554,17 @@ function ProfilePage() {
                   <input
                     id="currentPassword"
                     type="password"
-                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200"
-                    {...form.register("currentPassword", { required: true })}
+                    className={`w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200 ${form.formState.errors.currentPassword ? "ring-2 ring-rose-500/50" : ""}`}
+                    {...form.register("currentPassword", { 
+                      required: "Current password is required" 
+                    })}
                     placeholder="Enter your current password"
                   />
+                  {form.formState.errors.currentPassword && (
+                    <p className="text-xs text-rose-300 px-6">
+                      {form.formState.errors.currentPassword.message}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <label
@@ -547,10 +576,18 @@ function ProfilePage() {
                   <input
                     id="newPassword"
                     type="password"
-                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200"
-                    {...form.register("newPassword", { required: true })}
+                    className={`w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200 ${form.formState.errors.newPassword ? "ring-2 ring-rose-500/50" : ""}`}
+                    {...form.register("newPassword", { 
+                      required: "New password is required",
+                      minLength: { value: 8, message: "Password must be at least 8 characters" }
+                    })}
                     placeholder="Create a new password"
                   />
+                  {form.formState.errors.newPassword && (
+                    <p className="text-xs text-rose-300 px-6">
+                      {form.formState.errors.newPassword.message}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <label
@@ -562,12 +599,22 @@ function ProfilePage() {
                   <input
                     id="confirmNewPassword"
                     type="password"
-                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200"
+                    className={`w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200 ${form.formState.errors.confirmNewPassword ? "ring-2 ring-rose-500/50" : ""}`}
                     {...form.register("confirmNewPassword", {
-                      required: true,
+                      required: "Please confirm your password",
+                      validate: (val) => {
+                        if (form.watch("newPassword") != val) {
+                          return "Your passwords do no match";
+                        }
+                      },
                     })}
                     placeholder="Confirm your new password"
                   />
+                  {form.formState.errors.confirmNewPassword && (
+                    <p className="text-xs text-rose-300 px-6">
+                      {form.formState.errors.confirmNewPassword.message}
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center justify-center gap-4 pt-3">
                   <button

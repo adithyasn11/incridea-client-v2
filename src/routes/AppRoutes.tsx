@@ -10,13 +10,13 @@ import GuidelinesPage from "../pages/GuidelinesPage";
 import PrivacyPage from "../pages/PrivacyPage";
 import RulesPage from "../pages/RulesPage";
 import QuizPage from "../pages/QuizPage";
-import ProfilePage from "../pages/ProfilePage";
 import RegisterPage from "../pages/RegisterPage";
 import AccommodationPage from "../pages/AccommodationPage.tsx";
 import TechTeamPage from "../pages/techteam.tsx";
 import CoreTeamPage from "../pages/coreteam.tsx";
 import NotFoundPage from "../pages/NotFoundPage";
 import ComingSoon from "../pages/ComingSoon.tsx";
+import ProfilePage from "@/pages/ProfilePage.tsx";
 
 const AuthRedirect = () => {
   const params = new URLSearchParams(window.location.search);

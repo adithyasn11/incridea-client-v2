@@ -19,6 +19,7 @@ export interface UserPayload {
   email: string
   category: string
   collegeId: number
+  college?: string
   roles: string[]
   isVerified: boolean
   phoneNumber: string

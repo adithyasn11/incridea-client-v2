@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   useMutation,
   useQuery,
   type QueryFunction,
   type MutationFunction,
 } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import {
   changePassword,
   fetchMe,
@@ -20,8 +19,6 @@ import { useForm } from "react-hook-form";
 import { showToast } from "../utils/toast";
 
 function ProfilePage() {
-  const navigate = useNavigate();
-  const token = null; // Removed localStorage access
   const [showChangePassword, setShowChangePassword] = useState(false);
 
   const toErrorMessage = (error: unknown, fallback: string) =>
@@ -37,22 +34,16 @@ function ProfilePage() {
       ) => Promise<ResetPasswordResponse>
     )(payload);
 
-  useEffect(() => {
-    if (!token) {
-      void navigate("/");
-    }
-  }, [token, navigate]);
-
+  /* Removed obsolete token check that blocked rendering */
+  
   const profileQueryFn: QueryFunction<MeResponse> = () => {
-    if (!token) {
-      throw new Error("Unauthorized");
-    }
     return fetchMe();
   };
 
   const profileQuery = useQuery<MeResponse>({
     queryKey: ["me"],
     queryFn: profileQueryFn,
+    retry: false, // Don't retry if 401
   });
 
   const form = useForm<ChangePasswordPayload>({
