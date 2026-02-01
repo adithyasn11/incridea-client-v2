@@ -133,19 +133,19 @@ function EventsPage() {
                 <div className="absolute inset-0 bg-black/60" />
             </div>
 
-            <section className="space-y-8 max-w-[1400px] mx-auto px-4 md:px-8 py-12">
-                <header className="space-y-2">
-                    <p className="text-sky-400 uppercase text-[10px] tracking-[0.2em] font-bold">
-                        Discover
-                    </p>
-                    <h1 className="text-4xl font-black text-white tracking-tight">
-                        Events
-                    </h1>
-                    <p className="text-slate-400 text-sm max-w-2xl">
-                        Explore the upcoming challenges. Filter by category or day to find
-                        your perfect match.
-                    </p>
-                </header>
+      <section className="space-y-8 max-w-[1400px] mx-auto px-4 md:px-8 py-12">
+        <header className="space-y-2">
+          <p className="text-sky-400 uppercase text-[10px] tracking-[0.2em] font-bold font-moco">
+            Discover
+          </p>
+          <h1 className="text-4xl font-moco font-bold text-white tracking-tight">
+            Events
+          </h1>
+          <p className="text-slate-400 text-sm max-w-2xl font-moco">
+            Explore the upcoming challenges. Filter by category or day to find
+            your perfect match.
+          </p>
+        </header>
 
                 <LiquidGlassCard className="rounded-2xl space-y-4 p-6">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

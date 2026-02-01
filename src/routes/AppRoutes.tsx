@@ -6,6 +6,7 @@ import AboutPage from "../pages/AboutPage";
 import EventsPage from "../pages/EventsPage";
 import EventDetailPage from "../pages/EventDetailPage";
 import RefundPage from "../pages/RefundPage";
+import MerchPage from "../pages/Merch";
 import GuidelinesPage from "../pages/GuidelinesPage";
 import PrivacyPage from "../pages/PrivacyPage";
 import RulesPage from "../pages/RulesPage";
@@ -15,6 +16,7 @@ import AccommodationPage from "../pages/AccommodationPage.tsx";
 import TechTeamPage from "../pages/techteam.tsx";
 import CoreTeamPage from "../pages/coreteam.tsx";
 import NotFoundPage from "../pages/NotFoundPage";
+import RefundPolicy from '../pages/refundpolicy.tsx';
 import ProfilePage from "@/pages/ProfilePage.tsx";
 
 const AuthRedirect = () => {
@@ -34,9 +36,8 @@ const AuthRedirect = () => {
 };
 
 const ResetRedirect = () => {
-  window.location.href = `${import.meta.env.VITE_AUTH_URL}/reset-password${
-    window.location.search
-  }`;
+  window.location.href = `${import.meta.env.VITE_AUTH_URL}/reset-password${window.location.search
+    }`;
   return null;
 };
 
@@ -61,6 +62,8 @@ function AppRoutes() {
         <Route path="/accommodation" element={<AccommodationPage />} />
         <Route path="/techteam" element={<TechTeamPage />} />
         <Route path="/coreteam" element={<CoreTeamPage />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/merch" element={<MerchPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

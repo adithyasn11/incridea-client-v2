@@ -18,8 +18,8 @@ const MobileMenu = ({ onLogout, isAuthenticated }: MobileMenuProps) => {
         { icon: Calendar, path: "/events", label: "Events" },
         { icon: Music, path: "/pronite", label: "Pronite" },
         { icon: Image, path: "/gallery", label: "Gallery" },
-        { icon: Info, path: "/about", label: "About" },
         { icon: User, path: "/profile", label: "Profile" },
+        { icon: Info, path: "/about", label: "About" },
         { icon: Phone, path: "/contact", label: "Contact" },
     ].filter(link => isAuthenticated || link.label !== "Profile");
 

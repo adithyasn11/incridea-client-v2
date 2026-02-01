@@ -36,6 +36,15 @@ const Navbar = ({ isAuthenticated, onLogout, isLoading }: NavbarProps) => {
           >
             Pronite
           </NavLink>
+          <NavLink
+            to="/merch"
+            className={({ isActive }) =>
+              `font-['Orbitron'] text-xl md:text-3xl tracking-wide md:tracking-widest font-bold uppercase transition-colors duration-300 cursor-target ${isActive ? "text-purple-400" : "text-white hover:text-purple-300"
+              }`
+            }
+          >
+            Merch
+          </NavLink>
         </div>
       </div>
 

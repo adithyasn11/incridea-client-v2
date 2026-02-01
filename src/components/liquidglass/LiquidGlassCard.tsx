@@ -23,7 +23,7 @@ export default function LiquidGlassCard<T extends ElementType = "div">({
     <>
       <Component
         className={`card card--${colorScheme} ${className}`}
-        {...rest}
+        {...(rest as any)}
       >
         <div className="card__content">{children}</div>
       </Component>
