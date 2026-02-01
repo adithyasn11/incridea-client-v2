@@ -9,6 +9,7 @@ import { showToast } from '../utils/toast'
 import PaymentProcessingModal from '../components/PaymentProcessingModal'
 import LiquidGlassCard from '../components/liquidglass/LiquidGlassCard'
 import SEO from '../components/SEO'
+
 import regBg from '../assets/reg-bg.jpg'
 
 
@@ -269,126 +270,127 @@ function RegisterPage() {
         return <div className="p-8 text-center text-slate-400">Loading...</div>
     }
 
-  if (registrationConfig && !registrationConfig.isRegistrationOpen) {
+    if (registrationConfig && !registrationConfig.isRegistrationOpen) {
+        return (
+            <section className="space-y-4 max-w-2xl mx-auto p-4">
+                <SEO title="Register | Incridea'26" description="Register for Incridea 2026, the national level techno-cultural fest of NMAM Institute of Technology, Nitte." />
+                <LiquidGlassCard className="p-6">
+                    <p className="muted mb-2 font-moco">Registration</p>
+                    <h1 className="text-2xl text-slate-50 font-moco font-bold">Register Incridea</h1>
+                    <p className="mt-2 text-slate-300 font-moco">Registrations are not open yet. Please check back soon.</p>
+                </LiquidGlassCard>
+            </section>
+        )
+    }
+
     return (
-      <section className="space-y-4 max-w-2xl mx-auto p-4">
-        <LiquidGlassCard className="p-6">
-          <p className="muted mb-2 font-moco">Registration</p>
-          <h1 className="text-2xl text-slate-50 font-moco font-bold">Register Incridea</h1>
-          <p className="mt-2 text-slate-300 font-moco">Registrations are not open yet. Please check back soon.</p>
-        </LiquidGlassCard>
-      </section>
-    )
-  }
+        <>
+            <SEO title="Register | Incridea'26" description="Register for Incridea 2026, the national level techno-cultural fest of NMAM Institute of Technology, Nitte." />
+            <div
+                className="fixed inset-0 -z-10 h-full w-full bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: `url(${regBg})` }}
+            />
+            <section className="relative max-w-6xl mx-auto p-4 md:p-6 lg:p-8">
+                <div className="mb-8">
+                    <h1 className="text-3xl text-slate-50 font-moco font-bold">Incridea Registration</h1>
+                    <p className="text-slate-400 mt-1 font-moco">Confirm your details and complete payment to join.</p>
+                </div>
 
-  return (
-    <>
-      <div 
-          className="fixed inset-0 -z-10 h-full w-full bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${regBg})` }}
-      />
-      <section className="relative max-w-6xl mx-auto p-4 md:p-6 lg:p-8">
-        <div className="mb-8">
-            <h1 className="text-3xl text-slate-50 font-moco font-bold">Incridea Registration</h1>
-            <p className="text-slate-400 mt-1 font-moco">Confirm your details and complete payment to join.</p>
-        </div>
+                <LiquidGlassCard className="p-8 md:p-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                        {/* Left Column: Details & Terms */}
+                        <div className="space-y-6 h-fit">
+                            <div>
+                                <h2 className="text-xl text-slate-100 mb-4 font-moco font-bold">Your Details</h2>
+                                <div className="space-y-4 text-sm">
+                                    <div className="p-3 rounded-lg">
+                                        <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1 font-moco">Name</span>
+                                        <div className="text-slate-200 font-moco font-bold">{user?.name}</div>
+                                    </div>
+                                    <div className="p-3 rounded-lg">
+                                        <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1 font-moco">Email</span>
+                                        <div className="text-slate-200 font-moco font-bold">{user?.email}</div>
+                                    </div>
+                                    <div className="p-3 rounded-lg">
+                                        <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1 font-moco">Contact</span>
+                                        <div className="text-slate-200 font-moco font-bold">{user?.phoneNumber || 'N/A'}</div>
+                                    </div>
+                                </div>
+                            </div>
 
-        <LiquidGlassCard className="p-8 md:p-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-              {/* Left Column: Details & Terms */}
-              <div className="space-y-6 h-fit">
-                  <div>
-                      <h2 className="text-xl text-slate-100 mb-4 font-moco font-bold">Your Details</h2>
-                      <div className="space-y-4 text-sm">
-                          <div className="p-3 rounded-lg">
-                              <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1 font-moco">Name</span>
-                              <div className="text-slate-200 font-moco font-bold">{user?.name}</div>
-                          </div>
-                          <div className="p-3 rounded-lg">
-                              <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1 font-moco">Email</span>
-                              <div className="text-slate-200 font-moco font-bold">{user?.email}</div>
-                          </div>
-                          <div className="p-3 rounded-lg">
-                              <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1 font-moco">Contact</span>
-                              <div className="text-slate-200 font-moco font-bold">{user?.phoneNumber || 'N/A'}</div>
-                          </div>
-                      </div>
-                  </div>
+                            <div className="pt-4 border-t border-slate-800">
+                                <label className="flex items-start gap-3 cursor-pointer group">
+                                    <div className="relative flex items-center mt-0.5">
+                                        <input
+                                            type="checkbox"
+                                            className="peer h-5 w-5 appearance-none rounded border border-slate-600 checked:border-sky-500 checked:bg-sky-500 transition-colors"
+                                            checked={termsAccepted}
+                                            onChange={(e) => setTermsAccepted(e.target.checked)}
+                                        />
+                                        <svg className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <div className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors font-moco">
+                                        I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline">Terms and Conditions</a>, <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline">Privacy Policy</a>, and <a href="/refund" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline">Refund Policy</a> of Incridea.
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
 
-                  <div className="pt-4 border-t border-slate-800">
-                      <label className="flex items-start gap-3 cursor-pointer group">
-                          <div className="relative flex items-center mt-0.5">
-                              <input 
-                                  type="checkbox" 
-                                  className="peer h-5 w-5 appearance-none rounded border border-slate-600 checked:border-sky-500 checked:bg-sky-500 transition-colors"
-                                  checked={termsAccepted}
-                                  onChange={(e) => setTermsAccepted(e.target.checked)}
-                              />
-                              <svg className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                              </svg>
-                          </div>
-                          <div className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors font-moco">
-                              I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline">Terms and Conditions</a>, <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline">Privacy Policy</a>, and <a href="/refund" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline">Refund Policy</a> of Incridea.
-                          </div>
-                      </label>
-                  </div>
-              </div>
+                        {/* Right Column: Pricing */}
+                        <div className="space-y-6 flex flex-col h-fit relative lg:pl-12 lg:border-l border-slate-800">
+                            <div>
+                                <h2 className="text-xl text-slate-100 font-moco font-bold">Payment Summary</h2>
+                                {/* Status Message */}
+                                <div className={`py-2 rounded-lg text-xs font-moco ${!registrationConfig?.isSpotRegistration
+                                    }`}>
+                                    {!registrationConfig?.isSpotRegistration ? (
+                                        <p>Oh nice you are a early bird therefore you have early bird discount, Don't wait until Incridea !</p>
+                                    ) : (
+                                        <p>You missed the early bird discount. Only On-Spot Registration is available</p>
+                                    )}
+                                </div>
+                            </div>
 
-              {/* Right Column: Pricing */}
-              <div className="space-y-6 flex flex-col h-fit relative lg:pl-12 lg:border-l border-slate-800">
-                  <div>
-                      <h2 className="text-xl text-slate-100 font-moco font-bold">Payment Summary</h2>                  
-                      {/* Status Message */}
-                      <div className={`py-2 rounded-lg text-xs font-moco ${
-                          !registrationConfig?.isSpotRegistration 
-                      }`}>
-                          {!registrationConfig?.isSpotRegistration ? (
-                              <p>Oh nice you are a early bird therefore you have early bird discount, Don't wait until Incridea !</p>
-                          ) : (
-                              <p>You missed the early bird discount. Only On-Spot Registration is available</p>
-                          )}
-                      </div>
-                  </div>
+                            {pricingBreakdown ? (
+                                <div className="space-y-4">
+                                    <div className="rounded-lg p-4 border border-slate-800 space-y-3">
+                                        <div className="flex justify-between items-center text-slate-300 font-moco">
+                                            <span>{selectedFee?.label}</span>
+                                            <span>₹ {pricingBreakdown.base.toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-slate-400 text-sm font-moco">
+                                            <span>Tax & Gateway Charges</span>
+                                            <span>₹ {pricingBreakdown.tax.toFixed(2)}</span>
+                                        </div>
+                                        <div className="h-px bg-slate-700/50 my-2"></div>
+                                        <div className="flex justify-between items-center text-slate-100 text-lg font-moco font-bold">
+                                            <span>Total Payable</span>
+                                            <span>₹ {pricingBreakdown.total}</span>
+                                        </div>
+                                    </div>
 
-                  {pricingBreakdown ? (
-                      <div className="space-y-4">
-                          <div className="rounded-lg p-4 border border-slate-800 space-y-3">
-                              <div className="flex justify-between items-center text-slate-300 font-moco">
-                                  <span>{selectedFee?.label}</span>
-                                  <span>₹ {pricingBreakdown.base.toFixed(2)}</span>
-                              </div>
-                              <div className="flex justify-between items-center text-slate-400 text-sm font-moco">
-                                  <span>Tax & Gateway Charges</span>
-                                  <span>₹ {pricingBreakdown.tax.toFixed(2)}</span>
-                              </div>
-                              <div className="h-px bg-slate-700/50 my-2"></div>
-                              <div className="flex justify-between items-center text-slate-100 text-lg font-moco font-bold">
-                                  <span>Total Payable</span>
-                                  <span>₹ {pricingBreakdown.total}</span>
-                              </div>
-                          </div>
-                          
-                          <div className="border border-sky-500/20 p-3 rounded text-xs text-sky-200/80 font-moco">
-                              Note: The total amount is rounded up to the nearest integer.
-                          </div>
-                      </div>
-                  ) : (
-                      <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-200 rounded font-moco">
-                          No valid registration option available.
-                      </div>
-                  )}
+                                    <div className="border border-sky-500/20 p-3 rounded text-xs text-sky-200/80 font-moco">
+                                        Note: The total amount is rounded up to the nearest integer.
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-200 rounded font-moco">
+                                    No valid registration option available.
+                                </div>
+                            )}
 
-                  <button 
-                      className={`button w-full py-4 text-base shadow-lg shadow-sky-900/20 font-moco font-bold ${(!registrationOption || !termsAccepted || isPaymentInitiating) ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02]'}`}
-                      onClick={handlePayment}
-                      disabled={!registrationOption || !termsAccepted || isPaymentInitiating}
-                  >
-                      {isPaymentInitiating ? 'Opening payment page...' : (pricingBreakdown ? `Pay ₹ ${pricingBreakdown.total}` : 'Complete Registration')}
-                  </button>
-              </div>
-          </div>
-        </LiquidGlassCard>
+                            <button
+                                className={`button w-full py-4 text-base shadow-lg shadow-sky-900/20 font-moco font-bold ${(!registrationOption || !termsAccepted || isPaymentInitiating) ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02]'}`}
+                                onClick={handlePayment}
+                                disabled={!registrationOption || !termsAccepted || isPaymentInitiating}
+                            >
+                                {isPaymentInitiating ? 'Opening payment page...' : (pricingBreakdown ? `Pay ₹ ${pricingBreakdown.total}` : 'Complete Registration')}
+                            </button>
+                        </div>
+                    </div>
+                </LiquidGlassCard>
 
                 <PaymentProcessingModal
                     isOpen={modalState.isOpen}

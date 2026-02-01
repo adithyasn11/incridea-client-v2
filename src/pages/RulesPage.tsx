@@ -424,7 +424,8 @@ const RulesPage = () => {
           </defs>
         </svg>
       </div>
-    </>
+    </div>
+
   )
 }
 
