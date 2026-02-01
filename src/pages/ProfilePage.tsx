@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   useMutation,
   useQuery,
   type QueryFunction,
   type MutationFunction,
 } from "@tanstack/react-query";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   changePassword,
   fetchMe,
@@ -21,7 +21,7 @@ import LiquidGlassCard from "../components/liquidglass/LiquidGlassCard";
 import InfiniteScroll from "../components/InfiniteScroll";
 
 function ProfilePage() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   // Derived token check removed, rely on MeResponse or AuthContext if accessible
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
@@ -45,45 +45,18 @@ function ProfilePage() {
   };
 
   const profileQuery = useQuery<MeResponse>({
-    queryKey: ["me"], 
+    queryKey: ["me"],
     queryFn: profileQueryFn,
-    retry: false, 
+    retry: false,
     staleTime: 1000 * 60 * 5, // Cache for 5 mins
   });
 
-  // Handle Error State Explicitly
-  if (profileQuery.isError) {
-      const authUrl = import.meta.env.VITE_AUTH_URL || "http://localhost:3001";
-      const loginUrl = `${authUrl}/?redirect=${encodeURIComponent(window.location.href)}`;
-      
-      return (
-        <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-slate-50 flex-col gap-4">
-           <LiquidGlassCard className="p-8 rounded-2xl max-w-md w-full text-center">
-              <h1 className="text-xl font-bold mb-4 text-slate-200">Unable to load profile</h1>
-              <p className="text-sm text-slate-400 mb-6">
-                {(profileQuery.error as Error).message || "We couldn't verify your implementation. Please login again."}
-              </p>
-              <div className="flex gap-4 justify-center">
-                <a 
-                  href="/"
-                  className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-full transition-colors text-sm font-medium"
-                >
-                  Back to Home
-                </a>
-                <a 
-                  href={loginUrl}
-                  className="px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-colors text-sm font-medium shadow-lg hover:shadow-amber-500/20"
-                >
-                  Login
-                </a>
-              </div>
-           </LiquidGlassCard>
-        </div>
-      );
-  }
-  
-  // Handle Loading State - Removed blocking return to match ProfilePageOld behavior
-  // if (profileQuery.isLoading) { ... }
+  useEffect(() => {
+    if (profileQuery.isError) {
+      navigate("/login");
+    }
+  }, [profileQuery.isError, navigate]);
+
 
   const form = useForm<ChangePasswordPayload>({
     defaultValues: {
@@ -176,9 +149,8 @@ function ProfilePage() {
                 {/* Avatar with badge QR */}
                 <div className="relative flex items-center justify-center mt-3">
                   <div
-                    className={`w-32 h-32 lg:w-44 lg:h-44 rounded-full bg-linear-to-br from-slate-400 to-slate-500 flex items-center justify-center shadow-xl transition-transform duration-500 ${
-                      isRotating ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`w-32 h-32 lg:w-44 lg:h-44 rounded-full bg-linear-to-br from-slate-400 to-slate-500 flex items-center justify-center shadow-xl transition-transform duration-500 ${isRotating ? "rotate-180" : "rotate-0"
+                      }`}
                   >
                     <span className="text-4xl lg:text-6xl text-slate-800 font-semibold">
                       {userName.charAt(0).toUpperCase()}
@@ -555,8 +527,8 @@ function ProfilePage() {
                     id="currentPassword"
                     type="password"
                     className={`w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200 ${form.formState.errors.currentPassword ? "ring-2 ring-rose-500/50" : ""}`}
-                    {...form.register("currentPassword", { 
-                      required: "Current password is required" 
+                    {...form.register("currentPassword", {
+                      required: "Current password is required"
                     })}
                     placeholder="Enter your current password"
                   />
@@ -577,7 +549,7 @@ function ProfilePage() {
                     id="newPassword"
                     type="password"
                     className={`w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200 ${form.formState.errors.newPassword ? "ring-2 ring-rose-500/50" : ""}`}
-                    {...form.register("newPassword", { 
+                    {...form.register("newPassword", {
                       required: "New password is required",
                       minLength: { value: 8, message: "Password must be at least 8 characters" }
                     })}

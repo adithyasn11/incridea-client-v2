@@ -15,7 +15,6 @@ import AccommodationPage from "../pages/AccommodationPage.tsx";
 import TechTeamPage from "../pages/techteam.tsx";
 import CoreTeamPage from "../pages/coreteam.tsx";
 import NotFoundPage from "../pages/NotFoundPage";
-import ComingSoon from "../pages/ComingSoon.tsx";
 import ProfilePage from "@/pages/ProfilePage.tsx";
 
 const AuthRedirect = () => {
@@ -64,7 +63,6 @@ function AppRoutes() {
         <Route path="/coreteam" element={<CoreTeamPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
-      <Route path="/comingsoon" element={<ComingSoon />} />
     </Routes>
   );
 }
