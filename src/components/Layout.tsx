@@ -11,7 +11,7 @@ function Layout() {
   const [isLoading, setIsLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const { socket } = useSocket()
-  
+
   const handleLogout = async () => {
     try {
       await logoutUser()
@@ -46,13 +46,13 @@ function Layout() {
 
     // SAFETY TIMEOUT: If API hangs, stop loading after 5s so user sees SOMETHING
     const timer = setTimeout(() => {
-        setIsLoading((prev) => {
-            if (prev) {
-                console.warn("Layout loading timed out. Forcing render.")
-                return false
-            }
-            return prev
-        })
+      setIsLoading((prev) => {
+        if (prev) {
+          console.warn("Layout loading timed out. Forcing render.")
+          return false
+        }
+        return prev
+      })
     }, 5000)
 
     const handleAuthEvent = () => void fetchProfile()
@@ -62,8 +62,8 @@ function Layout() {
     }
 
     if (socket) {
-        socket.on('auth:login', handleAuthEvent)
-        socket.on('auth:logout', handleAuthEvent)
+      socket.on('auth:login', handleAuthEvent)
+      socket.on('auth:logout', handleAuthEvent)
     }
 
     window.addEventListener('storage', handleStorageChange)

@@ -70,24 +70,24 @@ export default function QuizPage() {
     // Timer & Stopwatch logic
     useEffect(() => {
         if (!quiz) return
-        
+
         const interval = setInterval(() => {
             const now = new Date().getTime()
-            
+
             // Countdown to End
             const end = new Date(quiz.endTime).getTime()
             const distance = end - now
-            
+
             if (distance < 0) {
                 clearInterval(interval)
                 setTimeLeft('Expired')
                 if (!isFinished) showToast('Quiz time is over! Submitting...', 'error')
                 // disable or auto submit? Left as user requested previously.
             } else {
-                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
-                 const seconds = Math.floor((distance % (1000 * 60)) / 1000)
-                 setTimeLeft(`${hours}h ${minutes}m ${seconds}s`)
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000)
+                setTimeLeft(`${hours}h ${minutes}m ${seconds}s`)
             }
 
             // Stopwatch (if started)
@@ -142,9 +142,9 @@ export default function QuizPage() {
         setSelectedOptions(prev => ({ ...prev, [questionId]: optionId }))
         submitAnswerMutation.mutate({ optionId })
     }
-    
+
     if (isLoading) return <div className="min-h-screen flex items-center justify-center text-white">Loading Quiz...</div>
-    
+
     if (error) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center text-white gap-4 p-4 text-center">
@@ -159,7 +159,7 @@ export default function QuizPage() {
 
     if (isFinished) {
         return (
-             <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4 text-center space-y-6">
+            <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4 text-center space-y-6">
                 <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center">
                     <FiCheck className="w-10 h-10 text-green-500" />
                 </div>
@@ -175,31 +175,31 @@ export default function QuizPage() {
             </div>
         )
     }
-    
+
     // Start Screen
     if (!hasStarted) {
-         return (
-             <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4 text-center space-y-6 animate-in fade-in">
+        return (
+            <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4 text-center space-y-6 animate-in fade-in">
                 <div className="bg-slate-900 border border-slate-800 p-8 rounded-2xl max-w-lg w-full shadow-2xl">
                     <h1 className="text-2xl font-bold mb-2">{quiz.name}</h1>
                     <p className="text-slate-400 mb-6">{quiz.description || 'Ready to start the quiz?'}</p>
-                    
+
                     <div className="space-y-4 mb-8 text-left bg-slate-950 p-4 rounded-xl border border-slate-800">
-                         <div className="flex justify-between">
+                        <div className="flex justify-between">
                             <span className="text-slate-500">Questions</span>
                             <span className="font-mono">{quiz.questions.length}</span>
-                         </div>
-                         <div className="flex justify-between">
+                        </div>
+                        <div className="flex justify-between">
                             <span className="text-slate-500">Attempts Allowed</span>
                             <span className="font-mono">{quiz.allowAttempts ? 'Yes' : 'No'}</span>
-                         </div>
-                         <div className="flex justify-between">
+                        </div>
+                        <div className="flex justify-between">
                             <span className="text-slate-500">Ends In</span>
                             <span className="font-mono text-blue-400 flex items-center gap-2"><FiClock /> {timeLeft}</span>
-                         </div>
+                        </div>
                     </div>
 
-                    <button 
+                    <button
                         onClick={() => startQuizMutation.mutate()}
                         disabled={startQuizMutation.isPending}
                         className="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-lg shadow-lg hover:shadow-blue-500/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
@@ -207,8 +207,8 @@ export default function QuizPage() {
                         {startQuizMutation.isPending ? 'Starting...' : 'Start Quiz'}
                     </button>
                 </div>
-             </div>
-         )
+            </div>
+        )
     }
 
     const currentQuestion = quiz.questions[currentQuestionIndex] as PublicQuizQuestion | undefined
@@ -221,23 +221,23 @@ export default function QuizPage() {
                     <h1 className="font-bold text-lg max-w-[200px] md:max-w-md truncate">{quiz.name}</h1>
                 </div>
                 <div className="flex items-center gap-4">
-                     <div className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg text-sm font-mono text-green-400">
+                    <div className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg text-sm font-mono text-green-400">
                         <span className="text-xs text-slate-500 uppercase">Time</span>
                         {stopwatch}
                     </div>
                     <div className="hidden md:flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg text-sm font-mono text-blue-400">
                         <span className="text-xs text-slate-500 uppercase">Ends In</span>
-                         {timeLeft}
+                        {timeLeft}
                     </div>
                 </div>
             </div>
 
             {/* Main Content */}
             <div className="flex-1 container mx-auto p-4 max-w-3xl flex flex-col justify-center">
-                
+
                 {/* Progress Bar */}
                 <div className="w-full bg-slate-800 h-2 rounded-full mb-6 relative overflow-hidden">
-                    <div 
+                    <div
                         className="absolute top-0 left-0 h-full bg-blue-600 transition-all duration-300"
                         style={{ width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%` }}
                     />
@@ -253,7 +253,7 @@ export default function QuizPage() {
                                     {currentQuestion.description}
                                 </div>
                             )}
-                             {currentQuestion.image && (
+                            {currentQuestion.image && (
                                 <img src={currentQuestion.image} alt="Question" className="max-h-64 rounded-xl border border-slate-800 object-contain mx-auto" />
                             )}
                         </div>
@@ -263,11 +263,10 @@ export default function QuizPage() {
                                 <button
                                     key={opt.id}
                                     onClick={() => handleOptionSelect(currentQuestion.id, opt.id)}
-                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all relative flex items-center justify-between group ${
-                                        selectedOptions[currentQuestion.id] === opt.id
-                                        ? 'bg-blue-600/10 border-blue-600 text-white'
-                                        : 'bg-slate-900/50 border-slate-800 hover:border-slate-600 text-slate-300'
-                                    }`}
+                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all relative flex items-center justify-between group ${selectedOptions[currentQuestion.id] === opt.id
+                                            ? 'bg-blue-600/10 border-blue-600 text-white'
+                                            : 'bg-slate-900/50 border-slate-800 hover:border-slate-600 text-slate-300'
+                                        }`}
                                 >
                                     <span className="font-medium text-lg">{opt.value}</span>
                                     {selectedOptions[currentQuestion.id] === opt.id && <FiCheck className="text-blue-500 w-6 h-6" />}
@@ -276,35 +275,35 @@ export default function QuizPage() {
                         </div>
                     </div>
                 ) : (
-                   null // Handled by isFinished
+                    null // Handled by isFinished
                 )}
             </div>
 
             {/* Footer Navigation */}
             <div className="bg-slate-900 border-t border-slate-800 p-4">
                 <div className="container mx-auto max-w-3xl flex justify-between">
-                     <button 
+                    <button
                         onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
                         disabled={currentQuestionIndex === 0}
                         className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-800 disabled:opacity-50 disabled:hover:bg-transparent text-slate-400 hover:text-white transition"
                     >
                         <FiChevronLeft /> Previous
                     </button>
-                    
+
                     {currentQuestionIndex < quiz.questions.length - 1 ? (
-                        <button 
+                        <button
                             onClick={() => setCurrentQuestionIndex(prev => prev + 1)}
                             className="flex items-center gap-2 px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200 transition"
                         >
                             Next <FiChevronRight />
                         </button>
                     ) : (
-                        <button 
+                        <button
                             onClick={() => {
                                 if (confirm('Are you sure you want to finish the quiz?')) {
                                     finishQuizMutation.mutate()
                                 }
-                            }} 
+                            }}
                             disabled={finishQuizMutation.isPending}
                             className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-500 transition disabled:opacity-50"
                         >
