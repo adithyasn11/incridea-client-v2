@@ -50,7 +50,7 @@ function ProfilePage() {
   });
 
   if (profileQuery.isError) {
-      window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${window.location.href}`;
+      window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${encodeURIComponent(window.location.href)}`;
       return null;
   }
   
@@ -127,9 +127,6 @@ function ProfilePage() {
       className="fixed inset-0 bg-cover bg-center bg-no-repeat overflow-hidden"
       style={{ backgroundImage: "url('/temp_event_bg.png')" }}
     >
-      <style>
-        {`@import url('https://fonts.googleapis.com/css2?family=New+Rocker&display=swap');`}
-      </style>
       <div className="absolute inset-0 bg-black/40"></div>
       <section className="relative h-screen overflow-y-auto pt-32 lg:pt-28 lg:pl-12 pb-2 flex flex-col items-center justify-start">
         {/* Profile Card */}
@@ -159,7 +156,7 @@ function ProfilePage() {
                       isRotating ? "rotate-180" : "rotate-0"
                     }`}
                   >
-                    <span className="text-4xl lg:text-6xl text-slate-800 font-semibold">
+                    <span className="text-4xl lg:text-6xl text-slate-800 font-moco font-bold">
                       {userName.charAt(0).toUpperCase()}
                     </span>
                   </div>
@@ -180,10 +177,10 @@ function ProfilePage() {
 
                 {/* Text */}
                 <div className="text-center space-y-2">
-                  <p className="text-2xl lg:text-3xl font-semibold text-slate-50">
+                  <p className="text-2xl lg:text-3xl text-slate-50 font-moco font-bold">
                     {userName}
                   </p>
-                  <p className="text-sm text-slate-300">{"No College Info"}</p>
+                  <p className="text-sm text-slate-300 font-moco">{"No College Info"}</p>
                 </div>
 
                 {/* Buttons */}
@@ -217,10 +214,7 @@ function ProfilePage() {
                 {/* Top Section: Enrolled Missions */}
                 <div className="flex flex-col overflow-hidden">
                   <div className="flex justify-center mb-4 mt-2 w-full">
-                    <h2
-                      className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white text-center w-full"
-                      style={{ fontFamily: "'New Rocker', cursive" }}
-                    >
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white text-center w-full font-moco font-bold">
                       My Missions
                     </h2>
                   </div>
@@ -274,21 +268,21 @@ function ProfilePage() {
                         </div>
                         <div className="flex-1 flex flex-col space-y-1.5 overflow-hidden">
                           <div>
-                            <h3 className="text-xs font-semibold text-slate-50 line-clamp-1">
+                            <h3 className="text-xs text-slate-50 line-clamp-1 font-moco font-bold">
                               {mission.title}
                             </h3>
                           </div>
                           <div className="flex items-center justify-between bg-slate-900/40 rounded px-1.5 py-1">
-                            <span className="text-xs text-teal-400">
+                            <span className="text-xs text-teal-400 font-moco">
                               VENUE:
                             </span>
-                            <span className="text-xs font-semibold text-amber-300">
+                            <span className="text-xs text-amber-300 font-moco font-bold">
                               TBA
                             </span>
                           </div>
                           <div className="flex items-center justify-between bg-slate-900/40 rounded px-1.5 py-1">
-                            <span className="text-xs text-pink-400">TIME:</span>
-                            <span className="text-xs font-semibold text-amber-300">
+                            <span className="text-xs text-pink-400 font-moco">TIME:</span>
+                            <span className="text-xs text-amber-300 font-moco font-bold">
                               TBA
                             </span>
                           </div>
@@ -309,10 +303,7 @@ function ProfilePage() {
                 {/* Bottom Section: Recommended Missions */}
                 <div className="flex flex-col overflow-hidden">
                   <div className="flex justify-center mb-4 mt-2 w-full">
-                    <h2
-                      className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white text-center w-full"
-                      style={{ fontFamily: "'New Rocker', cursive" }}
-                    >
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white text-center w-full font-moco font-bold">
                       Recommended Missions
                     </h2>
                   </div>
@@ -357,21 +348,21 @@ function ProfilePage() {
                         </div>
                         <div className="flex-1 flex flex-col space-y-1.5 overflow-hidden">
                           <div>
-                            <h3 className="text-xs font-semibold text-slate-50 line-clamp-1">
+                            <h3 className="text-xs text-slate-50 line-clamp-1 font-moco font-bold">
                               {mission.title}
                             </h3>
                           </div>
                           <div className="flex items-center justify-between bg-slate-900/40 rounded px-1.5 py-1">
-                            <span className="text-xs text-teal-400">
+                            <span className="text-xs text-teal-400 font-moco">
                               VENUE:
                             </span>
-                            <span className="text-xs font-semibold text-amber-300">
+                            <span className="text-xs text-amber-300 font-moco font-bold">
                               TBA
                             </span>
                           </div>
                           <div className="flex items-center justify-between bg-slate-900/40 rounded px-1.5 py-1">
-                            <span className="text-xs text-pink-400">TIME:</span>
-                            <span className="text-xs font-semibold text-amber-300">
+                            <span className="text-xs text-pink-400 font-moco">TIME:</span>
+                            <span className="text-xs text-amber-300 font-moco font-bold">
                               TBA
                             </span>
                           </div>
@@ -401,7 +392,7 @@ function ProfilePage() {
             >
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="pt-1">
-                  <h3 className="text-lg font-semibold text-slate-50 pl-0.5">
+                  <h3 className="text-lg text-slate-50 pl-0.5 font-moco font-bold">
                     QR Code
                   </h3>
                 </div>
@@ -422,7 +413,7 @@ function ProfilePage() {
                     <QrCode className="w-32 h-32 text-slate-400" />
                   </div>
                 </div>
-                <p className="text-sm text-slate-400 text-center pb-1">
+                <p className="text-sm text-slate-400 text-center pb-1 font-moco">
                   Scan this QR code
                 </p>
               </div>
@@ -441,7 +432,7 @@ function ProfilePage() {
             >
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="pt-1">
-                  <h3 className="text-lg font-semibold text-slate-50 pl-1">
+                  <h3 className="text-lg text-slate-50 pl-1 font-moco font-bold">
                     Edit profile
                   </h3>
                 </div>
@@ -460,7 +451,7 @@ function ProfilePage() {
                   <input
                     id="fullName"
                     type="text"
-                    className="w-full px-4! py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                    className="w-full px-4! py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-moco"
                     value={editFullName}
                     onChange={(e) => setEditFullName(e.target.value)}
                     placeholder="Enter your full name"
@@ -505,7 +496,7 @@ function ProfilePage() {
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="pt-0.5 pl-0.5">
-                  <h3 className="text-lg font-semibold text-slate-50">
+                  <h3 className="text-lg text-slate-50 font-moco font-bold">
                     Change password
                   </h3>
                 </div>
@@ -525,7 +516,7 @@ function ProfilePage() {
               >
                 <div className="space-y-1.5">
                   <label
-                    className="label text-sm font-medium text-slate-200 block px-5 md:px-6"
+                    className="label text-sm text-slate-200 block px-5 md:px-6 font-moco font-bold"
                     htmlFor="currentPassword"
                   >
                     Current password
@@ -533,14 +524,14 @@ function ProfilePage() {
                   <input
                     id="currentPassword"
                     type="password"
-                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200"
+                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200 font-moco"
                     {...form.register("currentPassword", { required: true })}
                     placeholder="Enter your current password"
                   />
                 </div>
                 <div className="space-y-1.5">
                   <label
-                    className="label text-sm font-medium text-slate-200 block px-5 md:px-6"
+                    className="label text-sm text-slate-200 block px-5 md:px-6 font-moco font-bold"
                     htmlFor="newPassword"
                   >
                     New password
@@ -548,14 +539,14 @@ function ProfilePage() {
                   <input
                     id="newPassword"
                     type="password"
-                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200"
+                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200 font-moco"
                     {...form.register("newPassword", { required: true })}
                     placeholder="Create a new password"
                   />
                 </div>
                 <div className="space-y-1.5">
                   <label
-                    className="label text-sm font-medium text-slate-200 block px-5 md:px-6"
+                    className="label text-sm text-slate-200 block px-5 md:px-6 font-moco font-bold"
                     htmlFor="confirmNewPassword"
                   >
                     Confirm new password
@@ -563,7 +554,7 @@ function ProfilePage() {
                   <input
                     id="confirmNewPassword"
                     type="password"
-                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200"
+                    className="w-full px-5 md:px-6 py-2.5 md:py-3 leading-tight bg-linear-to-b from-slate-600/30 to-slate-700/30 shadow-inner rounded-full text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:from-slate-600/50 focus:to-slate-700/50 transition-all duration-200 font-moco"
                     {...form.register("confirmNewPassword", {
                       required: true,
                     })}
@@ -590,7 +581,7 @@ function ProfilePage() {
                   </button>
                 </div>
                 {changePasswordMutation.isError && (
-                  <p className="text-sm text-rose-300 pt-1">
+                  <p className="text-sm text-rose-300 pt-1 font-moco">
                     {changePasswordMutation.error instanceof Error
                       ? changePasswordMutation.error.message
                       : "Failed to update password."}

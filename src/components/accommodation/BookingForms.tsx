@@ -10,8 +10,8 @@ import { Loader2, X, FileText } from 'lucide-react'
 // Schemas
 const individualSchema = z.object({
 
-  checkIn: z.string().min(1, 'Check-in time is required'),
-  checkOut: z.string().min(1, 'Check-out time is required'),
+  checkIn: z.enum(['2026-03-05', '2026-03-06', '2026-03-07'], { message: 'Please select a valid Check-in date' }),
+  checkOut: z.enum(['2026-03-05', '2026-03-06', '2026-03-07'], { message: 'Please select a valid Check-out date' }),
   idCard: z.string({ message: 'Please upload your college id photo' }).url('ID Card image is required'),
 })
 
@@ -41,8 +41,8 @@ export const IndividualBookingForm = ({ onSuccess }: { onSuccess: () => void }) 
     try {
       const response = await bookIndividual({
         ...data,
-        checkIn: new Date(data.checkIn).toISOString(),
-        checkOut: new Date(data.checkOut).toISOString()
+        checkIn: data.checkIn,
+        checkOut: data.checkOut
       })
       
       const { payment } = response
@@ -71,10 +71,16 @@ export const IndividualBookingForm = ({ onSuccess }: { onSuccess: () => void }) 
           name: "Incridea",
           description: "Accommodation Booking",
           order_id: payment.orderId,
-          handler: function (_response: any) {
-             // Open Modal to track status
+          handler: async function (response: any) {
              setPaymentModalOpen(true)
-             // onSuccess() // Do not call immediate onSuccess, let modal handle it
+             try {
+                // Verify payment matching Fest logic
+                await import('../../api/registration').then(m => m.verifyPaymentSignature(response))
+             } catch (e) {
+                console.error('Verification failed', e)
+                // Modal will rely on socket or show error eventually
+                toast.error('Payment verification failed, please check status')
+             }
           },
           prefill: {
               name: user?.name,
@@ -106,15 +112,25 @@ export const IndividualBookingForm = ({ onSuccess }: { onSuccess: () => void }) 
 
 
         <div>
-           {/* Date pickers - simple datetime-local for now */}
+           {/* Date pickers - Select for restricted dates */}
            <label className="block text-sm font-medium mb-1">Check In</label>
-           <input type="datetime-local" {...register('checkIn')} className="w-full bg-white/10 border border-white/20 rounded p-2 focus:outline-none" />
+           <select {...register('checkIn')} className="w-full bg-white/10 border border-white/20 rounded p-2 focus:outline-none focus:border-purple-500 text-white">
+              <option value="" className="bg-slate-900 text-gray-400">Select Date</option>
+              <option value="2026-03-05" className="bg-slate-900">March 5</option>
+              <option value="2026-03-06" className="bg-slate-900">March 6</option>
+              <option value="2026-03-07" className="bg-slate-900">March 7</option>
+           </select>
            {errors.checkIn && <p className="text-red-400 text-xs mt-1">{errors.checkIn.message}</p>}
         </div>
 
         <div>
            <label className="block text-sm font-medium mb-1">Check Out</label>
-           <input type="datetime-local" {...register('checkOut')} className="w-full bg-white/10 border border-white/20 rounded p-2 focus:outline-none" />
+           <select {...register('checkOut')} className="w-full bg-white/10 border border-white/20 rounded p-2 focus:outline-none focus:border-purple-500 text-white">
+              <option value="" className="bg-slate-900 text-gray-400">Select Date</option>
+              <option value="2026-03-05" className="bg-slate-900">March 5</option>
+              <option value="2026-03-06" className="bg-slate-900">March 6</option>
+              <option value="2026-03-07" className="bg-slate-900">March 7</option>
+           </select>
            {errors.checkOut && <p className="text-red-400 text-xs mt-1">{errors.checkOut.message}</p>}
         </div>
       </div>
