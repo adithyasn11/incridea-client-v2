@@ -13,6 +13,7 @@ import RulesPage from "../pages/RulesPage";
 import QuizPage from "../pages/QuizPage";
 import ProfilePage from "../pages/ProfilePage";
 import RegisterPage from "../pages/RegisterPage";
+import LeaderboardPage from "../pages/LeaderboardPage";
 import AccommodationPage from "../pages/AccommodationPage.tsx";
 import TechTeamPage from "../pages/techteam.tsx";
 import CoreTeamPage from "../pages/coreteam.tsx";
@@ -45,7 +46,7 @@ const ResetRedirect = () => {
 function AppRoutes() {
   return (
     <Routes>
-    <Route path="/" element={<HomePage />} />
+      <Route path="/" element={<HomePage />} />
       <Route element={<Layout />}>
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -61,6 +62,7 @@ function AppRoutes() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/accommodation" element={<AccommodationPage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/techteam" element={<TechTeamPage />} />
         <Route path="/coreteam" element={<CoreTeamPage />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />

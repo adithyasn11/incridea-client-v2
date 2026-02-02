@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { ChevronLeft, Home, Calendar, Image, Info, Phone, Music, User } from "lucide-react";
+import { ChevronLeft, Home, Calendar, Image, Info, Phone, Music, User, Package } from "lucide-react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 interface MobileMenuProps {
@@ -17,6 +17,7 @@ const MobileMenu = ({ onLogout, isAuthenticated }: MobileMenuProps) => {
         { icon: Home, path: "/", label: "Home" },
         { icon: Calendar, path: "/events", label: "Events" },
         { icon: Music, path: "/pronite", label: "Pronite" },
+        { icon: Package, path: "/merch", label: "Merch" },
         { icon: Image, path: "/gallery", label: "Gallery" },
         { icon: User, path: "/profile", label: "Profile" },
         { icon: Info, path: "/about", label: "About" },
@@ -175,7 +176,9 @@ const MobileMenu = ({ onLogout, isAuthenticated }: MobileMenuProps) => {
                                             </linearGradient>
                                         </svg>
                                         <button
+                                            type="button"
                                             onClick={toggleMenu}
+                                            aria-label="Close Menu"
                                             className="p-2 pl-2 mt-2 hover:bg-white/10 rounded-full transition-colors"
                                         >
                                             <ChevronLeft size={32} style={{ stroke: "url(#back-arrow-gradient)" }} />
