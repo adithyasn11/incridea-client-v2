@@ -176,7 +176,9 @@ const MobileMenu = ({ onLogout, isAuthenticated }: MobileMenuProps) => {
                                             </linearGradient>
                                         </svg>
                                         <button
+                                            type="button"
                                             onClick={toggleMenu}
+                                            aria-label="Close Menu"
                                             className="p-2 pl-2 mt-2 hover:bg-white/10 rounded-full transition-colors"
                                         >
                                             <ChevronLeft size={32} style={{ stroke: "url(#back-arrow-gradient)" }} />
